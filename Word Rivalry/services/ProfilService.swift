@@ -8,7 +8,7 @@
 import Foundation
 import CloudKit
 
-class ProfileInfoService {
+class ProfilService {
     
     private let cloudKitService: CloudKitService
     
