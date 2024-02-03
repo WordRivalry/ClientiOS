@@ -262,6 +262,8 @@ extension GameModel: Board_OnSwipe_Delegate {
     
     
     private func scoreForTile(at cellIndex: CellIndex) -> Int {
+        print(cellIndex)
+        
         let tile = board.getCell(cellIndex.i, cellIndex.j)
         return tile.score * tile.letterMultiplier // You might also consider word multipliers here
     }

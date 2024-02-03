@@ -43,7 +43,6 @@ struct GameView: View {
             Spacer()
 
             LetterBoardView(viewModel: viewModel)
-                .padding()
                 .cornerRadius(10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -19,69 +19,11 @@ protocol Board_OnTap_Delegate: AnyObject {
     func onTapGesture(_ cellIndex: CellIndex)
 }
 
-protocol Board_GameState_Delegate: AnyObject {
-    func onGameStarted()
-    func onGamePaused()
-    func onGameResumed()
-    func onGameEnded(result: GameResult) // GameResult could be an enum representing win/loss/etc.
-}
-
-protocol Board_Score_Delegate: AnyObject {
-    func onScoreIncreased(points: Int)
-    func onScoreDecreased(points: Int)
-    func onScoreReset()
-}
-
-protocol Board_Error_Delegate: AnyObject {
-    func onErrorOccurred(error: BoardError) // BoardError could be an enum listing possible errors
-}
-
-protocol Board_Animation_Delegate: AnyObject {
-    func onCellHighlightAnimationStarted(_ cellIndex: CellIndex)
-    func onCellHighlightAnimationEnded(_ cellIndex: CellIndex)
-    func onCustomAnimationTriggered(animation: BoardAnimation) // BoardAnimation could define animation types
-}
-
-enum GameResult {
-    case win(score: Int)
-    case lose(reason: String)
-    case timeUp(score: Int)
-    
-    var description: String {
-        switch self {
-        case .win(let score):
-            return "Congratulations! You've won with a score of \(score)."
-        case .lose(let reason):
-            return "Game Over. \(reason)"
-        case .timeUp(let score):
-            return "Time's up! Final score: \(score)."
-        }
-    }
-}
-
-enum BoardAnimation {
-    case tileSelected(cellIndex: CellIndex)
-    case wordFormed(word: String, path: [CellIndex])
-    case tilesCleared(path: [CellIndex])
-
-    var animationName: String {
-        switch self {
-        case .tileSelected:
-            return "tileSelectedAnimation"
-        case .wordFormed:
-            return "wordFormedAnimation"
-        case .tilesCleared:
-            return "tilesClearedAnimation"
-        }
-    }
-}
-
 @Observable class BoardViewModel<T> where T: Equatable {
     var board: Board<T>
     
     weak var swipeDelegate: Board_OnSwipe_Delegate?
     weak var tapDelegate: Board_OnTap_Delegate?
-    weak var animationDelegate: Board_Animation_Delegate?
     
     var rows: Int {
         board.rows

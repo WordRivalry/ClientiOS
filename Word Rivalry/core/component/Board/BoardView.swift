@@ -21,35 +21,55 @@ struct BoardView<T>: View where T: Hashable {
     
     var body: some View {
         GeometryReader { geometry in
-            let cellSize = geometry.size.width / CGFloat(viewModel.cols)
-            Grid {
+            // Determine the maximum size the board can take
+            let maxWidth = geometry.size.width - 25  // Adjust padding as needed
+            let maxHeight = geometry.size.height - 25 // Adjust padding as needed
+            let boardSize = min(maxWidth, maxHeight)
+            
+            let cellSize = boardSize / CGFloat(max(viewModel.cols, viewModel.rows))
+            
+            let tolerance: CGFloat = cellSize * 0.5 // Adjusted tolerance for swipe detection
+            
+            VStack {
                 ForEach(0..<viewModel.rows, id: \.self) { row in
-                    GridRow {
+                    HStack {
                         ForEach(0..<viewModel.cols, id: \.self) { col in
                             cellContent(viewModel.getCell(row, col), row, col)
-                            .onTapGesture {
-                                self.viewModel.handleTap(row, col)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(self.viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col)) ? Color.gray.opacity(0.5) : Color.clear)
-                            .id(CellIndex(i: row, j: col))
+                                .frame(width: cellSize, height: cellSize)
+                                .background(viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col)) ? Color.gray.opacity(0.5) : Color.clear)
+                                .cornerRadius(5) // Optional: Adds rounded corners for cell appearance
                         }
                     }
                 }
             }
             .gesture(
-                DragGesture()
-                    .onChanged { gesture in
-                        let colIndex = Int(gesture.location.x / cellSize)
-                        let rowIndex = Int(gesture.location.y / cellSize)
-                        viewModel.handleCellHover(rowIndex, colIndex)
-                    }
-                    .onEnded { _ in
-                        viewModel.processSwipeOrDragCompletion()
-                    }
+                combinedGesture(cellSize: cellSize, tolerance: tolerance)
             )
+            .frame(width: boardSize, height: boardSize) // Constrain the VStack to fit within the screen
             .aspectRatio(1, contentMode: .fit)
             .padding()
         }
+    }
+    
+    private func combinedGesture(cellSize: CGFloat, tolerance: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { gesture in
+                var colIndex = Int(gesture.location.x / cellSize)
+                var rowIndex = Int(gesture.location.y / cellSize)
+                
+                // Clamp the colIndex and rowIndex to ensure they're within the grid's bounds
+                colIndex = max(0, min(colIndex, viewModel.cols - 1))
+                rowIndex = max(0, min(rowIndex, viewModel.rows - 1))
+                
+                let cellCenter = CGPoint(x: CGFloat(colIndex) * cellSize + cellSize / 2, y: CGFloat(rowIndex) * cellSize + cellSize / 2)
+                let distanceFromCenter = sqrt(pow(gesture.location.x - cellCenter.x, 2) + pow(gesture.location.y - cellCenter.y, 2))
+                
+                if distanceFromCenter <= tolerance {
+                    viewModel.handleCellHover(rowIndex, colIndex)
+                }
+            }
+            .onEnded { _ in
+                viewModel.processSwipeOrDragCompletion()
+            }
     }
 }
