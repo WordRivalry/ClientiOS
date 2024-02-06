@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "Leonardo_Vision_XL_A_mesmerizing_papercut_animation_of_the_cla_2.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

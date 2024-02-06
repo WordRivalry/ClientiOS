@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "Leonardo_Vision_XL_naturally_interacting_with_the_environment1_3.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

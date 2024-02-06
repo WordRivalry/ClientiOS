@@ -22,8 +22,8 @@ struct BoardView<T>: View where T: Hashable {
     var body: some View {
         GeometryReader { geometry in
             // Determine the maximum size the board can take
-            let maxWidth = geometry.size.width - 25  // Adjust padding as needed
-            let maxHeight = geometry.size.height - 25 // Adjust padding as needed
+            let maxWidth =  max(1, geometry.size.width - 25)  // Adjust padding as needed
+            let maxHeight = max(1, geometry.size.height - 25) // Adjust padding as needed
             let boardSize = min(maxWidth, maxHeight)
             
             let cellSize = boardSize / CGFloat(max(viewModel.cols, viewModel.rows))
