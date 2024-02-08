@@ -45,6 +45,11 @@ enum GameStatus {
     var gameStatus: GameStatus = .notStarted
     var timerStatus: String = "60"
     
+    // Delegate
+    var roundNumber: Int = 0
+    var gameDuration: Int = 0
+    var opponentUsername: String = ""
+    
     @ObservationIgnored
     var timer: Timer?
     
@@ -55,10 +60,7 @@ enum GameStatus {
     var timerCancellable: AnyCancellable?
     
     @ObservationIgnored
-    private let wordChecker: WordChecker
-    
-    @ObservationIgnored
-    private let letterScores: [Character: Int]
+  //  private let letterScores: [Character: Int]
     
     @ObservationIgnored
     private let vowels: [Character] = ["A", "E", "I", "O", "U"]
@@ -69,63 +71,61 @@ enum GameStatus {
     @ObservationIgnored
     private var alreadyDoneWords: [String] = []
     
+    @ObservationIgnored
+    private var ws: WebSocketService
+    
     // MARK: INIT
     
     init() {
-        self.wordChecker = WordChecker.shared
-        self.numberOfVowelsToInclude = 16 / 4
-        self.letterScores = [
-            "A": 1, "B": 3, "C": 3, "D": 2, "E": 1, "F": 4, "G": 2, "H": 4,
-            "I": 1, "J": 8, "K": 5, "L": 1, "M": 3, "N": 1, "O": 1, "P": 3,
-            "Q": 10, "R": 1, "S": 1, "T": 1, "U": 1, "V": 4, "W": 4, "X": 8,
-            "Y": 4, "Z": 10
-        ]
-        super.init(board: Board(rows: 4, cols: 4, initialValue: LetterTile(letter: "", score: 0, letterMultiplier: 0, wordMultiplier: 0)))
+       
+        self.ws = WebSocketService()
+        super.init(board: Board(rows: 4, cols: 4, initialValue: LetterTile(letter: "", score: 0, letterMultiplier: 1, wordMultiplier: 1)))
         setupDelegates()
     }
     
     func setupDelegates() {
         self.swipeDelegate = self
         self.tapDelegate = self
+        self.ws.gameDelegate = self
     }
     
     // MARK: GAME START
     
     func startGame() {
-        populateBoard()
+      //  populateBoard()
         gameStatus = .ongoing
-        startTimer()
+      //  startTimer()
     }
     
-    func populateBoard() {
-        var vowelCount = 0
-        
-        for row in 0..<board.rows {
-            for col in 0..<board.cols {
-                var tile: LetterTile
-                let isVowelTurn = vowelCount < numberOfVowelsToInclude
-                
-                let letterPool: [Character] = isVowelTurn ? vowels : Array(letterScores.keys.filter { !vowels.contains($0) })
-                guard let randomLetter = letterPool.randomElement(),
-                      let score = letterScores[randomLetter] else { continue }
-                
-                tile = LetterTile(
-                    letter: String(randomLetter),
-                    score: score,
-                    letterMultiplier: 1,
-                    wordMultiplier: 1
-                )
-                
-                // Set the cell on the board to the new LetterTile
-                board.setCell(row, col, value: tile)
-                
-                // Update vowel count if necessary
-                if isVowelTurn { vowelCount += 1 }
-            }
-        }
-        
-        shuffleBoard()
-    }
+//    func populateBoard() {
+//        var vowelCount = 0
+//        
+//        for row in 0..<board.rows {
+//            for col in 0..<board.cols {
+//                var tile: LetterTile
+//                let isVowelTurn = vowelCount < numberOfVowelsToInclude
+//                
+//                let letterPool: [Character] = isVowelTurn ? vowels : Array(letterScores.keys.filter { !vowels.contains($0) })
+//                guard let randomLetter = letterPool.randomElement(),
+//                      let score = letterScores[randomLetter] else { continue }
+//                
+//                tile = LetterTile(
+//                    letter: String(randomLetter),
+//                    score: score,
+//                    letterMultiplier: 1,
+//                    wordMultiplier: 1
+//                )
+//                
+//                // Set the cell on the board to the new LetterTile
+//                board.setCell(row, col, value: tile)
+//                
+//                // Update vowel count if necessary
+//                if isVowelTurn { vowelCount += 1 }
+//            }
+//        }
+//        
+//        shuffleBoard()
+//    }
     
     func shuffleBoard() {
         var tiles = board.getAllCells().shuffled()
@@ -186,7 +186,7 @@ enum GameStatus {
         
         print(word)
         
-        guard wordChecker.wordExists(word) else {
+        guard WordChecker.shared.wordExists(word) else {
             throw GameError.invalidWord
         }
         
@@ -220,7 +220,7 @@ enum GameStatus {
         alreadyDoneWords.append(word)
     }
     
-// MARK: GAME FINISHED
+    // MARK: GAME FINISHED
     
     
     func gameTimesUp() {
@@ -280,3 +280,40 @@ extension GameModel: Board_OnTap_Delegate {
     }
 }
 
+// MARK: SENT VIA WS
+extension GameModel {
+    
+}
+
+// MARK: WS DELEGATE
+extension GameModel: WebSocket_GameDelegate {
+    func didReceiveRoundStart(roundNumber: Int, duration: Int, grid: [[LetterTile]]) {
+        DispatchQueue.main.async {
+            self.roundNumber = roundNumber
+            self.gameDuration = duration
+            self.board = Board(grid: grid)
+        }
+    }
+    
+    func didUpdateTime(_ remainingTime: Int) {
+        
+    }
+    
+    func didEndRound(round: Int, playerScore: Int, opponentScore: Int, winner: String) {
+        
+    }
+    
+    func didUpdateOpponentScore(_ score: Int) {
+        
+    }
+    
+    func didReceiveGameEnd(winners: [String], winnerStatus: String) {
+        
+    }
+    
+    func didReceiveOpponentUsername(opponentUsername: String) {
+        DispatchQueue.main.async {
+            self.opponentUsername = opponentUsername
+        }
+    }
+}

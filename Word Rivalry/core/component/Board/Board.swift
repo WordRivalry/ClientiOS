@@ -30,6 +30,23 @@ enum BoardError: Error {
         self.grid = Array(repeating: Array(repeating: initialValue, count: cols), count: rows)
     }
     
+    init(grid: [[T]]) {
+           // Ensure the grid is not empty and all rows have the same number of columns
+           guard !grid.isEmpty, let firstRowCols = grid.first?.count else {
+               fatalError("Grid cannot be empty and must have at least one row with a defined number of columns")
+           }
+           
+           // Verify that all rows in the grid have the same number of columns
+           let allRowsEqualLength = grid.allSatisfy { $0.count == firstRowCols }
+           if !allRowsEqualLength {
+               fatalError("All rows in the grid must have the same number of columns")
+           }
+           
+           self.rows = grid.count
+           self.cols = firstRowCols
+           self.grid = grid
+       }
+    
     func getCell(_ row: Int, _ col: Int) -> T {
         guard isWithinBound(row, col) else { fatalError("Board getCell OutOfBound") }
         return grid[row][col]

@@ -8,42 +8,62 @@
 import SwiftUI
 import Combine
 
+struct GameInfo {
+    let startTime: Int64
+    let duration: Int
+    var grid: [[LetterTile]]
+}
+
+
 @Observable class MatchmakingViewModel: ObservableObject {
     var process: MatchmakingProcess = .searching
-    
-    private let service = MatchmakingAPIService()
+
     var matchmakingType: MatchmakingType = .normal
     var cancellables = Set<AnyCancellable>()
+  
+    var ws: WebSocketService
     
-    func searchMatch() {
-        process = .searching
-        service.searchMatch(matchmakingType: matchmakingType) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    // Transition to countdown upon successful search
-                    self?.process = .countdown(3)
-                case .failure(let error):
-                    // Handle error scenario, perhaps updating process to reflect an error state
-                    print("Error searching for match: \(error)")
-                }
-            }
-        }
-    }
+    // Delagate data 
+    var opponentUsername: String?
+    var preGameCountdown: Int?
     
-    func cancelSearch() {
-        service.cancelSearch { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    // Handle search cancellation, perhaps dismissing the full screen cover
-                    self?.process = .searching // Resetting the process or setting to a specific state
-                case .failure(let error):
-                    // Handle error scenario
-                    print("Error cancelling search: \(error)")
-                }
-            }
-        }
+    init() {
+        self.ws = WebSocketService()
+        self.ws.matchmakingDelegate = self
     }
 }
 
+// MARK: MESSAGE SENT VIA WS
+extension MatchmakingViewModel {
+    func searchMatch() {
+        ws.findMatch()
+        // Update any relevant state or UI to indicate matchmaking is in progress
+    }
+    
+    func cancelSearch() {
+        ws.stopFindMatch()
+        // Update state/UI as necessary to reflect that matchmaking was cancelled
+    }
+    
+    func acknowledgeGameStart() {
+        ws.ackStartGame()
+        // Transition to the game view or state
+    }
+}
+
+// MARK: MESSAGE RECEIVED VIA WS
+extension MatchmakingViewModel: WebSocket_MatchmakingDelegate {
+    func didReceiveOpponentUsername(opponentUsername: String) {
+        DispatchQueue.main.async {
+            self.opponentUsername = opponentUsername
+            // Update any UI or state to reflect the opponent's username
+        }
+    }
+    
+    func didReceivePreGameCountDown(countdown: Int) {
+        DispatchQueue.main.async {
+            self.preGameCountdown = countdown
+            // Update any UI or state to reflect the opponent's username
+        }
+    }
+}
