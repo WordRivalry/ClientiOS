@@ -17,7 +17,7 @@ enum MatchmakingType: String, CaseIterable {
 struct RankedMatchmakingView: View {
     @Bindable private var viewModel = RankedMatchmakingModel()
     @State private var showingCover = false
-    @State private var activeMatchmakingType: MatchmakingType?
+    @State private var activeMatchmakingType: MatchmakingType = .normal
     @State private var timer: Timer?
     
     var body: some View {
@@ -58,7 +58,7 @@ struct RankedMatchmakingView: View {
             .navigationTitle("Ranked")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showingCover) {
-                FullScreenCoverView()
+                FullScreenCoverView(gameMode: activeMatchmakingType)
             }
             
             // Setup and teardown the timer for fetching stats
@@ -180,16 +180,6 @@ struct TournamentSection: View {
         .padding()
         .background(Color.blue.opacity(0.1))
         .cornerRadius(12)
-    }
-}
-
-struct MatchFoundView: View {
-    var matchmakingType: MatchmakingType
-    
-    var body: some View {
-        VStack {
-            Text("Match Found for \(matchmakingType.rawValue)")
-        }
     }
 }
 

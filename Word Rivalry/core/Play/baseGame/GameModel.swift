@@ -43,89 +43,47 @@ enum GameStatus {
     var currentPathScore: Int = 0
     var message: String = ""
     var gameStatus: GameStatus = .notStarted
-    var timerStatus: String = "60"
+    
     
     // Delegate
+    var timeLeft: String = ""
     var roundNumber: Int = 0
     var gameDuration: Int = 0
     var opponentUsername: String = ""
-    
-    @ObservationIgnored
-    var timer: Timer?
-    
-    @ObservationIgnored
-    var timeLeft: Int = 60
-    
-    @ObservationIgnored
-    var timerCancellable: AnyCancellable?
-    
-    @ObservationIgnored
-  //  private let letterScores: [Character: Int]
-    
-    @ObservationIgnored
-    private let vowels: [Character] = ["A", "E", "I", "O", "U"]
-    
-    @ObservationIgnored
-    private let numberOfVowelsToInclude: Int
+    var opponentRecentScore: Int = 0
     
     @ObservationIgnored
     private var alreadyDoneWords: [String] = []
-    
-    @ObservationIgnored
-    private var ws: WebSocketService
-    
+
     // MARK: INIT
     
     init() {
-       
-        self.ws = WebSocketService()
-        super.init(board: Board(rows: 4, cols: 4, initialValue: LetterTile(letter: "", score: 0, letterMultiplier: 1, wordMultiplier: 1)))
+        super.init(
+            board: Board(
+                rows: 4,
+                cols: 4,
+                initialValue: LetterTile(
+                    letter: "",
+                    score: 0,
+                    letterMultiplier: 1,
+                    wordMultiplier: 1)
+            )
+        )
+        
         setupDelegates()
     }
     
     func setupDelegates() {
         self.swipeDelegate = self
         self.tapDelegate = self
-        self.ws.gameDelegate = self
+        WebSocketService.shared.setGameDelegate(self)
     }
     
     // MARK: GAME START
     
     func startGame() {
-      //  populateBoard()
         gameStatus = .ongoing
-      //  startTimer()
     }
-    
-//    func populateBoard() {
-//        var vowelCount = 0
-//        
-//        for row in 0..<board.rows {
-//            for col in 0..<board.cols {
-//                var tile: LetterTile
-//                let isVowelTurn = vowelCount < numberOfVowelsToInclude
-//                
-//                let letterPool: [Character] = isVowelTurn ? vowels : Array(letterScores.keys.filter { !vowels.contains($0) })
-//                guard let randomLetter = letterPool.randomElement(),
-//                      let score = letterScores[randomLetter] else { continue }
-//                
-//                tile = LetterTile(
-//                    letter: String(randomLetter),
-//                    score: score,
-//                    letterMultiplier: 1,
-//                    wordMultiplier: 1
-//                )
-//                
-//                // Set the cell on the board to the new LetterTile
-//                board.setCell(row, col, value: tile)
-//                
-//                // Update vowel count if necessary
-//                if isVowelTurn { vowelCount += 1 }
-//            }
-//        }
-//        
-//        shuffleBoard()
-//    }
     
     func shuffleBoard() {
         var tiles = board.getAllCells().shuffled()
@@ -136,29 +94,13 @@ enum GameStatus {
         }
     }
     
-    func startTimer() {
-        timeLeft = 60 // Reset timer to 60 seconds
-        timerStatus = "60"
-        
-        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.timeLeft -= 1
-                self.timerStatus = "\(self.timeLeft)"
-                
-                if self.timeLeft <= 0 {
-                    self.timerCancellable?.cancel() // Stop the timer
-                    self.gameTimesUp()
-                }
-            }
-    }
     
     // MARK: GAME ACTION
     
-    func evalWord(path: [(Int, Int)]) {
+    func evalWord(path: [(Int, Int)]) -> Int {
+        var score: Int = 0
         do {
-            let score = try attemptWord(path: path)
+            score = try attemptWord(path: path)
             currentScore += score
             message = "Word Accepted: +\(score) points"
         } catch GameError.notOngoing {
@@ -170,6 +112,8 @@ enum GameStatus {
         } catch {
             message = "An unknown error occurred."
         }
+        
+        return score
     }
     
     func attemptWord(path: [(Int, Int)]) throws -> Int {
@@ -202,16 +146,20 @@ enum GameStatus {
     // Calculate the score for a given word path
     func calculateScore(forPath path: [(Int, Int)]) -> Int {
         var score = 0
-        var wordMultiplier = 1
+        var wordMultipliers: [Int] = []
         
         for position in path {
             let cell = board.getCell(position.0, position.1)
-            score += (letterScores[Character(cell.letter.uppercased())] ?? 0) * cell.letterMultiplier
-            wordMultiplier *= cell.wordMultiplier
-            
+            score += cell.score * cell.letterMultiplier
+            if (cell.wordMultiplier > 1) {
+                wordMultipliers.append(cell.wordMultiplier)
+            }
         }
         
-        score *= wordMultiplier
+        for wordMultiplier in wordMultipliers {
+            score *= wordMultiplier
+        }
+        
         return score
     }
     
@@ -225,7 +173,7 @@ enum GameStatus {
     
     func gameTimesUp() {
         gameStatus = .finished
-        timerStatus = "Time's up!"
+        timeLeft = "Time's up!"
     }
     
 }
@@ -253,8 +201,14 @@ extension GameModel: Board_OnSwipe_Delegate {
     
     func onSwipeProcessed() {
         // Attempt to form and score the word based on the final path
-        let path = cellsInDragPath.map { ($0.i, $0.j) }
-        evalWord(path: path)
+        let path = cellsInDragPath.map { [$0.i, $0.j] }
+        let path2 = cellsInDragPath.map { ($0.i, $0.j) }
+        
+        let wordScore = evalWord(path: path2)
+        if (wordScore > 0) {
+            WebSocketService.shared.sendScoreUpdate(wordPath: path)
+        }
+    
         // Clear the path and reset path score for the next attempt
         cellsInDragPath.removeAll()
         currentPathScore = 0
@@ -280,13 +234,9 @@ extension GameModel: Board_OnTap_Delegate {
     }
 }
 
-// MARK: SENT VIA WS
-extension GameModel {
-    
-}
-
 // MARK: WS DELEGATE
 extension GameModel: WebSocket_GameDelegate {
+    
     func didReceiveRoundStart(roundNumber: Int, duration: Int, grid: [[LetterTile]]) {
         DispatchQueue.main.async {
             self.roundNumber = roundNumber
@@ -296,20 +246,48 @@ extension GameModel: WebSocket_GameDelegate {
     }
     
     func didUpdateTime(_ remainingTime: Int) {
-        
+        DispatchQueue.main.async {
+            self.timeLeft = String(remainingTime)
+        }
     }
     
     func didEndRound(round: Int, playerScore: Int, opponentScore: Int, winner: String) {
-        
-    }
-    
-    func didUpdateOpponentScore(_ score: Int) {
-        
+        DispatchQueue.main.async {
+            
+            if (self.gameStatus == .finished) { return }
+            
+            // Update the UI with round results
+            self.currentScore = playerScore
+            self.opponentRecentScore = opponentScore
+            self.message = "Round \(round) ended. Winner: \(winner)"
+            
+            // You might want to check if the game continues or if additional actions are needed
+            // For example, you could update the game status to a waiting state if there are more rounds
+            // Or you could trigger any UI updates necessary to reflect these changes
+        }
     }
     
     func didReceiveGameEnd(winners: [String], winnerStatus: String) {
-        
+        DispatchQueue.main.async {
+            // Update the game status to finished
+            self.gameStatus = .finished
+            
+            // Update the message to show the winner(s)
+            let winnersStr = winners.joined(separator: ", ")
+            self.message = "Game ended. Winner(s): \(winnersStr) with status: \(winnerStatus)"
+            
+            // Here, you could also perform any necessary cleanup or setup for a new game
+            // This might include resetting the board, scores, and other properties
+        }
     }
+    
+    
+    func didUpdateOpponentScore(_ score: Int) {
+        DispatchQueue.main.async {
+            self.opponentRecentScore = score
+        }
+    }
+    
     
     func didReceiveOpponentUsername(opponentUsername: String) {
         DispatchQueue.main.async {

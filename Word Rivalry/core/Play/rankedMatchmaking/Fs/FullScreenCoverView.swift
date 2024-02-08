@@ -12,83 +12,117 @@ import Combine
 
 enum MatchmakingProcess {
     case searching
-    case countdown(Int) // Holds the countdown value
-    case inGame(MatchmakingType) // Holds the matchmaking type for the game
+    case lobby
+    case inGame // Holds the matchmaking type for the game
 }
 
 struct FullScreenCoverView: View {
-    var viewModel = MatchmakingViewModel()
+    @Bindable var viewModel: MatchmakingViewModel
+
+    init(gameMode: MatchmakingType) {
+        self.viewModel = MatchmakingViewModel(matchmakingType: gameMode)
+    }
     
     var body: some View {
         ZStack {
             switch viewModel.process {
             case .searching:
-                SearchingView {
-                    viewModel.searchMatch()
-                }
-            case .countdown(let seconds):
-                CountdownView(countdown: seconds) {
-                    viewModel.process = .inGame(viewModel.matchmakingType)
-                }
+                SearchingView(viewModel: viewModel)
+            case .lobby:
+                LobbyView(viewModel: viewModel)
             case .inGame:
-                GameView(viewModel: GameModel())
+                GameView(gameModel: viewModel.gameModel)
             }
+            
+            CountdownOverlayView(countdown: $viewModel.gameStartCountdown)
+                .allowsHitTesting(false)
         }
         .background(Color.black.opacity(0.5).edgesIgnoringSafeArea(.all))
     }
 }
 
-
 struct SearchingView: View {
-    var searchMatch: () -> Void
+    var viewModel:MatchmakingViewModel
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack {
+            
+            Text(viewModel.matchmakingType.rawValue)
+            
+            Spacer()
+            
             Text("Searching...")
                 .foregroundColor(.white)
                 .padding()
+            
             Button("Cancel Search") {
-                // This will dismiss the current full-screen cover view
+                
+                viewModel.cancelSearch()
                 dismiss()
             }
             .foregroundColor(.blue)
             .padding()
-            .onAppear(perform: searchMatch)
+            .onAppear(perform: viewModel.searchMatch)
+            
+            Spacer()
+        }
+    }
+}
+
+struct LobbyView: View {
+    var viewModel: MatchmakingViewModel
+    var body: some View {
+        VStack {
+            Text("Opponent: \(viewModel.opponentUsername)")
+                .foregroundColor(.white)
+                .padding()
+            
+            Text("You: \(viewModel.myUsername)")
+                .foregroundColor(.white)
+                .padding()
         }
     }
 }
 
 
-struct CountdownView: View {
-    @State var countdown: Int
-    @State private var timerCancellable: AnyCancellable?
-    var onComplete: () -> Void
+struct CountdownOverlayView: View {
+    @Binding var countdown: Int
+    // Added to trigger the scale animation
+    @State private var isAnimating = false
     
     var body: some View {
-        Text("Game starts in \(countdown)")
-            .font(.title)
-            .foregroundColor(.white)
-            .padding()
-            .onAppear {
-                self.timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-                    .autoconnect()
-                    .sink { _ in
-                        if self.countdown > 0 {
-                            self.countdown -= 1
-                        } else {
-                            self.timerCancellable?.cancel() // Stop the timer
-                            onComplete()
+        ZStack {
+            if countdown > 0 {
+                Text("\(countdown)")
+                    .font(.system(size: 90, weight: .bold))
+                    .scaleEffect(isAnimating ? 1.2 : 1.0)
+                    .opacity(isAnimating ? 1.0 : 0.0) // Fade effect
+                    // Ensure the animation triggers scale and opacity changes
+                    .animation(.easeInOut(duration: 0.5), value: isAnimating)
+                    .onAppear {
+                        isAnimating = true
+                        // Reset animation state after it's complete to prepare for next countdown
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            isAnimating = false
                         }
                     }
             }
-            .onDisappear {
-                // Invalidate and cancel the timer when the view disappears
-                self.timerCancellable?.cancel()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black.opacity(0.5))
+        .foregroundColor(.white)
+        .edgesIgnoringSafeArea(.all)
+        // Trigger the countdown decrease and restart the animation
+        .onChange(of: countdown) {
+            isAnimating = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isAnimating = false
             }
+        }
     }
 }
 
 #Preview {
-    FullScreenCoverView()
+    FullScreenCoverView(gameMode: MatchmakingType.normal)
 }

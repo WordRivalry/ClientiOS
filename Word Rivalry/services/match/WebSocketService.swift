@@ -34,16 +34,17 @@ extension LetterTile {
 }
 
 class WebSocketService: NSObject {
+    static let shared = WebSocketService()
     var webSocketTask: URLSessionWebSocketTask?
     var profileService: ProfileService?
     var gameDelegate: WebSocket_GameDelegate?
     var matchmakingDelegate: WebSocket_MatchmakingDelegate?
     
-    override init() {
-        super.init()
-        self.profileService = ProfileService()
-        connect()
-    }
+    private override init() {
+          super.init()
+          self.profileService = ProfileService()
+          connect()
+      }
 
     func connect() {
         guard let url = URL(string: "ws://battleserver-dtyigx66oa-nn.a.run.app") else { return }
@@ -144,16 +145,16 @@ class WebSocketService: NSObject {
             print("Game ended: \(json)")
         case "metaData":
             handleMetaData(json)
-            
-        case "gameStart":
-                if let startTime = json["startTime"] as? Int64,
-                   let duration = json["duration"] as? Int,
-                   let gridArray = json["grid"] as? [[[String: Any]]] {
-                    let grid = gridArray.map { row -> [LetterTile] in
-                        row.compactMap { LetterTile.from($0) }
-                    }
-                    matchmakingDelegate?.didReceiveGameReadyToStart(startTime: startTime, duration: duration, grid: grid)
-                }
+//            
+//        case "gameStart":
+//                if let startTime = json["startTime"] as? Int64,
+//                   let duration = json["duration"] as? Int,
+//                   let gridArray = json["grid"] as? [[[String: Any]]] {
+//                    let grid = gridArray.map { row -> [LetterTile] in
+//                        row.compactMap { LetterTile.from($0) }
+//                    }
+//                    matchmakingDelegate?.didReceiveGameReadyToStart(startTime: startTime, duration: duration, grid: grid)
+//                }
         default:
             print("Unhandled message type: \(type)")
         }

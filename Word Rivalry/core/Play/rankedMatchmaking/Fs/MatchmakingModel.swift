@@ -17,36 +17,47 @@ struct GameInfo {
 
 @Observable class MatchmakingViewModel: ObservableObject {
     var process: MatchmakingProcess = .searching
-
     var matchmakingType: MatchmakingType = .normal
-    var cancellables = Set<AnyCancellable>()
-  
-    var ws: WebSocketService
     
-    // Delagate data 
-    var opponentUsername: String?
-    var preGameCountdown: Int?
+    // Game mode
+    var gameModel: GameModel {
+        switch self.matchmakingType {
+            case .normal:
+                return GameModel()
+            case .blitz:
+                return GameModel()
+            case .mayhem:
+                return GameModel()
+        }
+    }
     
-    init() {
-        self.ws = WebSocketService()
-        self.ws.matchmakingDelegate = self
+    // User info
+    var myUsername: String = "Lighthouse"
+    
+    // Delagate data
+    var opponentUsername: String = ""
+    var gameStartCountdown: Int = 0
+    
+    init(matchmakingType: MatchmakingType) {
+        self.matchmakingType = matchmakingType
+        WebSocketService.shared.setMatchmakingDelegate(self)
     }
 }
 
 // MARK: MESSAGE SENT VIA WS
 extension MatchmakingViewModel {
     func searchMatch() {
-        ws.findMatch()
+        WebSocketService.shared.findMatch()
         // Update any relevant state or UI to indicate matchmaking is in progress
     }
     
     func cancelSearch() {
-        ws.stopFindMatch()
+        WebSocketService.shared.stopFindMatch()
         // Update state/UI as necessary to reflect that matchmaking was cancelled
     }
     
     func acknowledgeGameStart() {
-        ws.ackStartGame()
+        WebSocketService.shared.ackStartGame()
         // Transition to the game view or state
     }
 }
@@ -56,14 +67,15 @@ extension MatchmakingViewModel: WebSocket_MatchmakingDelegate {
     func didReceiveOpponentUsername(opponentUsername: String) {
         DispatchQueue.main.async {
             self.opponentUsername = opponentUsername
-            // Update any UI or state to reflect the opponent's username
+            self.process = .lobby
+
         }
     }
     
     func didReceivePreGameCountDown(countdown: Int) {
         DispatchQueue.main.async {
-            self.preGameCountdown = countdown
-            // Update any UI or state to reflect the opponent's username
+            if countdown <= 1 { self.process = .inGame }
+            self.gameStartCountdown = countdown
         }
     }
 }

@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct GameView: View {
-    private var viewModel: GameModel
+    private var gameModel: GameModel
 
-    init(viewModel: GameModel) {
-        self.viewModel = viewModel
+    init(gameModel: GameModel) {
+        self.gameModel = gameModel
     }
 
     var body: some View {
@@ -24,33 +24,34 @@ struct GameView: View {
 
             // Displaying dynamic content
             VStack(alignment: .leading, spacing: 10) {
-                Text("Timer: \(viewModel.timerStatus)")
-                Text("Score: \(viewModel.currentScore)")
-                Text("Path Score: \(viewModel.currentPathScore)")
-                Text("Message: \(viewModel.message)")
+                Text("Timer: \(gameModel.timeLeft)")
+                Text("Score: \(gameModel.currentScore)")
+                Text("Path Score: \(gameModel.currentPathScore)")
+                Text("Message: \(gameModel.message)")
+                Text("Opponent recent score: \(gameModel.opponentRecentScore)")
                 
-                switch viewModel.gameStatus {
-                case .notStarted:
-                    Text("Game Status: Not Started")
-                case .ongoing:
-                    Text("Game Status: Ongoing")
-                case .finished:
-                    Text("Game Status: Finished")
+                switch gameModel.gameStatus {
+                    case .notStarted:
+                        Text("Game Status: Not Started")
+                    case .ongoing:
+                        Text("Game Status: Ongoing")
+                    case .finished:
+                        Text("Game Status: Finished")
                 }
             }
             .padding()
 
             Spacer()
 
-            LetterBoardView(viewModel: viewModel)
+            LetterBoardView(viewModel: gameModel)
                 .cornerRadius(10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            viewModel.startGame()
+            gameModel.startGame()
         }
     }
 }
 #Preview {
-    GameView(viewModel: GameModel())
+    GameView(gameModel: GameModel())
 }
