@@ -7,18 +7,10 @@
 
 import SwiftUI
 
-enum MatchmakingType: String, CaseIterable {
-    case normal = "Normal Ranking"
-    case blitz  = "Blitz Ranking"
-    case mayhem = "Mayhem Ranking"
-}
-
 // MARK: RankedMatchmakingView
 struct RankedMatchmakingView: View {
     @Bindable private var viewModel = RankedMatchmakingModel()
-    @State private var showingCover = false
-    @State private var activeMatchmakingType: MatchmakingType = .normal
-    @State private var timer: Timer?
+//    @State private var timer: Timer?
     
     var body: some View {
         NavigationStack {
@@ -31,24 +23,15 @@ struct RankedMatchmakingView: View {
                     } else {
                         Divider()
                         
-                        ForEach(MatchmakingType.allCases, id: \.self) { type in
-                            if let stats = viewModel.gameStats[type.rawValue] {
+                        ForEach(ModeType.allCases, id: \.self) { type in
+                          
                                 RankedModeView(
                                     modeName: type.rawValue,
-                                    activePlayers: stats.activePlayers,
-                                    inQueue: stats.inQueue,
-                                    isSearching: viewModel.isSearching[type] ?? false) {
-                                        
-                                        if viewModel.isSearching[type] == true {
-                                            viewModel.isSearching[type] = false
-                                        } else {
-                                            activeMatchmakingType = type
-                                            viewModel.searchMatch(matchmakingType: type)
-                                        }
-                                        
-                                        showingCover = true
+                                    activePlayers: 0,
+                                    inQueue: 0) {
+                                        self.viewModel.searchMatch(modeType: type)
                                     }
-                            }
+                            
                         }
                         TournamentSection(nextTournament: viewModel.nextTournament)
                     }
@@ -57,29 +40,29 @@ struct RankedMatchmakingView: View {
             }
             .navigationTitle("Ranked")
             .navigationBarTitleDisplayMode(.large)
-            .fullScreenCover(isPresented: $showingCover) {
-                FullScreenCoverView(gameMode: activeMatchmakingType)
+            .fullScreenCover(isPresented: $viewModel.showingCover) {
+                FullScreenCoverView(
+                    gameMode: self.viewModel.activeGameMode,
+                    modeType: self.viewModel.activeModeType
+                )
             }
             
-            // Setup and teardown the timer for fetching stats
-            .onAppear {
-                // Setup the timer to fetch stats every 3 seconds
-                self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-                    viewModel.fetchStats()
-                }
-            }
-            .onDisappear {
-                // Invalidate and clear the timer when the view disappears
-                self.timer?.invalidate()
-                self.timer = nil
-            }
+//            // Setup and teardown the timer for fetching stats
+//            .onAppear {
+//                // Setup the timer to fetch stats every 3 seconds
+//                self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
+//                    viewModel.fetchStats()
+//                }
+//            }
+//            .onDisappear {
+//                // Invalidate and clear the timer when the view disappears
+//                self.timer?.invalidate()
+//                self.timer = nil
+//            }
         }
-        .onAppear {
-            viewModel.fetchStats()
-            viewModel.matchFound = { type in
-                self.activeMatchmakingType = type
-            }
-        }
+//        .onAppear {
+//            viewModel.fetchStats()
+//        }
     }
 }
 
@@ -88,7 +71,6 @@ struct RankedModeView: View {
     var modeName: String
     var activePlayers: Int?
     var inQueue: Int?
-    var isSearching: Bool
     var action: () -> Void
     @State private var loadingText = ""
     
@@ -107,9 +89,8 @@ struct RankedModeView: View {
                 }
                 Spacer()
                 ActionButton(
-                    title: isSearching ? "SEARCHING..." : "FIND MATCH",
-                    action: action,
-                    isSearching: isSearching
+                    title: "FIND MATCH",
+                    action: action
                 )
             }
             .padding(.vertical)
@@ -143,7 +124,6 @@ struct RankedModeView: View {
 struct ActionButton: View {
     var title: String
     var action: () -> Void
-    var isSearching: Bool
     
     var body: some View {
         Button(action: action) {
@@ -152,7 +132,7 @@ struct ActionButton: View {
                 .foregroundColor(.white)
                 .padding(.horizontal)
                 .padding(.vertical, 8)
-                .background(isSearching ? Color.gray : Color.blue)
+                .background(Color.blue)
                 .cornerRadius(8)
         }
     }

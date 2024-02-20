@@ -10,31 +10,35 @@ import SwiftUI
 import Combine
 
 
-enum MatchmakingProcess {
+enum GameProcess {
     case searching
     case lobby
     case inGame // Holds the matchmaking type for the game
+    case gameEnded
 }
 
 struct FullScreenCoverView: View {
-    @Bindable var viewModel: MatchmakingViewModel
-
-    init(gameMode: MatchmakingType) {
-        self.viewModel = MatchmakingViewModel(matchmakingType: gameMode)
+    var onGameEnded: (() -> Void)?
+    @Bindable var searchModel: SearchModel
+    
+    init(gameMode: GameMode, modeType: ModeType) {
+        self.searchModel = SearchModel(modeType: modeType)
     }
     
     var body: some View {
         ZStack {
-            switch viewModel.process {
+            switch searchModel.process {
             case .searching:
-                SearchingView(viewModel: viewModel)
+                SearchingView(viewModel: searchModel)
             case .lobby:
-                LobbyView(viewModel: viewModel)
+                LobbyView(viewModel: searchModel)
             case .inGame:
-                GameView(gameModel: viewModel.gameModel)
+                GameView(gameModel: searchModel.gameModel)
+            case .gameEnded:
+                ResultsView(viewModel: searchModel)
             }
             
-            CountdownOverlayView(countdown: $viewModel.gameStartCountdown)
+            CountdownOverlayView(countdown: $searchModel.gameStartCountdown)
                 .allowsHitTesting(false)
         }
         .background(Color.black.opacity(0.5).edgesIgnoringSafeArea(.all))
@@ -42,13 +46,13 @@ struct FullScreenCoverView: View {
 }
 
 struct SearchingView: View {
-    var viewModel:MatchmakingViewModel
+    var viewModel:SearchModel
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack {
             
-            Text(viewModel.matchmakingType.rawValue)
+            Text(viewModel.modeType.rawValue)
             
             Spacer()
             
@@ -57,21 +61,22 @@ struct SearchingView: View {
                 .padding()
             
             Button("Cancel Search") {
-                
-                viewModel.cancelSearch()
+                do {
+                    try  viewModel.cancelSearch()
+                } catch {
+                    print("Error occurred: \(error)")
+                }
                 dismiss()
             }
             .foregroundColor(.blue)
             .padding()
-            .onAppear(perform: viewModel.searchMatch)
-            
             Spacer()
         }
     }
 }
 
 struct LobbyView: View {
-    var viewModel: MatchmakingViewModel
+    var viewModel: SearchModel
     var body: some View {
         VStack {
             Text("Opponent: \(viewModel.opponentUsername)")
@@ -98,7 +103,7 @@ struct CountdownOverlayView: View {
                     .font(.system(size: 90, weight: .bold))
                     .scaleEffect(isAnimating ? 1.2 : 1.0)
                     .opacity(isAnimating ? 1.0 : 0.0) // Fade effect
-                    // Ensure the animation triggers scale and opacity changes
+                // Ensure the animation triggers scale and opacity changes
                     .animation(.easeInOut(duration: 0.5), value: isAnimating)
                     .onAppear {
                         isAnimating = true
@@ -123,6 +128,17 @@ struct CountdownOverlayView: View {
     }
 }
 
+struct ResultsView: View {
+    var viewModel: SearchModel
+    
+    var body: some View {
+        // Design your presentation screen
+        // Use viewModel and viewModel.gameModel to access game data for recap
+        Text("Game Recap")
+    }
+}
+
+
 #Preview {
-    FullScreenCoverView(gameMode: MatchmakingType.normal)
+    FullScreenCoverView(gameMode: GameMode.RANK, modeType: ModeType.NORMAL)
 }

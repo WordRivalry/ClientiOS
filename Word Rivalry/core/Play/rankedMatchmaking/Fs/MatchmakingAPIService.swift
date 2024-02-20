@@ -8,13 +8,13 @@
 import Foundation
 
 class MatchmakingAPIService {
-    func searchMatch(matchmakingType: MatchmakingType, completion: @escaping (Result<Bool, Error>) -> Void) {
-        // Simulate network request with a delay
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
-            // Simulate a successful search result
-            completion(.success(true))
-        }
-    }
+//    func searchMatch(matchmakingType: MatchmakingType, completion: @escaping (Result<Bool, Error>) -> Void) {
+//        // Simulate network request with a delay
+//        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+//            // Simulate a successful search result
+//            completion(.success(true))
+//        }
+//    }
     
     func cancelSearch(completion: @escaping (Result<Bool, Error>) -> Void) {
         // Simulate cancelling the search request

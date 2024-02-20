@@ -49,7 +49,13 @@
 		566F14CF2B6CD7B70069F06D /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14CE2B6CD7B70069F06D /* StatisticsView.swift */; };
 		566F14D12B6CD97B0069F06D /* FriendsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14D02B6CD97B0069F06D /* FriendsListView.swift */; };
 		566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14D72B6CE7460069F06D /* GlassModifier.swift */; };
-		567300B92B6D0047005D79F2 /* RankedMatchmaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300B82B6D0047005D79F2 /* RankedMatchmaking.swift */; };
+		567172F92B6EB66F0009607D /* RankedMarchmakingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */; };
+		567172FB2B6EC6F60009607D /* RankedMatchmakingStatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */; };
+		567172FD2B6F54320009607D /* FullScreenCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FC2B6F54320009607D /* FullScreenCoverView.swift */; };
+		567173002B6F56E90009607D /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FF2B6F56E90009607D /* SearchModel.swift */; };
+		567173022B6F61A10009607D /* MatchmakingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567173012B6F61A10009607D /* MatchmakingAPIService.swift */; };
+		567173052B70CBAE0009607D /* BattleServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567173042B70CBAE0009607D /* BattleServerService.swift */; };
+		567300B92B6D0047005D79F2 /* RankedMatchmakingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */; };
 		567300BB2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */; };
 		567300C02B6D01F3005D79F2 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BD2B6D01F3005D79F2 /* Board.swift */; };
 		567300C12B6D01F3005D79F2 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BE2B6D01F3005D79F2 /* BoardView.swift */; };
@@ -61,6 +67,7 @@
 		567300CD2B6D730E005D79F2 /* WordChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300CC2B6D730E005D79F2 /* WordChecker.swift */; };
 		567300CF2B6D7382005D79F2 /* french_trie_serialized.json in Resources */ = {isa = PBXBuildFile; fileRef = 567300CE2B6D7382005D79F2 /* french_trie_serialized.json */; };
 		567300D42B6DE07A005D79F2 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300D32B6DE07A005D79F2 /* GameView.swift */; };
+		56C1D0C72B84172E005D223F /* MatchmakingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0C62B84172E005D223F /* MatchmakingService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,7 +135,13 @@
 		566F14CE2B6CD7B70069F06D /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		566F14D02B6CD97B0069F06D /* FriendsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListView.swift; sourceTree = "<group>"; };
 		566F14D72B6CE7460069F06D /* GlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModifier.swift; sourceTree = "<group>"; };
-		567300B82B6D0047005D79F2 /* RankedMatchmaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMatchmaking.swift; sourceTree = "<group>"; };
+		567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMarchmakingModel.swift; sourceTree = "<group>"; };
+		567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMatchmakingStatsService.swift; sourceTree = "<group>"; };
+		567172FC2B6F54320009607D /* FullScreenCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenCoverView.swift; sourceTree = "<group>"; };
+		567172FF2B6F56E90009607D /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+		567173012B6F61A10009607D /* MatchmakingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchmakingAPIService.swift; sourceTree = "<group>"; };
+		567173042B70CBAE0009607D /* BattleServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattleServerService.swift; sourceTree = "<group>"; };
+		567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMatchmakingView.swift; sourceTree = "<group>"; };
 		567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayVsFriendMatchmakingView.swift; sourceTree = "<group>"; };
 		567300BD2B6D01F3005D79F2 /* Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 		567300BE2B6D01F3005D79F2 /* BoardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
@@ -140,6 +153,7 @@
 		567300CC2B6D730E005D79F2 /* WordChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordChecker.swift; sourceTree = "<group>"; };
 		567300CE2B6D7382005D79F2 /* french_trie_serialized.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = french_trie_serialized.json; sourceTree = "<group>"; };
 		567300D32B6DE07A005D79F2 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		56C1D0C62B84172E005D223F /* MatchmakingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchmakingService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +261,7 @@
 		5652D5382B68DC8B0071AE08 /* services */ = {
 			isa = PBXGroup;
 			children = (
+				567173032B70CB9F0009607D /* match */,
 				567300C92B6D72CE005D79F2 /* wordChecker */,
 				566F148D2B6A212E0069F06D /* Audio */,
 				566F147B2B6A06160069F06D /* Profile */,
@@ -321,9 +336,9 @@
 		566F14C22B6C4C190069F06D /* Play */ = {
 			isa = PBXGroup;
 			children = (
+				567172F72B6EB63F0009607D /* rankedMatchmaking */,
 				567300D02B6D7765005D79F2 /* baseGame */,
 				566F14C62B6C4C720069F06D /* PlayNavigationStack.swift */,
-				567300B82B6D0047005D79F2 /* RankedMatchmaking.swift */,
 				567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */,
 			);
 			path = Play;
@@ -335,6 +350,36 @@
 				566F14D72B6CE7460069F06D /* GlassModifier.swift */,
 			);
 			path = extension;
+			sourceTree = "<group>";
+		};
+		567172F72B6EB63F0009607D /* rankedMatchmaking */ = {
+			isa = PBXGroup;
+			children = (
+				567172FE2B6F569F0009607D /* Fs */,
+				567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */,
+				567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */,
+				567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */,
+			);
+			path = rankedMatchmaking;
+			sourceTree = "<group>";
+		};
+		567172FE2B6F569F0009607D /* Fs */ = {
+			isa = PBXGroup;
+			children = (
+				567172FC2B6F54320009607D /* FullScreenCoverView.swift */,
+				567172FF2B6F56E90009607D /* SearchModel.swift */,
+				567173012B6F61A10009607D /* MatchmakingAPIService.swift */,
+			);
+			path = Fs;
+			sourceTree = "<group>";
+		};
+		567173032B70CB9F0009607D /* match */ = {
+			isa = PBXGroup;
+			children = (
+				567173042B70CBAE0009607D /* BattleServerService.swift */,
+				56C1D0C62B84172E005D223F /* MatchmakingService.swift */,
+			);
+			path = match;
 			sourceTree = "<group>";
 		};
 		567300B72B6CFF57005D79F2 /* component */ = {
@@ -510,7 +555,9 @@
 			files = (
 				566F14CB2B6CD6570069F06D /* LeaderboardView.swift in Sources */,
 				5652D53A2B68DCAF0071AE08 /* CloudKitService.swift in Sources */,
+				567173052B70CBAE0009607D /* BattleServerService.swift in Sources */,
 				566F14A22B6A21370069F06D /* SoundEffectManageable.swift in Sources */,
+				56C1D0C72B84172E005D223F /* MatchmakingService.swift in Sources */,
 				5652D5412B68E7800071AE08 /* NetworkUtility.swift in Sources */,
 				566F14A52B6A21370069F06D /* AudioService.swift in Sources */,
 				566F14842B6A0FAA0069F06D /* ProfileCreationView.swift in Sources */,
@@ -520,9 +567,11 @@
 				566F14B72B6C00160069F06D /* ProfileView.swift in Sources */,
 				566F149C2B6A21370069F06D /* AudioSessionService.swift in Sources */,
 				566F148A2B6A20C00069F06D /* ServiceLocator.swift in Sources */,
+				567172FB2B6EC6F60009607D /* RankedMatchmakingStatsService.swift in Sources */,
 				566F14BD2B6C495B0069F06D /* PlayView.swift in Sources */,
 				566F14C72B6C4C720069F06D /* PlayNavigationStack.swift in Sources */,
 				566F14CF2B6CD7B70069F06D /* StatisticsView.swift in Sources */,
+				567172F92B6EB66F0009607D /* RankedMarchmakingModel.swift in Sources */,
 				566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */,
 				5652D50C2B6814EA0071AE08 /* ContentView.swift in Sources */,
 				566F149F2B6A21370069F06D /* MusicPlayer.swift in Sources */,
@@ -531,6 +580,7 @@
 				5652D50A2B6814EA0071AE08 /* Word_RivalryApp.swift in Sources */,
 				566F149B2B6A21370069F06D /* MusicManager.swift in Sources */,
 				566F14CD2B6CD7560069F06D /* BasicButton.swift in Sources */,
+				567173022B6F61A10009607D /* MatchmakingAPIService.swift in Sources */,
 				567300C22B6D01F3005D79F2 /* BoardViewModel.swift in Sources */,
 				566F14882B6A207F0069F06D /* AppService.swift in Sources */,
 				566F14862B6A1F590069F06D /* IntroView.swift in Sources */,
@@ -541,6 +591,7 @@
 				567300BB2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift in Sources */,
 				566F149A2B6A21370069F06D /* AudioLoaderService.swift in Sources */,
 				566F147A2B6993E70069F06D /* ProfileService.swift in Sources */,
+				567173002B6F56E90009607D /* SearchModel.swift in Sources */,
 				566F14A32B6A21370069F06D /* Playlist.swift in Sources */,
 				567300C42B6D03A6005D79F2 /* LetterBoardView.swift in Sources */,
 				567300CD2B6D730E005D79F2 /* WordChecker.swift in Sources */,
@@ -552,8 +603,9 @@
 				566F14C92B6C50890069F06D /* AppTabView.swift in Sources */,
 				567300C12B6D01F3005D79F2 /* BoardView.swift in Sources */,
 				567300C62B6D0452005D79F2 /* LetterCellView.swift in Sources */,
-				567300B92B6D0047005D79F2 /* RankedMatchmaking.swift in Sources */,
+				567300B92B6D0047005D79F2 /* RankedMatchmakingView.swift in Sources */,
 				567300D42B6DE07A005D79F2 /* GameView.swift in Sources */,
+				567172FD2B6F54320009607D /* FullScreenCoverView.swift in Sources */,
 				566F14B92B6C00200069F06D /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

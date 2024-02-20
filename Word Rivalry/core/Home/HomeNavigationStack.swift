@@ -20,6 +20,7 @@ struct HomeNavigationStack: View {
                     BasicButton(text: "Profile", destination: ProfileView())
                     BasicButton(text: "Leaderboard", destination: LeaderboardView())
                     BasicButton(text: "Statistics", destination: StatisticsView())
+                    BasicButton(text: "Friends", destination: FriendsListView())
                 }
                 
                 if (showingFriendsList) {
@@ -34,6 +35,7 @@ struct HomeNavigationStack: View {
                                 showingFriendsList = false
                             }
                         }
+                        
                 }
             }
             .navigationTitle(username)
@@ -46,7 +48,8 @@ struct HomeNavigationStack: View {
                                 showingFriendsList = true
                             }
                         }) {
-                            Image(systemName: "person.3.fill")
+                          //  Image(systemName: "person.3.fill")
+                            Image(systemName: "gear")
                         }
                     }
                 }
@@ -54,7 +57,7 @@ struct HomeNavigationStack: View {
             .onAppear {
                 Task {
                     do {
-                        username = try await profileService.getUsername()
+                        username = try await profileService.fetchUsername()
                     } catch {
                         username = "Lightcastle"
                     }

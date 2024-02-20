@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RankedMatchmakingService {
+class RankedMatchmakingStatsService {
     func fetchStats(completion: @escaping ([String: (activePlayers: Int, inQueue: Int)], Error?) -> Void) {
         // Simulate a network request with a delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -31,7 +31,7 @@ class RankedMatchmakingService {
     }
 
     
-    func searchMatch(matchmakingType: MatchmakingType, completion: @escaping (Bool, Error?) -> Void) {
+    func searchMatch(modeType: ModeType, completion: @escaping (Bool, Error?) -> Void) {
         // Simulate a network request with a delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             // Simulated search completion

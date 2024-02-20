@@ -9,6 +9,8 @@ import SwiftUI
 
 struct GameView: View {
     private var gameModel: GameModel
+    @State private var showingQuitAlert = false
+    @Environment(\.dismiss) var dismiss
 
     init(gameModel: GameModel) {
         self.gameModel = gameModel
@@ -19,9 +21,9 @@ struct GameView: View {
             Text("Ranked Game")
                 .font(.largeTitle)
                 .padding()
-
+            
             Divider()
-
+            
             // Displaying dynamic content
             VStack(alignment: .leading, spacing: 10) {
                 Text("Timer: \(gameModel.timeLeft)")
@@ -31,20 +33,36 @@ struct GameView: View {
                 Text("Opponent recent score: \(gameModel.opponentRecentScore)")
                 
                 switch gameModel.gameStatus {
-                    case .notStarted:
-                        Text("Game Status: Not Started")
-                    case .ongoing:
-                        Text("Game Status: Ongoing")
-                    case .finished:
-                        Text("Game Status: Finished")
+                case .notStarted:
+                    Text("Game Status: Not Started")
+                case .ongoing:
+                    Text("Game Status: Ongoing")
+                case .finished:
+                    Text("Game Status: Finished")
                 }
             }
             .padding()
-
+            
             Spacer()
-
+            
             LetterBoardView(viewModel: gameModel)
                 .cornerRadius(10)
+            
+            Button {
+                showingQuitAlert = true
+            } label: {
+                Text("Quit")
+            }
+            .alert("Forfeit Match?", isPresented: $showingQuitAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Forfeit", role: .destructive) {
+                    gameModel.quitGame()
+                    dismiss()
+                }
+            } message: {
+                Text("Are you sure you want to forfeit the match?")
+            }
+
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {

@@ -7,8 +7,7 @@
 
 import Foundation
 
-protocol WebSocket_MatchmakingDelegate: AnyObject {
-    func didReceiveOpponentUsername(opponentUsername: String)
+protocol BattleServerDelegate_GameStartCountdown: AnyObject {
     func didReceivePreGameCountDown(countdown: Int)
 }
 
@@ -19,6 +18,27 @@ protocol WebSocket_GameDelegate: AnyObject {
     func didUpdateOpponentScore(_ score: Int)
     func didReceiveGameEnd(winners: [String], winnerStatus: String)
 }
+
+enum BattleServerMessage: String {
+    // Sent
+    case JOIN_GAME_SESSION = "JOIN_GAME_SESSION"
+    case LEAVE_GAME_SESSION = "LEAVE_GAME_SESSION"
+    case PLAYER_ACTION = "PLAYER_ACTION"
+
+    
+    // Received
+    case gameStartCountdown = "gameStartCountdown"
+    case roundStart = "roundStart"
+    case timeUpdate = "timeUpdate"
+    case opponentScoreUpdate = "opponentScoreUpdate"
+    case endRound = "endRound"
+    case gameEnd = "gameEnd"
+}
+
+enum PlayerActionMessage: String {
+    case PUBLISH_WORD = "PUBLISH_WORD"
+}
+
 
 
 extension LetterTile {
@@ -33,23 +53,35 @@ extension LetterTile {
     }
 }
 
-class WebSocketService: NSObject {
-    static let shared = WebSocketService()
+class BattleServerService: NSObject {
+    static let shared = BattleServerService()
     var webSocketTask: URLSessionWebSocketTask?
     var profileService: ProfileService?
     var gameDelegate: WebSocket_GameDelegate?
-    var matchmakingDelegate: WebSocket_MatchmakingDelegate?
+    var matchmakingDelegate: BattleServerDelegate_GameStartCountdown?
+    var gameSessionUUID: String?
     
     private override init() {
           super.init()
-          self.profileService = ProfileService()
-          connect()
       }
 
-    func connect() {
+    func connect(gameSessionUUID: String) {
+        
+        self.setGameSessionUUID(gameSessionUUID: gameSessionUUID)
+        
+        guard let profile = self.profileService else {
+            return
+        } 
+        
+        guard let sessionUUID = self.gameSessionUUID else {
+            return
+        } 
+        
         guard let url = URL(string: "ws://battleserver-dtyigx66oa-nn.a.run.app") else { return }
         var request = URLRequest(url: url)
-        request.addValue("your_valid_api_key", forHTTPHeaderField: "x-api-key")
+        request.addValue("4a7524be-0020-42c3-a259-cdc7208c5c7d", forHTTPHeaderField: "x-api-key")
+        request.addValue(sessionUUID, forHTTPHeaderField: "x-game-session-uuid")
+        request.addValue(profile.getUUID(), forHTTPHeaderField: "x-player-uuid")
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
         webSocketTask = session.webSocketTask(with: request)
         webSocketTask?.resume()
@@ -60,47 +92,17 @@ class WebSocketService: NSObject {
         self.gameDelegate = delegate
     }
     
-    func setMatchmakingDelegate(_ delegate :WebSocket_MatchmakingDelegate) {
+    func setProfileService(_ profileService: ProfileService) {
+        self.profileService = profileService
+    }
+    
+    func setMatchmakingDelegate(_ delegate :BattleServerDelegate_GameStartCountdown) {
         self.matchmakingDelegate = delegate
     }
     
-    func initiateHandshake() async {
-        do {
-            // Use guard let to unwrap the optional values safely.
-            guard let username = try await profileService?.getUsername() else {
-                print("Username is nil")
-                return // Exit early if username is nil
-            }
-            
-            guard let uuid = try await profileService?.getUUID() else {
-                print("UUID is nil")
-                return // Exit early if uuid is nil
-            }
-
-            let handshakeMessage = composeHandshakeMessage(uuid: uuid, username: username, reconnecting: false)
-            send(message: handshakeMessage)
-        } catch {
-            print("Error fetching profile data for handshake: \(error)")
-        }
+    func setGameSessionUUID(gameSessionUUID: String) {
+        self.gameSessionUUID = gameSessionUUID
     }
-
-    private func composeHandshakeMessage(uuid: String, username: String, reconnecting: Bool) -> String {
-          let handshakeDict: [String: Any] = [
-              "type": "handshake",
-              "uuid": uuid,
-              "username": username,
-              "reconnecting": reconnecting
-          ]
-          
-          if let jsonData = try? JSONSerialization.data(withJSONObject: handshakeDict, options: []),
-             let jsonString = String(data: jsonData, encoding: .utf8) {
-              return jsonString
-          } else {
-              print("Error composing handshake message")
-              return ""
-          }
-      }
-    
     
     func listen() {
          webSocketTask?.receive { [weak self] result in
@@ -131,20 +133,18 @@ class WebSocketService: NSObject {
         }
         
         switch type {
-        case "roundStart":
+        case BattleServerMessage.roundStart.rawValue:
             handleRoundStartMessage(json)
-        case "timeUpdate":
+        case BattleServerMessage.timeUpdate.rawValue:
             handleTimeUpdate(json)
-        case "endRound":
+        case BattleServerMessage.endRound.rawValue:
             handleEndRound(json)
-        case "opponentScoreUpdate":
+        case BattleServerMessage.opponentScoreUpdate.rawValue:
             handleOpponentScoreUpdate(json)
-        case "gameStartCountdown":
+        case BattleServerMessage.gameStartCountdown.rawValue:
             handlePreGameCountdown(json)
-        case "gameEnd":
+        case BattleServerMessage.gameEnd.rawValue:
             print("Game ended: \(json)")
-        case "metaData":
-            handleMetaData(json)
 //            
 //        case "gameStart":
 //                if let startTime = json["startTime"] as? Int64,
@@ -169,12 +169,9 @@ class WebSocketService: NSObject {
     }
 }
 
-extension WebSocketService: URLSessionWebSocketDelegate {
+extension BattleServerService: URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         print("WebSocket did open")
-        Task {
-            await initiateHandshake()
-        }
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
@@ -182,47 +179,17 @@ extension WebSocketService: URLSessionWebSocketDelegate {
     }
 }
 
-extension WebSocketService {
-    // Send a message to start the matchmaking process
-    func findMatch() {
-        let message = composeMessage(type: "findMatch")
-        send(message: message)
-    }
-    
-    // Send a message to stop the matchmaking process
-    func stopFindMatch() {
-        let message = composeMessage(type: "stopFindMatch")
-        send(message: message)
-    }
-    
+extension BattleServerService {
+
     // Acknowledge that the game can start
-    func ackStartGame() {
-        let message = composeMessage(type: "ackStartGame")
+    func joinGameSession() {
+        let message = composeMessage(type: BattleServerMessage.JOIN_GAME_SESSION.rawValue)
         send(message: message)
     }
     
-    
-//    {
-//        "id": "8ac3ed14-bab2-40d5-9567-a3aa1f5a4a6f",
-//        "type": "opponentUsernames",
-//        "payload": [
-//            "Payer1"
-//        ],
-//        "timestamp": 1707374801910,
-//        "recipient": "121212-121212-121212"
-//    }
-    // Handle receiving the opponent's metadata
-    private func handleMetaData(_ json: [String: Any]) {
-        print("Received metaData: \(json)")
-        // Check if the "type" of the message is "opponentUsernames"
-        if let type = json["type"] as? String, type == "opponentUsernames" {
-            // Attempt to extract the "payload" as an array of Strings
-            if let payload = json["payload"] as? [String], !payload.isEmpty {
-                // Assuming you're interested in the first username
-                let opponentUsername = payload[0]
-                matchmakingDelegate?.didReceiveOpponentUsername(opponentUsername: opponentUsername)
-            }
-        }
+    func leaveGameSession() {
+        let message = composeMessage(type: BattleServerMessage.LEAVE_GAME_SESSION.rawValue)
+        send(message: message)
     }
 
 //    {
@@ -348,9 +315,14 @@ extension WebSocketService {
         gameDelegate?.didReceiveGameEnd(winners: winners, winnerStatus: status)
     }
     
-    // Helper method to compose a generic message
-    private func composeMessage(type: String) -> String {
-        let dict: [String: Any] = ["type": type]
+    // Helper method to compose a generic message with optional additional data
+    private func composeMessage(type: String, data: [String: Any]? = nil) -> String {
+        var dict: [String: Any] = ["type": type]
+        if let additionalData = data {
+            for (key, value) in additionalData {
+                dict[key] = value
+            }
+        }
         if let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []),
            let jsonString = String(data: jsonData, encoding: .utf8) {
             return jsonString
@@ -359,11 +331,20 @@ extension WebSocketService {
             return ""
         }
     }
+
     
     func sendScoreUpdate(wordPath: [[Int]]) {
+        
+        let dataDict: [String: Any] = [ "wordPath": wordPath ]
+        
+        let payloadDict: [String: Any] = [
+            "playerAction": PlayerActionMessage.PUBLISH_WORD.rawValue,
+            "data": dataDict
+        ]
+        
          let messageDict: [String: Any] = [
-             "type": "scoreUpdate",
-             "wordPath": wordPath,
+            "type": BattleServerMessage.PLAYER_ACTION.rawValue,
+            "payload":payloadDict
          ]
          
          send(dictionary: messageDict)
@@ -378,6 +359,13 @@ extension WebSocketService {
              print("Error serializing message")
          }
      }
+    
+    func quitGame() {
+        let messageDict: [String: Any] = [
+            "type": "quitGame"
+        ]
+        send(dictionary: messageDict)
+    }
 }
 
 

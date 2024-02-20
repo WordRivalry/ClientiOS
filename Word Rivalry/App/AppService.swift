@@ -16,13 +16,23 @@ final class AppService: ObservableObject {
     }
     
     func startApplication() {
-        
         // Start theme service
         let initialTheme = services.themeService.loadInitialTheme()
         
-        // Load Wordchecker
-        WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")
-        
+        Task {
+            // Load Profile
+            try await self.services.profileService.loadProfile()
+            
+            // Inject Profile service into matchmaking service
+            MatchmakingService.shared.setProfileService(self.services.profileService)
+            
+            // Load Wordchecker
+            WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")
+            
+            // Connect to server
+            BattleServerService.shared.setProfileService(self.services.profileService)
+        }
+
         // Starts audio service
         Task {
             // Load music

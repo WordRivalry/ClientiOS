@@ -11,9 +11,26 @@ import CloudKit
 class ProfileService: ObservableObject {
     
     private let cloudKitService: CloudKitService
+    private var username: String = ""
+    private var UUID: String = ""
     
     init(cloudKitService: CloudKitService = CloudKitService()) {
         self.cloudKitService = cloudKitService
+    }
+    
+    func loadProfile() async throws -> Void {
+        if await (try self.exist()) {
+            self.username = try await self.fetchUsername()
+            self.UUID = try await self.fetchUUID()
+        }
+    }
+    
+    func getUsername() -> String {
+        return self.username
+    }
+    
+    func getUUID() -> String {
+        return self.UUID
     }
     
     // MARK: PRIVATE PROFILE
@@ -24,17 +41,17 @@ class ProfileService: ObservableObject {
     }
     
     // Function to get the username for the current iCloud user
-    func getUsername() async throws -> String {
+    func fetchUsername() async throws -> String {
         return try await cloudKitService.fetchUsername()
     }
     
     // Function to get the UUID for the current iCloud user
-    func getUUID() async throws -> String {
+    func fetchUUID() async throws -> String {
         return try await cloudKitService.fetchUUID()
     }
     
     // Function to get the theme preference for the current iCloud user
-    func getThemePreference() async throws -> ColorScheme {
+    func fetchThemePreference() async throws -> ColorScheme {
         return try await cloudKitService.fetchThemePreference()
     }
     

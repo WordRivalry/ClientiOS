@@ -44,6 +44,7 @@ enum GameStatus {
     var message: String = ""
     var gameStatus: GameStatus = .notStarted
     
+    var onGameEnded: (() -> Void)?
     
     // Delegate
     var timeLeft: String = ""
@@ -72,11 +73,12 @@ enum GameStatus {
         
         setupDelegates()
     }
+
     
     func setupDelegates() {
         self.swipeDelegate = self
         self.tapDelegate = self
-        WebSocketService.shared.setGameDelegate(self)
+        BattleServerService.shared.setGameDelegate(self)
     }
     
     // MARK: GAME START
@@ -170,12 +172,10 @@ enum GameStatus {
     
     // MARK: GAME FINISHED
     
-    
     func gameTimesUp() {
         gameStatus = .finished
         timeLeft = "Time's up!"
     }
-    
 }
 
 
@@ -206,7 +206,7 @@ extension GameModel: Board_OnSwipe_Delegate {
         
         let wordScore = evalWord(path: path2)
         if (wordScore > 0) {
-            WebSocketService.shared.sendScoreUpdate(wordPath: path)
+            BattleServerService.shared.sendScoreUpdate(wordPath: path)
         }
     
         // Clear the path and reset path score for the next attempt
@@ -231,6 +231,14 @@ extension GameModel: Board_OnTap_Delegate {
         let tappedCell = getCell(cellIndex.i, cellIndex.j)
         // Process the tap on the cell, e.g., select the cell, start a word, etc.
         print("Tapped cell at \(cellIndex.i), \(cellIndex.j) with letter \(tappedCell.letter)")
+    }
+}
+
+// MARK: WS SEND
+extension GameModel {
+    func quitGame() {
+        self.onGameEnded?()
+        BattleServerService.shared.quitGame()
     }
 }
 
@@ -275,6 +283,8 @@ extension GameModel: WebSocket_GameDelegate {
             // Update the message to show the winner(s)
             let winnersStr = winners.joined(separator: ", ")
             self.message = "Game ended. Winner(s): \(winnersStr) with status: \(winnerStatus)"
+            
+            self.onGameEnded?()
             
             // Here, you could also perform any necessary cleanup or setup for a new game
             // This might include resetting the board, scores, and other properties

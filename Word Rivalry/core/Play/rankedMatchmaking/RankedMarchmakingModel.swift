@@ -6,48 +6,91 @@
 //
 
 import Foundation
+import SwiftUI
 
-@Observable class RankedMatchmakingModel {
+@Observable class RankedMatchmakingModel: ObservableObject {
     var gameStats: [String: (activePlayers: Int?, inQueue: Int?)] = [
-            MatchmakingType.normal.rawValue: (nil, nil),
-            MatchmakingType.blitz.rawValue: (nil, nil),
-            MatchmakingType.mayhem.rawValue: (nil, nil)
+        ModeType.NORMAL.rawValue: (nil, nil),
+        ModeType.BLITZ.rawValue: (nil, nil),
         ]
     var isLoading: Bool = false
-    var isSearching: [MatchmakingType: Bool] = [:]
+    var showingCover = false
     var errorMessage: String?
-    var matchFound: ((MatchmakingType) -> Void)?
     var nextTournament: Date = Calendar.current.date(byAdding: .hour, value: 3, to: Date()) ?? Date()
-    private var service = RankedMatchmakingService()
+    var activeGameMode: GameMode = .RANK
+    var activeModeType: ModeType = .NORMAL
+//    private var statService = RankedMatchmakingStatsService()
     
     init() {
-        fetchStats()
+        MatchmakingService.shared.setMatchmakingDelegate(self)
     }
     
-    func fetchStats() {
-        isLoading = true
-        service.fetchStats { [weak self] gameStats, error in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                if let error = error {
-                    self?.errorMessage = error.localizedDescription
-                } else {
-                    self?.gameStats = gameStats
-                }
+    func searchMatch(modeType: ModeType) {
+        do {
+            self.activeModeType = modeType
+            MatchmakingService.shared.connect()
+            self.showingCover = true
+            try MatchmakingService.shared.findMatch(
+                gameMode: self.activeGameMode,
+                modeType: self.activeModeType
+            )
+        } catch {
+            print("Error occurred: \(error)")
+        }
+    }
+    
+//    func fetchStats() {
+//        isLoading = true
+//        statService.fetchStats { [weak self] gameStats, error in
+//            DispatchQueue.main.async {
+//                self?.isLoading = false
+//                if let error = error {
+//                    self?.errorMessage = error.localizedDescription
+//                } else {
+//                    self?.gameStats = gameStats
+//                }
+//            }
+//        }
+//    }
+}
+
+extension RankedMatchmakingModel: MatcMatchmakingDelegate_onSearch {
+    
+    func didJoinedQueue() {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut) {
+                print("Opening FS Cover")
+                self.showingCover = true
             }
         }
     }
     
-    func searchMatch(matchmakingType: MatchmakingType) {
-        isSearching[matchmakingType] = true
-        service.searchMatch(matchmakingType: matchmakingType) { [weak self] success, error in
-            DispatchQueue.main.async {
-                self?.isSearching[matchmakingType] = false
-                if success {
-                    self?.matchFound?(matchmakingType)
-                } else if let error = error {
-                    self?.errorMessage = error.localizedDescription
-                }
+    func didNotJoinedQueue() {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut) {
+                self.errorMessage = "Failed to join a queue, retry later."
+                print("Closing FS Cover")
+                self.showingCover = false
+            }
+        }
+    }
+    
+    func didNotConnect() {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut) {
+                self.errorMessage = "Connection to Matchmaking Server failed"
+                print("Closing FS Cover")
+                self.showingCover = false
+            }
+        }
+    }
+    
+    func didNotSendMessage() {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut) {
+                self.errorMessage = "Sending WebSocket Message Failed"
+                print("Closing FS Cover")
+                self.showingCover = false
             }
         }
     }
