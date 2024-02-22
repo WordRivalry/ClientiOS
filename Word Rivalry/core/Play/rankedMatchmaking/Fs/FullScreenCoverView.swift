@@ -27,64 +27,120 @@ struct FullScreenCoverView: View {
     
     var body: some View {
         ZStack {
-            switch searchModel.process {
-            case .searching:
-                SearchingView(viewModel: searchModel)
-            case .lobby:
-                LobbyView(viewModel: searchModel)
-            case .inGame:
-                GameView(gameModel: searchModel.gameModel)
-            case .gameEnded:
-                ResultsView(viewModel: searchModel)
+            
+            Group{
+                switch searchModel.process {
+                case .searching:
+                    SearchingView(viewModel: searchModel)
+                case .lobby:
+                    LobbyView(viewModel: searchModel)
+                case .inGame:
+                    GameView(gameModel: searchModel.gameModel)
+                case .gameEnded:
+                    ResultsView(viewModel: searchModel)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             CountdownOverlayView(countdown: $searchModel.gameStartCountdown)
                 .allowsHitTesting(false)
         }
-        .background(Color.black.opacity(0.5).edgesIgnoringSafeArea(.all))
     }
 }
 
+//struct PulsatingCircleView: View {
+//    var animatePulse: Bool
+//    let animationDuration: Double
+//
+//    var body: some View {
+//        Circle()
+//            .stroke(Color.blue.opacity(0.5), lineWidth: 5)
+//            .scaleEffect(animatePulse ? 1.5 : 1)
+//            .opacity(animatePulse ? 0 : 1)
+//            // Ensure the animation only starts once `animatePulse` is true
+//            .animation(animatePulse ? Animation.easeOut(duration: animationDuration).repeatForever(autoreverses: false) : nil, value: animatePulse)
+//            .frame(width: 200, height: 200)
+//    }
+//}
+
+
 struct SearchingView: View {
-    var viewModel:SearchModel
+    var viewModel: SearchModel
     @Environment(\.dismiss) var dismiss
     
+    @State private var textScale = 0.1 // Start scaled down
+    @State private var textOpacity = 0.0 // Start almost invisible
+    
+    // Define specific animation durations for better control
+    let textAppearDuration = 0.5
+    let blinkDuration = 3.0
+    
     var body: some View {
-        VStack {
+        ZStack {
+            AnimatedCirclesView().opacity(0.7)
             
-            Text(viewModel.modeType.rawValue)
-            
-            Spacer()
-            
-            Text("Searching...")
-                .foregroundColor(.white)
-                .padding()
-            
-            Button("Cancel Search") {
-                do {
-                    try  viewModel.cancelSearch()
-                } catch {
-                    print("Error occurred: \(error)")
+            VStack {
+                Text(viewModel.modeType.rawValue)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.top, 50)
+                
+                Spacer()
+                
+                // "Searching" text with varying opacity
+                Text("Searching")
+                    .foregroundColor(.primary)
+                    .font(.title2)
+                    .padding()
+                    .opacity(textOpacity)
+                    .scaleEffect(textScale)
+                    .shadow(radius: 10)
+                    .onAppear {
+                        // Pop effect: scale up then down
+                        withAnimation(.easeOut(duration: textAppearDuration)) {
+                            textScale = 1.2
+                            textOpacity = 1.0
+                        }
+                        withAnimation(.easeOut(duration: textAppearDuration).delay(textAppearDuration)) {
+                            textScale = 1.0
+                        }
+                        // Start blinking after initial animations
+                        DispatchQueue.main.asyncAfter(deadline: .now() + textAppearDuration * 2) {
+                            withAnimation(.easeInOut(duration: blinkDuration / 2).repeatForever(autoreverses: true)) {
+                                textOpacity = 0.2 // Adjust opacity for the blinking effect
+                            }
+                        }
+                    }
+                
+                Spacer()
+                
+                BasicButton(text: "Cancel Search") {
+                    do {
+                        try viewModel.cancelSearch()
+                    } catch {
+                        print("Error occurred: \(error)")
+                    }
+                    dismiss()
                 }
-                dismiss()
+                .padding(.bottom, 50)
             }
-            .foregroundColor(.blue)
-            .padding()
-            Spacer()
         }
+        .edgesIgnoringSafeArea(.all)
     }
 }
+
+
 
 struct LobbyView: View {
     var viewModel: SearchModel
     var body: some View {
         VStack {
             Text("Opponent: \(viewModel.opponentUsername)")
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .padding()
             
             Text("You: \(viewModel.myUsername)")
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .padding()
         }
     }
@@ -112,19 +168,21 @@ struct CountdownOverlayView: View {
                             isAnimating = false
                         }
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.5))
+                    .foregroundColor(.white)
+                    .edgesIgnoringSafeArea(.all)
+                // Trigger the countdown decrease and restart the animation
+                    .onChange(of: countdown) {
+                        isAnimating = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            isAnimating = false
+                        }
+                    }
             }
+            
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0.5))
-        .foregroundColor(.white)
-        .edgesIgnoringSafeArea(.all)
-        // Trigger the countdown decrease and restart the animation
-        .onChange(of: countdown) {
-            isAnimating = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                isAnimating = false
-            }
-        }
+        
     }
 }
 

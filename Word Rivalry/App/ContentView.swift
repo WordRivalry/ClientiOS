@@ -15,38 +15,47 @@ enum AppState {
 }
 
 struct ContentView: View {
-    
     @EnvironmentObject var profile: ProfileService
-    @State private var appState: AppState = .intro
     
-    @State private var selection: AppScreen? = .home
-
+    // Handle the entire color scheme of the app
+    @StateObject private var colorSchemeManager = ColorSchemeManager.shared
+    
+    // Handle app current displayed View
+    @State private var contentViewState: AppState = .home
+    @State private var appScreen: AppScreen? = .home
+    
+    init() {
+    }
+    
     var body: some View {
         
         ZStack {
             Group {
-                switch appState {
-                    
+                switch contentViewState {
                 case .intro:
                     IntroView(onFinished: {
                         Task {
+                            /// If no profil, show profil creation window
                             let profileExists = try await profile.exist()
-                            appState = profileExists ? .home : .profileCreation
+                            contentViewState = profileExists ? .home : .profileCreation
                         }
                     })
                     
                 case .profileCreation:
                     ProfileCreationView(onProfileCreated: {
-                        self.appState = .home
+                        self.contentViewState = .home
                     })
                     
                 case .home:
-                    AppTabView(selection: $selection)
+                    AppTabView(selection: $appScreen)
                 }
             }
             .transition(.opacity)
-            .animation(.easeInOut, value: appState)
+            .animation(.easeInOut, value: contentViewState)
         }
+        .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
+  
+        
     }
 }
 

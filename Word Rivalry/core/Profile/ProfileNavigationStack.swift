@@ -1,13 +1,13 @@
 //
-//  HomeNavigationStack.swift
+//  ProfileNavigationStack.swift
 //  Word Rivalry
 //
-//  Created by benoit barbier on 2024-02-01.
+//  Created by benoit barbier on 2024-02-22.
 //
 
 import SwiftUI
 
-struct HomeNavigationStack: View {
+struct ProfileNavigationStack: View {
     @EnvironmentObject var profileService: ProfileService
     @State private var username: String = ""
     @State private var showingFriendsList = false
@@ -16,6 +16,7 @@ struct HomeNavigationStack: View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 20) {
+                    BasicNavButton(text: "Profile", destination: ProfileView())
                     BasicNavButton(text: "Leaderboard", destination: LeaderboardView())
                     BasicNavButton(text: "Statistics", destination: StatisticsView())
                     BasicNavButton(text: "Friends", destination: FriendsListView())
@@ -65,4 +66,9 @@ struct HomeNavigationStack: View {
 #Preview {
     HomeNavigationStack()
         .environmentObject(ProfileService())
+}
+
+
+#Preview {
+    ProfileNavigationStack()
 }

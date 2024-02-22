@@ -29,7 +29,6 @@ struct JoinQueueSuccessPayload: Codable {
 }
 struct JoinQueueSuccessMessage: Codable {
     let type: String
-//    let payload: JoinQueueSuccessPayload
 }
 
 // Joined Queue Failure
@@ -113,6 +112,10 @@ class MatchmakingService: NSObject {
         webSocketTask?.resume()
         listen()
         print("Connected to matchmaking server")
+    }
+    
+    func getUsername() -> String {
+        return (self.profileService?.getUsername())!
     }
     
     func setProfileService(_ profileService: ProfileService) {

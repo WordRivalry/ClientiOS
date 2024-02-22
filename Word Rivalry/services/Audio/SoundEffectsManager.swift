@@ -31,9 +31,9 @@ class SoundEffectsManager: NSObject, SoundEffectManageable {
         }
     }
     
-    func prepareThemedSFX(theme: ColorScheme) {
-        
-    }
+//    func prepareThemedSFX(theme: ColorScheme) {
+//        
+//    }
     
     func play(soundEffect: SoundEffect, completion: @escaping () -> Void) {
         guard let player = audioPlayers[soundEffect] else { return }

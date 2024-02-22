@@ -16,8 +16,8 @@ struct AppTabView: View {
                 screen.destination
                     .tag(screen as AppScreen?)
                     .tabItem { screen.label }
-                    .toolbarBackground(.visible, for: .tabBar)
-                    .toolbarColorScheme(.dark, for: .tabBar)
+                 //   .toolbarBackground(Color, for: .tabBar)
+                //    .toolbarBackground(.visible, for: .tabBar)
             }
         }
         .ignoresSafeArea()

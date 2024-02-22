@@ -23,7 +23,7 @@ struct GameInfo {
     var gameModel: GameModel
     
     // User info
-    var myUsername: String = "Lighthouse"
+    var myUsername: String = MatchmakingService.shared.getUsername()
     
     // Delagate data
     var opponentUsername: String = ""

@@ -10,6 +10,8 @@ import SwiftUI
 struct StatisticsView: View {
     var body: some View {
         Text("Stats!")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
     }
 }
 

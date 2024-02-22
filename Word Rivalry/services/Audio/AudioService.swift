@@ -52,11 +52,11 @@ class AudioService: ObservableObject {
     
     // MARK: - Theme preparation
     
-    func prepareAudioTheme(theme: ColorScheme) {
-        musicManager.prepareThemedPlaylist(theme: theme)
-        soundEffectsManager.prepareThemedSFX(theme: theme)
-        logger.notice("Audio theme prepared")
-    }
+//    func prepareAudioTheme(theme: ColorScheme) {
+//        musicManager.prepareThemedPlaylist(theme: theme)
+//        soundEffectsManager.prepareThemedSFX(theme: theme)
+//        logger.notice("Audio theme prepared")
+//    }
     
     // MARK: - Music Playback
     

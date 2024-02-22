@@ -7,6 +7,7 @@
 
 import Foundation
 import CloudKit
+import SwiftUI
 
 enum UserProfilFlag: String {
     case needsPublicRecordCreation
@@ -35,7 +36,7 @@ extension CloudKitService {
 // MARK: - Profil creation
 extension CloudKitService {
     
-    func createUserRecord(username: String) async throws -> CKRecord {
+    func createUserRecord(username: String) async throws -> Void {
         
         // RECOVERY - If needed handle pending creation of public record
         if UserDefaults.standard.bool(forKey: UserProfilFlag.needsPublicRecordCreation.rawValue) {
@@ -54,7 +55,8 @@ extension CloudKitService {
             // Mark recovery as resolved
             UserDefaults.standard.set(false, forKey: UserProfilFlag.needsPublicRecordCreation.rawValue)
             
-            return existingPrivateUserInfoRecord
+            // Early retun
+            return
         }
         
         // Guard: Check if a UserInfo record already exists in the private database
@@ -75,16 +77,15 @@ extension CloudKitService {
         let profil = Profil(
             uuid: userUUID,
             username: username,
-            themePreference: ColorScheme.system.rawValue,
-            hapticPreference: true,
-            friendsUUIDs: []
+            friendsUUIDs: ["Hi"]
         )
         
-        // Save
-        let savedPrivateRecord = try await savePrivateRecord(profil.privateRecord)
-        try await savePublicRecord(profil.publicRecord)
+        UserDefaultsManager.shared.setUsername(username)
+        UserDefaultsManager.shared.setUserUUID(userUUID)
         
-        return savedPrivateRecord
+        // Save
+        try await savePrivateRecord(profil.privateRecord)
+        try await savePublicRecord(profil.publicRecord)
     }
     
     private func createPublicUserInfoRecord(username: Any?, uuid: Any?) async throws -> CKRecord {
@@ -101,15 +102,15 @@ extension CloudKitService {
         return record
     }
     
-    private func savePrivateRecord(_ record: CKRecord) async throws -> CKRecord {
+    private func savePrivateRecord(_ record: CKRecord) async throws -> Void {
         do {
-            return try await privateDatabase.save(record)
+            _ = try await privateDatabase.save(record)
         } catch {
             throw NSError(domain: "CloudKitService", code: -9, userInfo: [NSLocalizedDescriptionKey: "Failed to create private user record."])
         }
     }
     
-    private func savePublicRecord(_ record: CKRecord) async throws {
+    private func savePublicRecord(_ record: CKRecord) async throws -> Void {
         do {
             _ = try await publicDatabase.save(record)
         } catch {
@@ -150,18 +151,8 @@ extension CloudKitService {
         return username
     }
     
-    // Function to fetch the theme preference for the current iCloud user
-    func fetchThemePreference() async throws -> ColorScheme {
-        let userRecord = try await fetchPrivateUserInfoRecord()
-        guard let themePreferenceString = userRecord[ProfilRecordKey.themePreference] as? String,
-              let themePreference = ColorScheme(rawValue: themePreferenceString) else {
-            throw NSError(domain: "CloudKitService", code: -9, userInfo: [NSLocalizedDescriptionKey: "Theme preference not found."])
-        }
-        return themePreference
-    }
-    
     // Function to update the username for the current iCloud user
-    func updateUsernameRecord(username: String) async throws -> CKRecord {
+    func updateUsernameRecord(username: String) async throws -> Void {
         
         // Guard: Check if new username is already in use
         let isUsernameTaken = try await isUsernameInPublicDatabase(username: username)
@@ -171,22 +162,8 @@ extension CloudKitService {
         
         let record = try await fetchPrivateUserInfoRecord()
         record[ProfilRecordKey.username] = username
-        return try await privateDatabase.save(record)
-    }
-    
-    
-    // Function to update the theme preference for the current iCloud user
-    func updateThemePreferenceRecord(themePreference: ColorScheme) async throws -> CKRecord {
-        let record = try await fetchPrivateUserInfoRecord()
-        record[ProfilRecordKey.themePreference] = themePreference.rawValue
-        return try await privateDatabase.save(record)
-    }
-    
-    // Function to update the theme preference for the current iCloud user
-    func updateHapticPreferenceRecord(hapticPreference: Bool) async throws -> CKRecord {
-        let record = try await fetchPrivateUserInfoRecord()
-        record[ProfilRecordKey.hapticPreference] = hapticPreference
-        return try await privateDatabase.save(record)
+        try await privateDatabase.save(record)
+        UserDefaultsManager.shared.setUsername(username)
     }
 }
 
@@ -333,3 +310,4 @@ extension CloudKitService {
         }
     }
 }
+

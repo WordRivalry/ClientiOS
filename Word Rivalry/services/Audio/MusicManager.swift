@@ -34,15 +34,15 @@ class MusicManager {
         return musicPlayer.isPlaying
     }
     
-    func prepareThemedPlaylist(theme: ColorScheme) {
-        // Create a new playlist based on the theme.
-        let playlist = musicLibrary.getSongs(by: theme)
-        
-        // Update the current playlist.
-        self.currentPlaylist = Playlist(songs: playlist)
-        
-        logger.notice("MusicManager playlist prepared")
-    }
+//    func prepareThemedPlaylist(theme: ColorScheme) {
+//        // Create a new playlist based on the theme.
+//        let playlist = musicLibrary.getSongs(by: theme)
+//        
+//        // Update the current playlist.
+//        self.currentPlaylist = Playlist(songs: playlist)
+//        
+//        logger.notice("MusicManager playlist prepared")
+//    }
     
     
     func playSong() {

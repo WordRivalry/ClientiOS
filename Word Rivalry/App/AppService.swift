@@ -21,16 +21,20 @@ final class AppService: ObservableObject {
         
         Task {
             // Load Profile
-            try await self.services.profileService.loadProfile()
+            do {
+                try await self.services.profileService.loadProfile()
+            } catch {
+                print("Profile not loaded")
+            }
             
             // Inject Profile service into matchmaking service
             MatchmakingService.shared.setProfileService(self.services.profileService)
             
+            // Inject Profile service into Battle service
+            BattleServerService.shared.setProfileService(self.services.profileService)
+            
             // Load Wordchecker
             WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")
-            
-            // Connect to server
-            BattleServerService.shared.setProfileService(self.services.profileService)
         }
 
         // Starts audio service
@@ -42,7 +46,7 @@ final class AppService: ObservableObject {
             services.audioService.musicManager.setSongs(songs: songs)
             
             // Prepare the audio service for the initial theme.
-            services.audioService.prepareAudioTheme(theme: initialTheme)
+//            services.audioService.prepareAudioTheme(theme: initialTheme)
             
             // Play music
 //            services.audioService.playSong()

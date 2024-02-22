@@ -11,30 +11,7 @@ import OSLog
 
 private let logger = Logger(subsystem: "ThemeService", category: "Theme")
 
-//enum Theme: String, CaseIterable {
-//    case basic
-//    
-//    var name: String {
-//        return rawValue.capitalized
-//    }
-//    
-//    var productId: String {
-//        switch self {
-//        case .basic:
-//            return "theme.basic"
-//        }
-//    }
-//    
-//    var themeTitle: String {
-//        switch self {
-//        case .basic:
-//            return "Basic Theme"
-//        }
-//    }
-//}
-
-
-enum ColorScheme: String, CaseIterable, Identifiable {
+enum ColorScheme2: String, CaseIterable, Identifiable {
     case system = "System"
     case light = "Light"
     case dark = "Dark"
@@ -43,9 +20,9 @@ enum ColorScheme: String, CaseIterable, Identifiable {
 
     var scheme: SwiftUI.ColorScheme? {
         switch self {
-        case .dark: return .dark
-        case .light: return .light
-        case .system: return nil
+            case .dark: return .dark
+            case .light: return .light
+            case .system: return nil
         }
     }
 }
@@ -53,7 +30,7 @@ enum ColorScheme: String, CaseIterable, Identifiable {
 class ThemeService: ObservableObject {
     
     // MARK: - Published
-    @Published var currentTheme: ColorScheme
+    @Published var currentTheme: ColorScheme2
     
     init() {
         currentTheme = .system // default
@@ -62,10 +39,10 @@ class ThemeService: ObservableObject {
     
     // Public interface
     
-    func loadInitialTheme() -> ColorScheme {
-        let savedTheme = UserDefaults.standard.string(forKey: "CurrentTheme") ?? ColorScheme.system.rawValue
+    func loadInitialTheme() -> ColorScheme2 {
+        let savedTheme = UserDefaults.standard.string(forKey: "CurrentTheme") ?? ColorScheme2.system.rawValue
         
-        currentTheme = ColorScheme(rawValue: savedTheme) ?? .system
+        currentTheme = ColorScheme2(rawValue: savedTheme) ?? .system
         
         logger.notice("Loading theme: \(self.currentTheme.rawValue)")
         return currentTheme
@@ -87,8 +64,8 @@ class ThemeService: ObservableObject {
         return "\(currentTheme.rawValue.capitalized)_\(name)"
     }
     
-    var allThemes: [ColorScheme] {
-        ColorScheme.allCases
+    var allThemes: [ColorScheme2] {
+        ColorScheme2.allCases
     }
 }
 
@@ -96,7 +73,7 @@ extension ThemeService {
     var currentThemeRaw: String {
         get { currentTheme.rawValue }
         set {
-            if let newTheme = ColorScheme(rawValue: newValue) {
+            if let newTheme = ColorScheme2(rawValue: newValue) {
                 currentTheme = newTheme
             }
         }

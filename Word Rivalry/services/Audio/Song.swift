@@ -8,7 +8,7 @@
 import Foundation
 
 struct Song: PlayableSong {
-    let theme: ColorScheme
+//    let theme: ColorScheme
     let title: String
     let artist: String
     let album: String
@@ -17,7 +17,7 @@ struct Song: PlayableSong {
 
 
 protocol PlayableSong {
-    var theme: ColorScheme { get }
+//    var theme: ColorScheme { get }
     var title: String { get }
     var artist: String { get }
     var album: String { get }

@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileCreationView: View {
     @EnvironmentObject var profile: ProfileService
     var onProfileCreated: () -> Void
-    @State private var username: String = ""
+    @State private var usernameTextField: String = ""
     @State private var errorMessage: String? = nil
     
     var body: some View {
@@ -20,7 +20,7 @@ struct ProfileCreationView: View {
                 .fontWeight(.bold) // Making title bold for emphasis
                 .padding(.bottom, 20) // Additional padding to separate title from text field
             
-            TextField("Enter Username", text: $username)
+            TextField("Enter Username", text: $usernameTextField)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .background(Color(.systemGray6)) // Adding a background color for better contrast
@@ -37,10 +37,10 @@ struct ProfileCreationView: View {
                     .frame(minWidth: 0, maxWidth: .infinity) // Button width extends to max available space
                     .padding()
                     .foregroundColor(.white) // White text for better contrast
-                    .background(username.isEmpty ? Color.gray : Color.blue) // Dynamic background color
+                    .background(usernameTextField.isEmpty ? Color.gray : Color.blue) // Dynamic background color
                     .cornerRadius(10) // Rounded corners for button
             }
-            .disabled(username.isEmpty) // Disabling button when username is empty
+            .disabled(usernameTextField.isEmpty) // Disabling button when username is empty
             
             Spacer()
             
@@ -57,7 +57,7 @@ struct ProfileCreationView: View {
     private func createProfile() async {
         do {
             // Attempt to create the profile
-            _ = try await profile.createProfile(username: username)
+            _ = try await profile.createProfile(username: usernameTextField)
             
             // Callback
             onProfileCreated()

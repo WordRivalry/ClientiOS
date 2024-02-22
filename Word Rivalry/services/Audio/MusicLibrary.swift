@@ -28,7 +28,7 @@ class MusicLibrary {
         return songs.first { $0.title == title }
     }
     
-    func getSongs(by theme: ColorScheme) -> [Song] {
-        return songs.filter { $0.theme == theme }
-    }
+//    func getSongs(by theme: ColorScheme) -> [Song] {
+//        return songs.filter { $0.theme == theme }
+//    }
 }

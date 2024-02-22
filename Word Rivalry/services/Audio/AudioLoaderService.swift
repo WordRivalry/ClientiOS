@@ -63,7 +63,6 @@ class AudioLoaderService {
         let artist = try await AVMetadataItem.metadataItems(from: metadata, filteredByIdentifier: .commonIdentifierArtist).first?.load(.stringValue) ?? "Unknown"
         let album = try await AVMetadataItem.metadataItems(from: metadata, filteredByIdentifier: .commonIdentifierAlbumName).first?.load(.stringValue) ?? "Unknown"
         
-        return Song(theme: .system, title: title, artist: artist, album: album, url: url)
+        return Song(title: title, artist: artist, album: album, url: url)
     }
-    
 }

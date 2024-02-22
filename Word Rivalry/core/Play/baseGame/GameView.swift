@@ -57,6 +57,7 @@ struct GameView: View {
                 Button("Cancel", role: .cancel) { }
                 Button("Forfeit", role: .destructive) {
                     gameModel.quitGame()
+                    BattleServerService.shared.leaveGameSession()
                     dismiss()
                 }
             } message: {

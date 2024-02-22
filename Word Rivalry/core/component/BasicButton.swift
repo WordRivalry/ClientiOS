@@ -1,29 +1,32 @@
 //
-//  GlassyButton.swift
+//  FindMatchButton.swift
 //  Word Rivalry
 //
-//  Created by benoit barbier on 2024-02-02.
+//  Created by benoit barbier on 2024-02-22.
 //
 
 import SwiftUI
 
-// Reusable GlassyButton component
-struct BasicButton<Destination: View>: View {
+struct BasicButton: View {
     var text: String
-    var destination: Destination
+    var action: () -> Void
     
     var body: some View {
-        NavigationLink(destination: destination) {
+        Button {
+            action()
+        } label: {
             Text(text)
-                .frame(width: 350)
-                .foregroundColor(.primary)
-                .font(.title3.bold())
-                .padding(.vertical, 22)
-                .background(.ultraThinMaterial)
+                .bold()
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.accentColor.opacity(0.6))
+                .cornerRadius(8)
         }
+        .padding(.horizontal, 40)
     }
 }
 
 #Preview {
-    BasicButton(text: "Hi", destination: Text("Hi"))
+    BasicButton(text: "Hi", action: {})
 }

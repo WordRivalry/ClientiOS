@@ -21,10 +21,13 @@ extension AppScreen {
         switch self {
         case .home:
             Label("Home", systemImage: "house.fill")
+                .foregroundStyle(Color.accentColor)
         case .play:
             Label("Play", systemImage: "flag.checkered")
+                .foregroundStyle(Color.accentColor)
         case .settings:
             Label("Settings", systemImage: "gear")
+                .foregroundStyle(Color.accentColor)
         }
     }
     

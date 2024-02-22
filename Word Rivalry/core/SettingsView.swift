@@ -8,60 +8,68 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @State private var hapticFeedbackEnabled = true
-    @State private var appearanceSetting = "System"
-    let appearanceOptions = ["Light", "Dark", "System"]
     
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("General")) {
-               
-                    
-                    Picker("Appearance", selection: $appearanceSetting) {
-                        ForEach(appearanceOptions, id: \.self) { option in
-                            Text(option).tag(option)
-                        }
-                    }
-                    
+                Section{
                     Toggle(isOn: $hapticFeedbackEnabled) {
                         Text("Haptic Feedback")
                     }
-                }
+               
+   
                 
-                Section(header: Text("Privacy & Security")) {
-                                  NavigationLink(destination: TermsOfServiceView()) {
-                                      Text("Terms of Service")
-                                  }
-                                  NavigationLink(destination: PrivacyPolicyView()) {
-                                      Text("Privacy Policy")
-                                  }
-                              }
-                              
-                              Section(header: Text("Feedback & Support")) {
-                                  Button("Send Feedback") {
-                                      // TODO: Implement feedback functionality
-                                  }
-                                  
-                                  Button("Help & Support") {
-                                      // TODO: Link to support resources
-                                  }
-                              }
-                              
-                              Section(header: Text("About")) {
-                                  HStack {
-                                      Text("Version")
-                                      Spacer()
-                                      Text("1.0.0").foregroundColor(.gray)
-                                  }
-                                  NavigationLink(destination: LicensesView()) {
-                                      Text("Licenses")
-                                  }
-                              }
+                    Picker("Appearance", selection: $colorSchemeManager.selectedColorScheme) {
+                        Text("Dark").tag("dark")
+                        Text("Light").tag("light")
+                        Text("System").tag("system")
+                    }
+                    .pickerStyle(.navigationLink)
+                    .listRowSeparator(.hidden)
+                }
+                Section {
+                    NavigationLink(destination: TermsOfServiceView()) {
+                        Text("Terms of Service")
+                    }
+                    NavigationLink(destination: PrivacyPolicyView()) {
+                        Text("Privacy Policy")
+                    }
+
+                    Button("Send Feedback") {
+                        // TODO: Implement feedback functionality
+                    }
+                    
+                    Button("Help & Support") {
+                        // TODO: Link to support resources
+                    } 
+                }
+                .listRowSeparator(.hidden)
+    
+                Section {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("1.0.0").foregroundColor(.gray)
+                    }
+                    NavigationLink(destination: LicensesView()) {
+                        Text("Licenses")
+                    }
+                } 
+                .listRowSeparator(.hidden)
             }
-            .listStyle(GroupedListStyle())
+            /// List Modifiers
+            .listStyle(.automatic)
+            .environment(\.defaultMinListRowHeight, 70)
+            .scrollContentBackground(.hidden)
+            
+            /// View Modifiers
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
+            .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
         }
     }
 }

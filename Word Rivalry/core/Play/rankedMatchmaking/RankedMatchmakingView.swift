@@ -46,6 +46,8 @@ struct RankedMatchmakingView: View {
                     modeType: self.viewModel.activeModeType
                 )
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.background)
             
 //            // Setup and teardown the timer for fetching stats
 //            .onAppear {
@@ -132,7 +134,7 @@ struct ActionButton: View {
                 .foregroundColor(.white)
                 .padding(.horizontal)
                 .padding(.vertical, 8)
-                .background(Color.blue)
+                .background(Color.accentColor)
                 .cornerRadius(8)
         }
     }

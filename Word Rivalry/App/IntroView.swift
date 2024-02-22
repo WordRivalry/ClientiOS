@@ -18,7 +18,6 @@ struct IntroView: View {
         ZStack {
             bubble
         }
-        .background(Color.primary)
         .ignoresSafeArea()
         .onAppear {
             intros = [
