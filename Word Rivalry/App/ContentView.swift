@@ -15,13 +15,11 @@ enum AppState {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var profile: ProfileService
-    
     // Handle the entire color scheme of the app
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     
     // Handle app current displayed View
-    @State private var contentViewState: AppState = .home
+    @State private var contentViewState: AppState = .intro
     @State private var appScreen: AppScreen? = .home
     
     init() {
@@ -36,7 +34,7 @@ struct ContentView: View {
                     IntroView(onFinished: {
                         Task {
                             /// If no profil, show profil creation window
-                            let profileExists = try await profile.exist()
+                            let profileExists = try await ProfileService.shared.exist()
                             contentViewState = profileExists ? .home : .profileCreation
                         }
                     })
@@ -91,9 +89,6 @@ struct InternetConnectionRequiredView: View {
     }
 }
 
-
-
 #Preview {
     ContentView()
-        .environmentObject(ProfileService())
 }

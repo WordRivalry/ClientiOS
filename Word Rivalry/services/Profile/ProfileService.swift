@@ -9,13 +9,14 @@ import Foundation
 import CloudKit
 
 @Observable class ProfileService: ObservableObject {
+    static let shared = ProfileService()
     
     private let cloudKitService: CloudKitService
     private var cachedUsername: String?
     private var cachedUUID: String?
     
-    init(cloudKitService: CloudKitService = CloudKitService()) {
-        self.cloudKitService = cloudKitService
+    private init() {
+        self.cloudKitService = CloudKitService()
     }
     
     func loadProfile() async throws {

@@ -21,35 +21,47 @@ struct BoardView<T>: View where T: Hashable {
     
     var body: some View {
         GeometryReader { geometry in
-            // Determine the maximum size the board can take
-            let maxWidth =  max(1, geometry.size.width - 25)  // Adjust padding as needed
-            let maxHeight = max(1, geometry.size.height - 25) // Adjust padding as needed
-            let boardSize = min(maxWidth, maxHeight)
-            
-            let cellSize = boardSize / CGFloat(max(viewModel.cols, viewModel.rows))
-            
-            let tolerance: CGFloat = cellSize * 0.5 // Adjusted tolerance for swipe detection
-            
-            VStack {
-                ForEach(0..<viewModel.rows, id: \.self) { row in
-                    HStack {
-                        ForEach(0..<viewModel.cols, id: \.self) { col in
-                            cellContent(viewModel.getCell(row, col), row, col)
-                                .frame(width: cellSize, height: cellSize)
-                                .background(viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col)) ? Color.gray.opacity(0.5) : Color.clear)
-                                .cornerRadius(5) // Optional: Adds rounded corners for cell appearance
-                        }
+              VStack {
+                  Spacer()
+                  HStack {
+                      Spacer()
+                      boardView(geometry: geometry)
+                      Spacer()
+                  }
+                  Spacer()
+              }
+          }
+    }
+    
+    private func boardView(geometry: GeometryProxy) -> some View {
+        // Determine the maximum size the board can take
+        let maxWidth =  max(1, geometry.size.width - 25)  // Adjust padding as needed
+        let maxHeight = max(1, geometry.size.height - 25) // Adjust padding as needed
+        let boardSize = min(maxWidth, maxHeight)
+        
+        let cellSize = boardSize / CGFloat(max(viewModel.cols, viewModel.rows))
+        
+        let tolerance: CGFloat = cellSize * 0.5 // Adjusted tolerance for swipe detection
+        
+        return VStack {
+            ForEach(0..<viewModel.rows, id: \.self) { row in
+                HStack {
+                    ForEach(0..<viewModel.cols, id: \.self) { col in
+                        cellContent(viewModel.getCell(row, col), row, col)
+                            .frame(width: cellSize, height: cellSize)
+                            .background(viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col)) ? Color.gray.opacity(0.5) : Color.clear)
+                            .cornerRadius(5) // Optional: Adds rounded corners for cell appearance
                     }
                 }
             }
-            .gesture(
-                combinedGesture(cellSize: cellSize, tolerance: tolerance)
-            )
-            .frame(width: boardSize, height: boardSize) // Constrain the VStack to fit within the screen
-            .aspectRatio(1, contentMode: .fit)
-            .padding()
         }
+        .gesture(
+            combinedGesture(cellSize: cellSize, tolerance: tolerance)
+        )
+        .frame(width: boardSize, height: boardSize) // Constrain the VStack to fit within the screen
+        .aspectRatio(1, contentMode: .fit)
     }
+
     
     private func combinedGesture(cellSize: CGFloat, tolerance: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)

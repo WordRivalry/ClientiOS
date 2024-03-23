@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		564549552B92195C002A289C /* RankedGameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564549542B92195C002A289C /* RankedGameCardView.swift */; };
+		5645495E2B923955002A289C /* RankedGameTournamentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5645495D2B923955002A289C /* RankedGameTournamentView.swift */; };
+		564549602B9362A1002A289C /* MatchedGeometryExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5645495F2B9362A1002A289C /* MatchedGeometryExampleView.swift */; };
+		56466F6F2BAB31B20008C985 /* SearchingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F6E2BAB31B20008C985 /* SearchingView.swift */; };
+		56466F712BAB324B0008C985 /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F702BAB324B0008C985 /* LobbyView.swift */; };
+		56466F732BAB328B0008C985 /* CountdownOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F722BAB328B0008C985 /* CountdownOverlayView.swift */; };
+		56466F752BAB33020008C985 /* AnimatedLinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F742BAB33020008C985 /* AnimatedLinesView.swift */; };
+		56466F772BAB33270008C985 /* PulsatingCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F762BAB33270008C985 /* PulsatingCircleView.swift */; };
+		56466F792BAB33890008C985 /* GameResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F782BAB33890008C985 /* GameResultsView.swift */; };
+		56466F7C2BAB39790008C985 /* FloatingCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F7B2BAB39790008C985 /* FloatingCirclesView.swift */; };
+		56466F7E2BAB39A30008C985 /* PlayerInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F7D2BAB39A30008C985 /* PlayerInfoView.swift */; };
+		56466F802BAB39DE0008C985 /* BlinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F7F2BAB39DE0008C985 /* BlinkingTextView.swift */; };
+		56466F822BAC89480008C985 /* WebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F812BAC89480008C985 /* WebSocketManager.swift */; };
+		56466F842BAC8A260008C985 /* WebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56466F832BAC8A260008C985 /* WebSocketService.swift */; };
 		5652D50A2B6814EA0071AE08 /* Word_RivalryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5652D5092B6814EA0071AE08 /* Word_RivalryApp.swift */; };
 		5652D50C2B6814EA0071AE08 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5652D50B2B6814EA0071AE08 /* ContentView.swift */; };
 		5652D5102B6814EC0071AE08 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5652D50F2B6814EC0071AE08 /* Assets.xcassets */; };
@@ -53,13 +67,11 @@
 		566F14CF2B6CD7B70069F06D /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14CE2B6CD7B70069F06D /* StatisticsView.swift */; };
 		566F14D12B6CD97B0069F06D /* FriendsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14D02B6CD97B0069F06D /* FriendsListView.swift */; };
 		566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14D72B6CE7460069F06D /* GlassModifier.swift */; };
-		567172F92B6EB66F0009607D /* RankedMarchmakingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */; };
-		567172FB2B6EC6F60009607D /* RankedMatchmakingStatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */; };
+		567172F92B6EB66F0009607D /* RankedGamesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172F82B6EB66F0009607D /* RankedGamesModel.swift */; };
 		567172FD2B6F54320009607D /* FullScreenCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FC2B6F54320009607D /* FullScreenCoverView.swift */; };
 		567173002B6F56E90009607D /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567172FF2B6F56E90009607D /* SearchModel.swift */; };
-		567173022B6F61A10009607D /* MatchmakingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567173012B6F61A10009607D /* MatchmakingAPIService.swift */; };
 		567173052B70CBAE0009607D /* BattleServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567173042B70CBAE0009607D /* BattleServerService.swift */; };
-		567300B92B6D0047005D79F2 /* RankedMatchmakingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */; };
+		567300B92B6D0047005D79F2 /* RankedGamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300B82B6D0047005D79F2 /* RankedGamesView.swift */; };
 		567300BB2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */; };
 		567300C02B6D01F3005D79F2 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BD2B6D01F3005D79F2 /* Board.swift */; };
 		567300C12B6D01F3005D79F2 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300BE2B6D01F3005D79F2 /* BoardView.swift */; };
@@ -94,6 +106,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		564549542B92195C002A289C /* RankedGameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedGameCardView.swift; sourceTree = "<group>"; };
+		5645495D2B923955002A289C /* RankedGameTournamentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedGameTournamentView.swift; sourceTree = "<group>"; };
+		5645495F2B9362A1002A289C /* MatchedGeometryExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchedGeometryExampleView.swift; sourceTree = "<group>"; };
+		56466F6E2BAB31B20008C985 /* SearchingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchingView.swift; sourceTree = "<group>"; };
+		56466F702BAB324B0008C985 /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
+		56466F722BAB328B0008C985 /* CountdownOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayView.swift; sourceTree = "<group>"; };
+		56466F742BAB33020008C985 /* AnimatedLinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedLinesView.swift; sourceTree = "<group>"; };
+		56466F762BAB33270008C985 /* PulsatingCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingCircleView.swift; sourceTree = "<group>"; };
+		56466F782BAB33890008C985 /* GameResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameResultsView.swift; sourceTree = "<group>"; };
+		56466F7B2BAB39790008C985 /* FloatingCirclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingCirclesView.swift; sourceTree = "<group>"; };
+		56466F7D2BAB39A30008C985 /* PlayerInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInfoView.swift; sourceTree = "<group>"; };
+		56466F7F2BAB39DE0008C985 /* BlinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkingTextView.swift; sourceTree = "<group>"; };
+		56466F812BAC89480008C985 /* WebSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManager.swift; sourceTree = "<group>"; };
+		56466F832BAC8A260008C985 /* WebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketService.swift; sourceTree = "<group>"; };
 		5652D5062B6814EA0071AE08 /* Word Rivalry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Word Rivalry.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5652D5092B6814EA0071AE08 /* Word_RivalryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word_RivalryApp.swift; sourceTree = "<group>"; };
 		5652D50B2B6814EA0071AE08 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -145,13 +171,11 @@
 		566F14CE2B6CD7B70069F06D /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		566F14D02B6CD97B0069F06D /* FriendsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListView.swift; sourceTree = "<group>"; };
 		566F14D72B6CE7460069F06D /* GlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassModifier.swift; sourceTree = "<group>"; };
-		567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMarchmakingModel.swift; sourceTree = "<group>"; };
-		567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMatchmakingStatsService.swift; sourceTree = "<group>"; };
+		567172F82B6EB66F0009607D /* RankedGamesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedGamesModel.swift; sourceTree = "<group>"; };
 		567172FC2B6F54320009607D /* FullScreenCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenCoverView.swift; sourceTree = "<group>"; };
 		567172FF2B6F56E90009607D /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
-		567173012B6F61A10009607D /* MatchmakingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchmakingAPIService.swift; sourceTree = "<group>"; };
 		567173042B70CBAE0009607D /* BattleServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattleServerService.swift; sourceTree = "<group>"; };
-		567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedMatchmakingView.swift; sourceTree = "<group>"; };
+		567300B82B6D0047005D79F2 /* RankedGamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankedGamesView.swift; sourceTree = "<group>"; };
 		567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayVsFriendMatchmakingView.swift; sourceTree = "<group>"; };
 		567300BD2B6D01F3005D79F2 /* Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 		567300BE2B6D01F3005D79F2 /* BoardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
@@ -193,6 +217,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		564549502B9216E3002A289C /* RankedGames */ = {
+			isa = PBXGroup;
+			children = (
+				5645495D2B923955002A289C /* RankedGameTournamentView.swift */,
+				564549542B92195C002A289C /* RankedGameCardView.swift */,
+				567172F82B6EB66F0009607D /* RankedGamesModel.swift */,
+				567300B82B6D0047005D79F2 /* RankedGamesView.swift */,
+				567172F72B6EB63F0009607D /* rankedMatchmaking */,
+				5645495F2B9362A1002A289C /* MatchedGeometryExampleView.swift */,
+			);
+			path = RankedGames;
+			sourceTree = "<group>";
+		};
+		56466F7A2BAB39470008C985 /* lobbyView */ = {
+			isa = PBXGroup;
+			children = (
+				56466F702BAB324B0008C985 /* LobbyView.swift */,
+				56466F7B2BAB39790008C985 /* FloatingCirclesView.swift */,
+				56466F7D2BAB39A30008C985 /* PlayerInfoView.swift */,
+				56466F7F2BAB39DE0008C985 /* BlinkingTextView.swift */,
+			);
+			path = lobbyView;
+			sourceTree = "<group>";
+		};
 		5652D4FD2B6814EA0071AE08 = {
 			isa = PBXGroup;
 			children = (
@@ -280,6 +328,8 @@
 				5652D5402B68E7800071AE08 /* NetworkUtility.swift */,
 				566F14AD2B6A22CF0069F06D /* ThemeService.swift */,
 				56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */,
+				56466F812BAC89480008C985 /* WebSocketManager.swift */,
+				56466F832BAC8A260008C985 /* WebSocketService.swift */,
 			);
 			path = services;
 			sourceTree = "<group>";
@@ -297,6 +347,8 @@
 			children = (
 				565E14FB2B8726B500AD7292 /* AnimatedCirclesViewModel.swift */,
 				565E14FD2B8726D000AD7292 /* AnimatedCirclesView.swift */,
+				56466F742BAB33020008C985 /* AnimatedLinesView.swift */,
+				56466F762BAB33270008C985 /* PulsatingCircleView.swift */,
 			);
 			path = SearchAnimation;
 			sourceTree = "<group>";
@@ -368,7 +420,7 @@
 		566F14C22B6C4C190069F06D /* Play */ = {
 			isa = PBXGroup;
 			children = (
-				567172F72B6EB63F0009607D /* rankedMatchmaking */,
+				564549502B9216E3002A289C /* RankedGames */,
 				567300D02B6D7765005D79F2 /* baseGame */,
 				566F14C62B6C4C720069F06D /* PlayNavigationStack.swift */,
 				567300BA2B6D006A005D79F2 /* PlayVsFriendMatchmakingView.swift */,
@@ -388,9 +440,6 @@
 			isa = PBXGroup;
 			children = (
 				567172FE2B6F569F0009607D /* Fs */,
-				567300B82B6D0047005D79F2 /* RankedMatchmakingView.swift */,
-				567172F82B6EB66F0009607D /* RankedMarchmakingModel.swift */,
-				567172FA2B6EC6F60009607D /* RankedMatchmakingStatsService.swift */,
 			);
 			path = rankedMatchmaking;
 			sourceTree = "<group>";
@@ -398,10 +447,13 @@
 		567172FE2B6F569F0009607D /* Fs */ = {
 			isa = PBXGroup;
 			children = (
+				56466F7A2BAB39470008C985 /* lobbyView */,
 				565E14FA2B87269F00AD7292 /* SearchAnimation */,
 				567172FC2B6F54320009607D /* FullScreenCoverView.swift */,
 				567172FF2B6F56E90009607D /* SearchModel.swift */,
-				567173012B6F61A10009607D /* MatchmakingAPIService.swift */,
+				56466F6E2BAB31B20008C985 /* SearchingView.swift */,
+				56466F722BAB328B0008C985 /* CountdownOverlayView.swift */,
+				56466F782BAB33890008C985 /* GameResultsView.swift */,
 			);
 			path = Fs;
 			sourceTree = "<group>";
@@ -587,7 +639,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				564549602B9362A1002A289C /* MatchedGeometryExampleView.swift in Sources */,
 				566F14CB2B6CD6570069F06D /* LeaderboardView.swift in Sources */,
+				564549552B92195C002A289C /* RankedGameCardView.swift in Sources */,
 				5652D53A2B68DCAF0071AE08 /* CloudKitService.swift in Sources */,
 				567173052B70CBAE0009607D /* BattleServerService.swift in Sources */,
 				566F14A22B6A21370069F06D /* SoundEffectManageable.swift in Sources */,
@@ -595,6 +649,7 @@
 				5652D5412B68E7800071AE08 /* NetworkUtility.swift in Sources */,
 				566F14A52B6A21370069F06D /* AudioService.swift in Sources */,
 				566F14842B6A0FAA0069F06D /* ProfileCreationView.swift in Sources */,
+				56466F6F2BAB31B20008C985 /* SearchingView.swift in Sources */,
 				566F14A42B6A21370069F06D /* SoundEffectsManager.swift in Sources */,
 				567300C82B6D05A8005D79F2 /* GameModel.swift in Sources */,
 				566F149D2B6A21370069F06D /* MusicLibrary.swift in Sources */,
@@ -602,22 +657,24 @@
 				566F14B72B6C00160069F06D /* ProfileView.swift in Sources */,
 				566F149C2B6A21370069F06D /* AudioSessionService.swift in Sources */,
 				566F148A2B6A20C00069F06D /* ServiceLocator.swift in Sources */,
-				567172FB2B6EC6F60009607D /* RankedMatchmakingStatsService.swift in Sources */,
 				566F14BD2B6C495B0069F06D /* PlayView.swift in Sources */,
 				566F14C72B6C4C720069F06D /* PlayNavigationStack.swift in Sources */,
 				566F14CF2B6CD7B70069F06D /* StatisticsView.swift in Sources */,
-				567172F92B6EB66F0009607D /* RankedMarchmakingModel.swift in Sources */,
+				567172F92B6EB66F0009607D /* RankedGamesModel.swift in Sources */,
 				566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */,
 				5652D50C2B6814EA0071AE08 /* ContentView.swift in Sources */,
 				566F149F2B6A21370069F06D /* MusicPlayer.swift in Sources */,
+				56466F842BAC8A260008C985 /* WebSocketService.swift in Sources */,
 				566F14BB2B6C00330069F06D /* MatchmakingView.swift in Sources */,
 				566F14C02B6C4AEA0069F06D /* AppScreen.swift in Sources */,
 				5652D50A2B6814EA0071AE08 /* Word_RivalryApp.swift in Sources */,
+				56466F822BAC89480008C985 /* WebSocketManager.swift in Sources */,
 				566F149B2B6A21370069F06D /* MusicManager.swift in Sources */,
+				56466F752BAB33020008C985 /* AnimatedLinesView.swift in Sources */,
 				56C1D0C92B85BDCD005D223F /* UserDefaultsManager.swift in Sources */,
 				566F14CD2B6CD7560069F06D /* BasicNavButton.swift in Sources */,
-				567173022B6F61A10009607D /* MatchmakingAPIService.swift in Sources */,
 				567300C22B6D01F3005D79F2 /* BoardViewModel.swift in Sources */,
+				56466F7E2BAB39A30008C985 /* PlayerInfoView.swift in Sources */,
 				565E14F92B8720B400AD7292 /* BasicButton.swift in Sources */,
 				566F14882B6A207F0069F06D /* AppService.swift in Sources */,
 				566F14862B6A1F590069F06D /* IntroView.swift in Sources */,
@@ -633,17 +690,24 @@
 				566F14A32B6A21370069F06D /* Playlist.swift in Sources */,
 				567300C42B6D03A6005D79F2 /* LetterBoardView.swift in Sources */,
 				56C1D0CB2B86B441005D223F /* ColorSchemeManager.swift in Sources */,
+				56466F712BAB324B0008C985 /* LobbyView.swift in Sources */,
 				567300CD2B6D730E005D79F2 /* WordChecker.swift in Sources */,
 				567300C02B6D01F3005D79F2 /* Board.swift in Sources */,
 				566F14A02B6A21370069F06D /* AudioPlayable.swift in Sources */,
+				56466F772BAB33270008C985 /* PulsatingCircleView.swift in Sources */,
+				56466F732BAB328B0008C985 /* CountdownOverlayView.swift in Sources */,
+				56466F802BAB39DE0008C985 /* BlinkingTextView.swift in Sources */,
 				567300CB2B6D72F5005D79F2 /* TrieNode.swift in Sources */,
 				566F147D2B6A063B0069F06D /* ProfileRecord.swift in Sources */,
+				56466F7C2BAB39790008C985 /* FloatingCirclesView.swift in Sources */,
 				566F14A12B6A21370069F06D /* SoundEffect.swift in Sources */,
 				566F14C92B6C50890069F06D /* AppTabView.swift in Sources */,
 				565E14F72B871EB000AD7292 /* ProfileNavigationStack.swift in Sources */,
 				567300C12B6D01F3005D79F2 /* BoardView.swift in Sources */,
+				5645495E2B923955002A289C /* RankedGameTournamentView.swift in Sources */,
 				567300C62B6D0452005D79F2 /* LetterCellView.swift in Sources */,
-				567300B92B6D0047005D79F2 /* RankedMatchmakingView.swift in Sources */,
+				567300B92B6D0047005D79F2 /* RankedGamesView.swift in Sources */,
+				56466F792BAB33890008C985 /* GameResultsView.swift in Sources */,
 				567300D42B6DE07A005D79F2 /* GameView.swift in Sources */,
 				567172FD2B6F54320009607D /* FullScreenCoverView.swift in Sources */,
 				566F14B92B6C00200069F06D /* SettingsView.swift in Sources */,

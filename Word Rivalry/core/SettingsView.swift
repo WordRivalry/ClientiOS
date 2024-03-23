@@ -29,6 +29,7 @@ struct SettingsView: View {
                     .pickerStyle(.navigationLink)
                     .listRowSeparator(.hidden)
                 }
+                
                 Section {
                     NavigationLink(destination: TermsOfServiceView()) {
                         Text("Terms of Service")

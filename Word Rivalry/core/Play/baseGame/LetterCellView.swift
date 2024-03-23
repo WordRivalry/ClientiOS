@@ -20,9 +20,8 @@ struct LetterCellView: View {
             .overlay(
                 Text(letter)
                     .font(.title)
-                    .foregroundColor(isHighlighted ? .white : .black) // Ensure text color contrasts with the background
+                    .foregroundColor(isHighlighted ? .white : .black)
             )
-            .padding(2)
     }
 }
 

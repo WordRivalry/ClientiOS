@@ -30,7 +30,7 @@ struct GameView: View {
                 Text("Score: \(gameModel.currentScore)")
                 Text("Path Score: \(gameModel.currentPathScore)")
                 Text("Message: \(gameModel.message)")
-                Text("Opponent recent score: \(gameModel.opponentRecentScore)")
+                Text("Opponent recent score: \(gameModel.opponentScore)")
                 
                 switch gameModel.gameStatus {
                 case .notStarted:
@@ -47,6 +47,7 @@ struct GameView: View {
             
             LetterBoardView(viewModel: gameModel)
                 .cornerRadius(10)
+                .scaleEffect(0.8)
             
             Button {
                 showingQuitAlert = true

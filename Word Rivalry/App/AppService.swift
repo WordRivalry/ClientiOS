@@ -22,16 +22,10 @@ final class AppService: ObservableObject {
         Task {
             // Load Profile
             do {
-                try await self.services.profileService.loadProfile()
+                try await ProfileService.shared.loadProfile()
             } catch {
                 print("Profile not loaded")
             }
-            
-            // Inject Profile service into matchmaking service
-            MatchmakingService.shared.setProfileService(self.services.profileService)
-            
-            // Inject Profile service into Battle service
-            BattleServerService.shared.setProfileService(self.services.profileService)
             
             // Load Wordchecker
             WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")

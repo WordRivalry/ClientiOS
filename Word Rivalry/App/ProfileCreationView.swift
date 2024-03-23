@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProfileCreationView: View {
-    @EnvironmentObject var profile: ProfileService
     var onProfileCreated: () -> Void
     @State private var usernameTextField: String = ""
     @State private var errorMessage: String? = nil
@@ -57,7 +56,7 @@ struct ProfileCreationView: View {
     private func createProfile() async {
         do {
             // Attempt to create the profile
-            _ = try await profile.createProfile(username: usernameTextField)
+            _ = try await ProfileService.shared.createProfile(username: usernameTextField)
             
             // Callback
             onProfileCreated()
@@ -69,5 +68,4 @@ struct ProfileCreationView: View {
 
 #Preview {
     ProfileCreationView(onProfileCreated: {})
-        .environmentObject(ProfileService())
 }

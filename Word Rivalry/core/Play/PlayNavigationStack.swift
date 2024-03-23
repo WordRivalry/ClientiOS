@@ -7,41 +7,20 @@
 
 import SwiftUI
 
-//struct PlayNavigationStack: View {
-//    // Simulated data for countdown timer to next tournament
-//    let nextTournament = Calendar.current.date(byAdding: .hour, value: 3, to: Date()) ?? Date()
-//    
-//    var body: some View {
-//        NavigationStack {
-//            VStack(spacing: 20) {
-//                BasicNavButton(text: "Rank ", destination: RankedMatchmakingView())
-//                BasicNavButton(text: "Quick Duel", destination: RankedMatchmakingView())
-//                BasicNavButton(text: "Custom", destination:PlayVsFriendMatchmakingView())
-//                BasicNavButton (text: "Heroic Challenges", destination: DailiesView())
-//            }
-//            .navigationTitle("Play")
-//            .navigationBarTitleDisplayMode(.large)
-//            .padding()
-//        }
-//    }
-//}
-
 enum PlayTab {
-    case pvp, solo, training, custom
+    case Multiplayer, SoloAdventures
 }
 
 struct PlayNavigationStack: View {
-    @State private var selectedTab: PlayTab = .pvp
+    @State private var selectedTab: PlayTab = .Multiplayer
 
     var body: some View {
         NavigationStack {
             VStack {
                 // Tabs for selection
                 Picker("Select", selection: $selectedTab) {
-                    Text("PVP").tag(PlayTab.pvp)
-                    Text("Solo").tag(PlayTab.solo)
-                    Text("Training").tag(PlayTab.training)
-                    Text("Custom").tag(PlayTab.custom)
+                    Text("Multiplayer").tag(PlayTab.Multiplayer)
+                    Text("Solo Adventures").tag(PlayTab.SoloAdventures)
                 }
                 .pickerStyle(.palette)
                 .padding()
@@ -50,21 +29,14 @@ struct PlayNavigationStack: View {
 
                 // Content based on selection
                 switch selectedTab {
-                case .pvp:
+                case .Multiplayer:
                     VStack(spacing: 20) {
-                        BasicNavButton(text: "Rank", destination: RankedMatchmakingView())
-                        BasicNavButton(text: "Quick Duel", destination: RankedMatchmakingView())
+                        BasicNavButton(text: "Rank", destination: RankedGamesView())
+                        BasicNavButton(text: "Quick Duel", destination: RankedGamesView())
                     }
-                case .solo:
+                case .SoloAdventures:
                     BasicNavButton(text: "Heroic Challenges", destination: DailiesView())
-                case .training:
-                    // TrainingPageView() // Implement your training view
-                    Text("Training Page Content")
-                case .custom:
-                    // CreateCustomPageView() // Implement your create custom view
-                    Text("Create Custom Page Content")
                 }
-                
                 Spacer()
             }
             .navigationTitle("Play")

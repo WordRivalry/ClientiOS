@@ -15,41 +15,44 @@ struct GameInfo {
 }
 
 @Observable class SearchModel {
-    var process: GameProcess = .searching
+    var state: GameProcess = .searching
     var gameMode: GameMode = .RANK
     var modeType: ModeType = .NORMAL
     
-    // Game mode
+    // Game model
     var gameModel: GameModel
     
     // User info
-    var myUsername: String = MatchmakingService.shared.getUsername()
+    var myUsername: String
     
     // Delagate data
     var opponentUsername: String = ""
     var opponentElo: Int = 0
     var errorMessage: String?
-    var gameStartCountdown: Int = 0
+    var preGameCountdown: Int = 0
     
     init(modeType: ModeType) {
-        print("FS COVER model")
-        self.modeType = modeType
         
+        self.myUsername = ProfileService.shared.getUsername()
+      
+        // Instanciate game model
         switch modeType {
-            case .NORMAL:
-                self.gameModel = GameModel()
-            case .BLITZ:
-                self.gameModel = GameModel()
-            
-            self.gameModel.onGameEnded = { [weak self] in
-                DispatchQueue.main.async {
-                    self?.process = .gameEnded
-                }
+        case .NORMAL:
+            self.gameModel = GameModel()
+        case .BLITZ:
+            self.gameModel = GameModel()
+        }
+        
+        self.gameModel.onGameEnded = { [weak self] in
+            DispatchQueue.main.async {
+                self?.state = .gameResult
             }
         }
         
+        self.modeType = modeType
         MatchmakingService.shared.setMatchmakingDelegate_onMatchFound(self)
         BattleServerService.shared.setMatchmakingDelegate(self)
+    
     }
 }
 
@@ -68,13 +71,13 @@ extension SearchModel: MatchmakingDelegate_onMatchFound {
             print("Match Found")
             self.opponentUsername = opponentUsername
             self.opponentElo = opponentElo
+            self.gameModel.setOpponentName(playerName: opponentUsername)
             withAnimation(.easeInOut) {
-                self.process = .lobby
+                self.state = .lobby
             }
-            
+       
             // Start the connection
             BattleServerService.shared.connect(gameSessionUUID: gameSessionUUID)
-            BattleServerService.shared.joinGameSession()
         }
     }
 }
@@ -82,11 +85,11 @@ extension SearchModel: MatchmakingDelegate_onMatchFound {
 extension SearchModel: BattleServerDelegate_GameStartCountdown {
     func didReceivePreGameCountDown(countdown: Int) {
         
-        self.gameStartCountdown = countdown
+        self.preGameCountdown = countdown
         
         if (countdown <= 1 ) {
             withAnimation(.easeInOut) {
-                self.process = .inGame
+                self.state = .inGame
             }
         }
     }

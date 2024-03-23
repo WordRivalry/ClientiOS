@@ -57,69 +57,39 @@ struct MatchFoundMessage: Codable {
 }
 
 // Enums
-enum ModeType: String, CaseIterable {
+enum ModeType: String, CaseIterable, Codable {
     case NORMAL = "NORMAL"
     case BLITZ = "BLITZ"
 }
 
-enum GameMode: String, CaseIterable {
+enum GameMode: String, CaseIterable, Codable {
     case RANK = "RANK"
     case QUICK_DUEL = "QUICK_DUEL"
 }
 
-enum MatchmakingMessage: String {
-    // Sent
-    case JOIN_QUEUE = "JOIN_QUEUE"
-    case LEAVE_QUEUE = "LEAVE_QUEUE"
-    
-    // Received
-    case JOIN_QUEUE_SUCCESS = "JOIN_QUEUE_SUCCESS"
-    case JOIN_QUEUE_FAILURE = "JOIN_QUEUE_FAILURE"
-    case MATCH_FOUND = "MATCH_FOUND"
-}
-
-enum MessageError: Error {
-    case compositionFailed
-}
-
-class MatchmakingService: NSObject {
+class MatchmakingService: WebSocketService {
     static let shared = MatchmakingService()
     var webSocketTask: URLSessionWebSocketTask?
     var matchmakingDelegate: MatchmakingDelegate_onMatchFound?
     var matcMatchmakingDelegate_Searching: MatcMatchmakingDelegate_onSearch?
-    var profileService: ProfileService?
     
     private override init() {
         super.init()
     }
-
-    func connect() {
-        guard let url = URL(string: "wss://matchmakingserver-dtyigx66oa-nn.a.run.app") else {
-            matcMatchmakingDelegate_Searching?.didNotConnect()
-            return
-        }
-        
-        guard let profile = self.profileService else {
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.addValue("4a7524be-0020-42c3-a259-cdc7208c5c7d", forHTTPHeaderField: "x-api-key")
-        request.addValue(profile.getUUID(), forHTTPHeaderField: "x-player-uuid")
-        request.addValue(profile.getUsername(), forHTTPHeaderField: "x-player-username")
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-        webSocketTask = session.webSocketTask(with: request)
-        webSocketTask?.resume()
-        listen()
-        print("Connected to matchmaking server")
-    }
     
-    func getUsername() -> String {
-        return (self.profileService?.getUsername())!
-    }
-    
-    func setProfileService(_ profileService: ProfileService) {
-        self.profileService = profileService
+    func connect() throws {
+        guard let url = URL(string: "wss://matchmakingserver-dtyigx66oa-nn.a.run.app") else { return }
+        
+        let playerUUID = try UserDefaultsManager.shared.getUserUUID()
+        let playerName = try UserDefaultsManager.shared.getUsername()
+        
+        let headers = [
+            "x-api-key": "4a7524be-0020-42c3-a259-cdc7208c5c7d",
+            "x-player-uuid": playerUUID,
+            "x-player-name": playerName
+        ]
+        
+        super.connect(url: url, headers: headers)
     }
     
     func setMatchmakingDelegate_onMatchFound(_ delegate :MatchmakingDelegate_onMatchFound) {
@@ -130,61 +100,63 @@ class MatchmakingService: NSObject {
         self.matcMatchmakingDelegate_Searching = delegate
     }
     
-    func listen() {
-         webSocketTask?.receive { [weak self] result in
-             switch result {
-             case .failure(let error):
-                 print("Error in receiving message: \(error)")
-             case .success(let message):
-                 switch message {
-                 case .string(let text):
-                     self?.handleMessage(text)
-                 default:
-                     print("Received data message, which is not handled")
-                 }
-                 
-                 // Keep listening for the next message
-                 self?.listen()
-             }
-         }
-     }
+    enum MatchmakingMessageReceived: String, Codable {
+        case CONNECTION_SUCCESS = "CONNECTION_SUCCESS"
+        case JOIN_QUEUE_SUCCESS = "JOIN_QUEUE_SUCCESS"
+        case JOIN_QUEUE_FAILURE = "JOIN_QUEUE_FAILURE"
+        case LEFT_QUEUE_SUCCESS = "LEFT_QUEUE_SUCCESS"
+        case MATCH_FOUND = "MATCH_FOUND"
+      
+    }
     
-    func handleMessage(_ text: String) {
+    override func handleTextMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else {
             print("Failed to convert string to data.")
             return
         }
-
-        guard let basicMessage = try? JSONDecoder().decode(BasicMessage.self, from: data) else {
-            print("Failed to parse message or unknown message type.")
-            return
+        
+        print("\n \(data)")
+        
+        struct WrappedType: Codable {
+            let type: MatchmakingMessageReceived
         }
         
-        switch basicMessage.type {
-            case MatchmakingMessage.JOIN_QUEUE_SUCCESS.rawValue:
+        do {
+            let messageTypeWrapper = try JSONDecoder().decode(WrappedType.self, from: data)
+            let messageType = messageTypeWrapper.type
+            
+            print("message type : \(messageType)")
+            
+            switch messageType {
+            case .CONNECTION_SUCCESS:
+                print("Connection success to matchmaking server")
+            case .JOIN_QUEUE_SUCCESS:
                 if let decodedMessage = try? JSONDecoder().decode(JoinQueueSuccessMessage.self, from: data) {
                     handleJoinQueueSuccess(decodedMessage)
                 }
-            case MatchmakingMessage.JOIN_QUEUE_FAILURE.rawValue:
+            case .JOIN_QUEUE_FAILURE:
                 if let decodedMessage = try? JSONDecoder().decode(JoinQueueFailureMessage.self, from: data) {
                     handleJoinQueueFailure(decodedMessage)
                 }
-            case MatchmakingMessage.MATCH_FOUND.rawValue:
+            case .MATCH_FOUND:
                 if let decodedMessage = try? JSONDecoder().decode(MatchFoundMessage.self, from: data) {
                     handleMatchFound(decodedMessage)
                 }
-            default:
-                print("Unhandled message type: \(basicMessage.type)")
+            case .LEFT_QUEUE_SUCCESS:
+                print("Left queue")
+            }
+        } catch {
+            print("Failed to parse message type: \(error)")
+            return
         }
     }
-    
+}
+
+
+
+// MARK: - Message received
+extension MatchmakingService {
     func handleJoinQueueSuccess(_ message: JoinQueueSuccessMessage) {
-        // Access the position from the message payload
-//        let positionInQueue = message.payload.position
-
-        // Update the application state or UI with this information
-//        print("Successfully joined the queue. Position: \(positionInQueue)")
-
         print("JoinedQueue")
         
         // Notify the delegate
@@ -222,73 +194,44 @@ class MatchmakingService: NSObject {
             opponentUsername: opponentUsername,
             opponentElo: opponentElo
         )
+        
+        self.disconnect()
     }
-
 }
 
+
+// MARK: - Message Sent
 extension MatchmakingService {
-    /// Sends a message to start the matchmaking process.
-    /// - Parameters:
-    ///   - gameMode: The game mode for matchmaking.
-    ///   - modeType: The mode type for matchmaking.
-    /// - Throws: `MessageError.compositionFailed` if message composition fails.
+    
+    enum MatchmakingMessageSend: String, Codable  {
+        case JOIN_QUEUE = "JOIN_QUEUE"
+        case LEAVE_QUEUE = "LEAVE_QUEUE"
+    }
+    
+    struct JoinQueueRequest: Codable {
+        var type: MatchmakingMessageSend = .JOIN_QUEUE
+        let payload: Payload
+        
+        struct Payload: Codable {
+            let gameMode: GameMode
+            let modeType: ModeType
+            let elo: Int
+        }
+    }
+    
+    struct LeaveQueueRequest: Codable {
+        var type: MatchmakingMessageSend = .LEAVE_QUEUE
+    }
+    
     func findMatch(gameMode: GameMode, modeType: ModeType) throws {
-        let message = try composeMessage(
-            type: MatchmakingMessage.JOIN_QUEUE.rawValue,
-            payload: ["gameMode": gameMode.rawValue, "modeType": modeType.rawValue, "elo": 1000]
-        )
-        send(message: message)
+        let payload = JoinQueueRequest.Payload(gameMode: gameMode, modeType: modeType, elo: 1000)
+        let message = JoinQueueRequest(payload: payload)
+        send(message)
     }
 
-    /// Sends a message to stop the matchmaking process.
-    /// - Throws: `MessageError.compositionFailed` if message composition fails.
     func stopFindMatch() throws {
-        let message = try composeMessage(type: MatchmakingMessage.LEAVE_QUEUE.rawValue)
-        send(message: message)
-    }
-    
-    /// Composes a message with optional payload.
-    /// - Parameters:
-    ///   - type: The type of message to be composed.
-    ///   - payload: An optional dictionary containing message payload.
-    /// - Returns: A stringified JSON representation of the message.
-    /// - Throws: `MessageError.compositionFailed` if unable to compose the message.
-    private func composeMessage(type: String, payload: [String: Any]? = nil) throws -> String {
-        var dict: [String: Any] = ["type": type]
-        
-        if let additionalData = payload {
-            dict["payload"] = additionalData
-        }
-        
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-            guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-                throw MessageError.compositionFailed
-            }
-            return jsonString
-        } catch {
-            throw error
-        }
-    }
-    
-    func send(message: String) {
-        webSocketTask?.send(.string(message)) { [weak self] error in
-            if let error = error {
-                print("Error in sending message: \(error)")
-                self?.matcMatchmakingDelegate_Searching?.didNotSendMessage()
-            }
-        }
+        let message = LeaveQueueRequest()
+        send(message)
+        self.disconnect()
     }
 }
-
-
-extension MatchmakingService: URLSessionWebSocketDelegate {
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        print("WebSocket did open")
-    }
-    
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        print("WebSocket did close")
-    }
-}
-

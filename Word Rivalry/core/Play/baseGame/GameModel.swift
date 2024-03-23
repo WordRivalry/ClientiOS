@@ -9,15 +9,15 @@ import Foundation
 import Combine
 
 // Assuming a structure to represent a letter's properties on the board
-struct LetterTile: Equatable, Hashable {
+struct LetterTile: Equatable, Hashable, Codable {
     let letter: String
-    let score: Int
+    let value: Int
     var letterMultiplier: Int
     var wordMultiplier: Int
     
-    init(letter: String, score: Int, letterMultiplier: Int = 1, wordMultiplier: Int = 1) {
+    init(letter: String, value: Int, letterMultiplier: Int = 1, wordMultiplier: Int = 1) {
         self.letter = letter
-        self.score = score
+        self.value = value
         self.letterMultiplier = letterMultiplier
         self.wordMultiplier = wordMultiplier
     }
@@ -35,10 +35,33 @@ enum GameStatus {
     case finished
 }
 
+struct GameResults {
+    private var winner: String?
+    private var scores: [PlayerResults]?
+ 
+    // Follow null pattern
+    init(winner: String, scores: [PlayerResults]) {
+        if (!winner.isEmpty) {
+            self.winner = winner
+        }
+        
+        if (!scores.isEmpty) {
+            self.scores = scores
+        }
+    }
+    
+    func getWinner() -> String {
+        guard let winner = self.winner else { fatalError("Winner is not defined") }
+    }
+    
+    func getScores() -> [PlayerResults] {
+        guard let scores = self.scores else { fatalError("Scores are not defined") }
+    }
+}
+
 @Observable class GameModel: BoardViewModel<LetterTile> {
     
     // MARK: OBSERVED PROPERTIES
-    
     var currentScore: Int = 0
     var currentPathScore: Int = 0
     var message: String = ""
@@ -48,10 +71,12 @@ enum GameStatus {
     
     // Delegate
     var timeLeft: String = ""
-    var roundNumber: Int = 0
     var gameDuration: Int = 0
-    var opponentUsername: String = ""
-    var opponentRecentScore: Int = 0
+    var opponentName: String = ""
+    var opponentScore: Int = 0
+    var gameResults: GameResults
+    var stats: GridStats
+    var valid_words: [String]
     
     @ObservationIgnored
     private var alreadyDoneWords: [String] = []
@@ -59,19 +84,28 @@ enum GameStatus {
     // MARK: INIT
     
     init() {
+        
+        self.gameResults = GameResults(winner: "", scores: [])
+        self.stats = GridStats(difficulty_rating: 0, diversity_rating: 0, total_words: 0)
+        self.valid_words = []
+        
         super.init(
             board: Board(
                 rows: 4,
                 cols: 4,
                 initialValue: LetterTile(
                     letter: "",
-                    score: 0,
+                    value: 0,
                     letterMultiplier: 1,
                     wordMultiplier: 1)
             )
         )
-        
+   
         setupDelegates()
+    }
+    
+    func setOpponentName(playerName: String) {
+        self.opponentName = playerName
     }
 
     
@@ -152,7 +186,7 @@ enum GameStatus {
         
         for position in path {
             let cell = board.getCell(position.0, position.1)
-            score += cell.score * cell.letterMultiplier
+            score += cell.value * cell.letterMultiplier
             if (cell.wordMultiplier > 1) {
                 wordMultipliers.append(cell.wordMultiplier)
             }
@@ -171,7 +205,6 @@ enum GameStatus {
     }
     
     // MARK: GAME FINISHED
-    
     func gameTimesUp() {
         gameStatus = .finished
         timeLeft = "Time's up!"
@@ -183,7 +216,6 @@ enum GameStatus {
 extension GameModel: Board_OnSwipe_Delegate {
     
     func onCellHoverEntered(_ cellIndex: CellIndex) {
-        
         let cellScore = scoreForTile(at: cellIndex)
         currentPathScore += cellScore
     }
@@ -219,7 +251,7 @@ extension GameModel: Board_OnSwipe_Delegate {
         print(cellIndex)
         
         let tile = board.getCell(cellIndex.i, cellIndex.j)
-        return tile.score * tile.letterMultiplier // You might also consider word multipliers here
+        return tile.value * tile.letterMultiplier // You might also consider word multipliers here
     }
     
 }
@@ -227,7 +259,6 @@ extension GameModel: Board_OnSwipe_Delegate {
 //MARK: TAP DELAGATE
 extension GameModel: Board_OnTap_Delegate {
     func onTapGesture(_ cellIndex: CellIndex) {
-        // Example implementation
         let tappedCell = getCell(cellIndex.i, cellIndex.j)
         // Process the tap on the cell, e.g., select the cell, start a word, etc.
         print("Tapped cell at \(cellIndex.i), \(cellIndex.j) with letter \(tappedCell.letter)")
@@ -244,64 +275,32 @@ extension GameModel {
 
 // MARK: WS DELEGATE
 extension GameModel: WebSocket_GameDelegate {
-    
-    func didReceiveRoundStart(roundNumber: Int, duration: Int, grid: [[LetterTile]]) {
+    func didReceiveGameInformation(duration: Int, grid: [[LetterTile]], valid_words: [String], stats: GridStats) {
         DispatchQueue.main.async {
-            self.roundNumber = roundNumber
             self.gameDuration = duration
             self.board = Board(grid: grid)
+            self.valid_words = valid_words
+            self.stats = stats
         }
     }
     
-    func didUpdateTime(_ remainingTime: Int) {
+    func didReceiveRemainingTime(_ remainingTime: Int) {
         DispatchQueue.main.async {
             self.timeLeft = String(remainingTime)
         }
     }
     
-    func didEndRound(round: Int, playerScore: Int, opponentScore: Int, winner: String) {
+    func didReceiveOpponentScore(_ score: Int) {
         DispatchQueue.main.async {
-            
-            if (self.gameStatus == .finished) { return }
-            
-            // Update the UI with round results
-            self.currentScore = playerScore
-            self.opponentRecentScore = opponentScore
-            self.message = "Round \(round) ended. Winner: \(winner)"
-            
-            // You might want to check if the game continues or if additional actions are needed
-            // For example, you could update the game status to a waiting state if there are more rounds
-            // Or you could trigger any UI updates necessary to reflect these changes
+            self.opponentScore = score
         }
     }
     
-    func didReceiveGameEnd(winners: [String], winnerStatus: String) {
-        DispatchQueue.main.async {
-            // Update the game status to finished
-            self.gameStatus = .finished
-            
-            // Update the message to show the winner(s)
-            let winnersStr = winners.joined(separator: ", ")
-            self.message = "Game ended. Winner(s): \(winnersStr) with status: \(winnerStatus)"
-            
-            self.onGameEnded?()
-            
-            // Here, you could also perform any necessary cleanup or setup for a new game
-            // This might include resetting the board, scores, and other properties
-        }
-    }
-    
-    
-    func didUpdateOpponentScore(_ score: Int) {
-        DispatchQueue.main.async {
-            self.opponentRecentScore = score
-        }
-    }
-    
-    
-    func didReceiveOpponentUsername(opponentUsername: String) {
-        DispatchQueue.main.async {
-            self.opponentUsername = opponentUsername
-        }
+    func didReceiveGameResult(winner: String, scores: [PlayerResults]) {
+        self.gameStatus = .finished
+        self.gameResults = GameResults(winner: winner, scores: scores)
+        self.message = "Game ended. Winner(s): \(winner)"
+        print("Game Has Ended ! - Game Result Received ! ")
+        self.onGameEnded!()
     }
 }

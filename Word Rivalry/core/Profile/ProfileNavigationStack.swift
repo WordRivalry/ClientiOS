@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProfileNavigationStack: View {
-    @EnvironmentObject var profileService: ProfileService
     @State private var username: String = ""
     @State private var showingFriendsList = false
     
@@ -55,7 +54,7 @@ struct ProfileNavigationStack: View {
                 }
             }
             .onAppear {
-               username = profileService.getUsername()
+                username = ProfileService.shared.getUsername()
             }
    
         }
@@ -65,7 +64,6 @@ struct ProfileNavigationStack: View {
 
 #Preview {
     HomeNavigationStack()
-        .environmentObject(ProfileService())
 }
 
 

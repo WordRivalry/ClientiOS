@@ -8,18 +8,19 @@
 import Foundation
 import SwiftUI
 
-@Observable class RankedMatchmakingModel: ObservableObject {
-    var gameStats: [String: (activePlayers: Int?, inQueue: Int?)] = [
-        ModeType.NORMAL.rawValue: (nil, nil),
-        ModeType.BLITZ.rawValue: (nil, nil),
-        ]
-    var isLoading: Bool = false
+@Observable class RankedGamesModel: ObservableObject {
     var showingCover = false
-    var errorMessage: String?
+    var errorMessage: String? {
+        didSet { // On change
+            // Check if it's non-nil to control the alert presentation
+            showErrorAlert = errorMessage != nil
+        }
+    }
+    var showErrorAlert = false
+    
     var nextTournament: Date = Calendar.current.date(byAdding: .hour, value: 3, to: Date()) ?? Date()
     var activeGameMode: GameMode = .RANK
     var activeModeType: ModeType = .NORMAL
-//    private var statService = RankedMatchmakingStatsService()
     
     init() {
         MatchmakingService.shared.setMatchmakingDelegate(self)
@@ -28,7 +29,7 @@ import SwiftUI
     func searchMatch(modeType: ModeType) {
         do {
             self.activeModeType = modeType
-            MatchmakingService.shared.connect()
+            try MatchmakingService.shared.connect()
             self.showingCover = true
             try MatchmakingService.shared.findMatch(
                 gameMode: self.activeGameMode,
@@ -38,23 +39,9 @@ import SwiftUI
             print("Error occurred: \(error)")
         }
     }
-    
-//    func fetchStats() {
-//        isLoading = true
-//        statService.fetchStats { [weak self] gameStats, error in
-//            DispatchQueue.main.async {
-//                self?.isLoading = false
-//                if let error = error {
-//                    self?.errorMessage = error.localizedDescription
-//                } else {
-//                    self?.gameStats = gameStats
-//                }
-//            }
-//        }
-//    }
 }
 
-extension RankedMatchmakingModel: MatcMatchmakingDelegate_onSearch {
+extension RankedGamesModel: MatcMatchmakingDelegate_onSearch {
     
     func didJoinedQueue() {
         DispatchQueue.main.async {

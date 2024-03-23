@@ -12,13 +12,11 @@ final class ServiceLocator {
     private(set) var audioSessionService:   AudioSessionService
     private(set) var audioLoaderService:    AudioLoaderService
     private(set) var themeService:          ThemeService
-    private(set) var profileService:        ProfileService
     
     init() {
         self.audioService           = .init()
         self.audioSessionService    = .init(audioService: self.audioService)
         self.audioLoaderService     = .init()
         self.themeService           = .init()
-        self.profileService         = .init()
     }
 }
