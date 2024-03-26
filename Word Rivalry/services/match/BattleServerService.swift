@@ -15,7 +15,8 @@ protocol WebSocket_GameDelegate: AnyObject {
     func didReceiveGameInformation(duration: Int, grid: [[LetterTile]],  valid_words: [String], stats: GridStats)
     func didReceiveRemainingTime(_ remainingTime: Int)
     func didReceiveOpponentScore(_ score: Int)
-    func didReceiveGameResult(winner: String, scores: [PlayerResults])
+    func didReceiveGameResult(winner: String, playerResults: [PlayerResult])
+    func didReceiveOpponentLeft()
 }
 
 enum RankedGameMessageReceived: String, Codable {
@@ -109,23 +110,20 @@ struct OpponentScoreUpdateMessage: GameMessage {
     let payload: OpponentScoreUpdatePayload
 }
 
-
 // Game Result Struct
 
 // Define the Path as an array of tuples, each containing a Row and Col.
-struct Path: Codable {
-    let positions: [[Int]]
-}
 
 struct WordHistory: Codable {
     let word: String
-    let path: Path // Assuming Path is already defined somewhere in your Swift code
-    let time: Int
+    let path: [[Int]]
+    let time: Float
     let score: Int
 }
 
-struct PlayerResults: Codable, Identifiable {
+struct PlayerResult: Codable, Identifiable {
     let playerName: String
+    let playerEloRating: Int
     let score: Int
     let historic: [WordHistory]
     var id: String { playerName }
@@ -133,8 +131,7 @@ struct PlayerResults: Codable, Identifiable {
 
 struct GameResultPayload: Codable {
     let winner: String
-    let grid: [[LetterTile]]
-    let scores: [PlayerResults]
+    let playerResults: [PlayerResult]
 }
 
 struct GameResultMessage: GameMessage {
@@ -150,16 +147,16 @@ class BattleServerService: WebSocketService {
     static let shared = BattleServerService()
     var gameDelegate: WebSocket_GameDelegate?
     var matchmakingDelegate: BattleServerDelegate_GameStartCountdown?
-  
+    
     private override init() {
         super.init()
     }
     
     func connect(gameSessionUUID: String) {
         guard let url = URL(string: "wss://battleserver-dtyigx66oa-nn.a.run.app") else { return }
-    
-        let playerUUID = try! UserDefaultsManager.shared.getUserUUID()
-        let playerName = try! UserDefaultsManager.shared.getUsername()
+        
+        let playerUUID = try! PlayerDefaultsManager.shared.getUserUUID()
+        let playerName = try! PlayerDefaultsManager.shared.getUsername()
         
         let headers = [
             "x-api-key": "4a7524be-0020-42c3-a259-cdc7208c5c7d",
@@ -178,7 +175,7 @@ class BattleServerService: WebSocketService {
     func setMatchmakingDelegate(_ delegate :BattleServerDelegate_GameStartCountdown) {
         self.matchmakingDelegate = delegate
     }
-            
+    
     override func handleTextMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else {
             print("Failed to convert string to data.")
@@ -199,31 +196,26 @@ class BattleServerService: WebSocketService {
             
             switch messageType {
             case .GAME_INFORMATION:
-                if let decodedMessage = try? JSONDecoder().decode(GameInformationMessage.self, from: data) {
-                    handleGameInformationMessage(decodedMessage)
-                }
+                let decodedMessage = try JSONDecoder().decode(GameInformationMessage.self, from: data)
+                handleGameInformationMessage(decodedMessage)
             case .PRE_GAME_COUNTDOWN:
-                if let decodedMessage = try? JSONDecoder().decode(PreGameCountdownMessage.self, from: data) {
-                    print("YESSSS!!!!")
-                    handlePreGameCountdown(decodedMessage)
-                }
+                let decodedMessage = try JSONDecoder().decode(PreGameCountdownMessage.self, from: data)
+                handlePreGameCountdown(decodedMessage)
             case .COUNTDOWN:
-                if let decodedMessage = try? JSONDecoder().decode(CountdownMessage.self, from: data) {
-                    print("YESSSS!!!!")
-                    handleCountdown(decodedMessage)
-                }
+                let decodedMessage = try JSONDecoder().decode(CountdownMessage.self, from: data)
+                handleCountdown(decodedMessage)
+                
             case .OPPONENT_PUBLISHED_WORD:
-                if let decodedMessage = try? JSONDecoder().decode(OpponentScoreUpdateMessage.self, from: data) {
-                    print("YESSSS!!!!")
-                    handleOpponentScoreUpdate(decodedMessage)
-                }
+                let decodedMessage = try JSONDecoder().decode(OpponentScoreUpdateMessage.self, from: data)
+                handleOpponentScoreUpdate(decodedMessage)
+                
             case .GAME_RESULT:
-                if let decodedMessage = try? JSONDecoder().decode(GameResultMessage.self, from: data) {
-                    print("YESSSS!!!!")
-                    handleGameResult(decodedMessage)
-                }
+                let decodedMessage = try JSONDecoder().decode(GameResultMessage.self, from: data)
+                print("DECODED")
+                handleGameResult(decodedMessage)
+                
             case .GAME_END_BY_PLAYER_LEFT:
-                print("Game Ended By Player Left")
+                handleOpponentLeft()
             }
         } catch {
             print("Failed to parse message type: \(error)")
@@ -241,20 +233,19 @@ class BattleServerService: WebSocketService {
 // MARK: - Message sent
 extension BattleServerService {
     
-     struct BasicMessage: Codable {
-         let type: BattleServerMessage
-     }
+    struct BasicMessage: Codable {
+        let type: BattleServerMessage
+    }
     
     enum PlayerActionMessage: String, Codable {
         case PUBLISH_WORD
     }
-
+    
     enum BattleServerMessage: String, Codable {
         case PLAYER_ACTION
-        case JOIN_GAME_SESSION
         case LEAVE_GAME_SESSION
     }
-
+    
     struct ScoreUpdateMessage: Codable {
         let type: BattleServerMessage
         let payload: Payload
@@ -269,23 +260,20 @@ extension BattleServerService {
         }
     }
     
-    func leaveGameSession() {
-        send(text: BattleServerMessage.LEAVE_GAME_SESSION.rawValue)
+    func leaveGame() {
+        send(BasicMessage(type: .LEAVE_GAME_SESSION))
     }
     
     func sendScoreUpdate(wordPath: [[Int]]) {
-         let wordPathData = ScoreUpdateMessage.Payload.WordPathData(wordPath: wordPath)
-         let payload = ScoreUpdateMessage.Payload(playerAction: .PUBLISH_WORD, data: wordPathData)
-         let message = ScoreUpdateMessage(type: .PLAYER_ACTION, payload: payload)
-         send(message)
-     }
-    
-    func quitGame() {
-        let message = BasicMessage(type: .LEAVE_GAME_SESSION) // Assuming you have or will create a .QUIT_GAME case
-          send(message)
-      }
+        let wordPathData = ScoreUpdateMessage.Payload.WordPathData(wordPath: wordPath)
+        let payload = ScoreUpdateMessage.Payload(playerAction: .PUBLISH_WORD, data: wordPathData)
+        let message = ScoreUpdateMessage(type: .PLAYER_ACTION, payload: payload)
+        send(message)
+    }
 }
 
+
+// MARK: - Message received
 extension BattleServerService {
     
     private func handlePreGameCountdown(_ message: PreGameCountdownMessage) {
@@ -313,7 +301,11 @@ extension BattleServerService {
     
     private func handleGameResult(_ message: GameResultMessage) {
         let winner = message.payload.winner
-        let scores = message.payload.scores
-        gameDelegate?.didReceiveGameResult(winner: winner, scores: scores)
+        let playerResults = message.payload.playerResults
+        gameDelegate?.didReceiveGameResult(winner: winner, playerResults: playerResults)
+    }
+    
+    private func handleOpponentLeft() {
+        gameDelegate?.didReceiveOpponentLeft()
     }
 }

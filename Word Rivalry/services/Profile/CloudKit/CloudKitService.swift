@@ -22,7 +22,7 @@ class CloudKitService {
 }
 
 extension CloudKitService {
-
+    
     func isUserNew() async throws -> Bool {
         // Attempt to fetch any existing private user info records
         let existingRecords = try await fetchPrivateRecords(ofType: ProfilRecordKey.privateUserInfoRecordType)
@@ -36,7 +36,7 @@ extension CloudKitService {
 // MARK: - Profil creation
 extension CloudKitService {
     
-    func createUserRecord(username: String) async throws -> Void {
+    func createUserRecord(playerName: String) async throws -> Void {
         
         // RECOVERY - If needed handle pending creation of public record
         if UserDefaults.standard.bool(forKey: UserProfilFlag.needsPublicRecordCreation.rawValue) {
@@ -45,7 +45,7 @@ extension CloudKitService {
             let existingPrivateUserInfoRecord = try await fetchPrivateUserInfoRecord()
             
             let publicRecord = try await createPublicUserInfoRecord(
-                username: existingPrivateUserInfoRecord[ProfilRecordKey.username],
+                playerName: existingPrivateUserInfoRecord[ProfilRecordKey.playerName],
                 uuid: existingPrivateUserInfoRecord[ProfilRecordKey.uuid]
             )
             
@@ -66,7 +66,7 @@ extension CloudKitService {
         }
         
         // Guard: Check if username is already in use
-        let isUsernameTaken = try await isUsernameInPublicDatabase(username: username)
+        let isUsernameTaken = try await isPlayerNameInPublicDatabase(playerName: playerName)
         guard !isUsernameTaken else {
             throw NSError(domain: "CloudKitService", code: -5, userInfo: [NSLocalizedDescriptionKey: "Username is already taken."])
         }
@@ -76,22 +76,23 @@ extension CloudKitService {
         
         let profil = Profil(
             uuid: userUUID,
-            username: username,
-            friendsUUIDs: ["Hi"]
+            playerName: playerName,
+            eloRating: 0,
+            friendsUUIDs: [""]
         )
         
-        UserDefaultsManager.shared.setUsername(username)
-        UserDefaultsManager.shared.setUserUUID(userUUID)
+        PlayerDefaultsManager.shared.setUsername(playerName)
+        PlayerDefaultsManager.shared.setUserUUID(userUUID)
         
         // Save
         try await savePrivateRecord(profil.privateRecord)
         try await savePublicRecord(profil.publicRecord)
     }
     
-    private func createPublicUserInfoRecord(username: Any?, uuid: Any?) async throws -> CKRecord {
+    private func createPublicUserInfoRecord(playerName: Any?, uuid: Any?) async throws -> CKRecord {
         let record = CKRecord(recordType: ProfilRecordKey.publicUserInfoRecordType)
-        if let username = username as? String, let uuid = uuid as? String {
-            record[ProfilRecordKey.username] = username
+        if let playerName = playerName as? String, let uuid = uuid as? String {
+            record[ProfilRecordKey.playerName] = playerName
             record[ProfilRecordKey.uuid] = uuid
         } else {
             // Data is corrupted, delete the private UserInfo Record
@@ -142,36 +143,40 @@ extension CloudKitService {
         return uuid
     }
     
-    // Function to fetch the username for the current iCloud user
-    func fetchUsername() async throws -> String {
+    // Function to fetch the playerName for the current iCloud user
+    func fetchPlayerName() async throws -> String {
         let userRecord = try await fetchPrivateUserInfoRecord()
-        guard let username = userRecord[ProfilRecordKey.username] as? String else {
+        guard let username = userRecord[ProfilRecordKey.playerName] as? String else {
             throw NSError(domain: "CloudKitService", code: -7, userInfo: [NSLocalizedDescriptionKey: "Username not found."])
         }
         return username
     }
     
-    // Function to update the username for the current iCloud user
-    func updateUsernameRecord(username: String) async throws -> Void {
+    func fetchEloRating() async throws -> String {
+        let userRecord = try await searchPublicUser(byPlayerName: )
+    }
+    
+    // Function to update the playerName for the current iCloud user
+    func updatePlayerNameRecord(playerName: String) async throws -> Void {
         
         // Guard: Check if new username is already in use
-        let isUsernameTaken = try await isUsernameInPublicDatabase(username: username)
+        let isUsernameTaken = try await isPlayerNameInPublicDatabase(playerName: playerName)
         guard !isUsernameTaken else {
             throw NSError(domain: "CloudKitService", code: -5, userInfo: [NSLocalizedDescriptionKey: "Username is already taken."])
         }
         
         let record = try await fetchPrivateUserInfoRecord()
-        record[ProfilRecordKey.username] = username
+        record[ProfilRecordKey.playerName] = playerName
         try await privateDatabase.save(record)
-        UserDefaultsManager.shared.setUsername(username)
+        PlayerDefaultsManager.shared.setUsername(playerName)
     }
 }
 
 extension CloudKitService {
-
+    
     // MARK: Add Friend
     func addFriend(byUsername friendUsername: String) async throws {
-        let friendPublicRecord = try await searchPublicUser(byUsername: friendUsername)
+        let friendPublicRecord = try await searchPublicUser(byPlayerName: friendUsername)
         
         guard let friendUUID = friendPublicRecord?[ProfilRecordKey.uuid] as? String else {
             throw NSError(domain: "CloudKitService", code: -14, userInfo: [NSLocalizedDescriptionKey: "Unable to find friend's UUID."])
@@ -187,7 +192,7 @@ extension CloudKitService {
             _ = try await privateDatabase.save(userPrivateRecord)
         }
     }
-
+    
     // MARK: Remove Friend
     func removeFriend(friendUUID: String) async throws {
         let userPrivateRecord = try await fetchPrivateUserInfoRecord()
@@ -198,12 +203,12 @@ extension CloudKitService {
         
         _ = try await privateDatabase.save(userPrivateRecord)
     }
-
+    
     // MARK: Search Friend by Username
-    func searchPublicUser(byUsername username: String) async throws -> CKRecord? {
-        let predicate = NSPredicate(format: "\(ProfilRecordKey.username) == %@", username)
+    func searchPublicUser(byPlayerName playerName: String) async throws -> CKRecord? {
+        let predicate = NSPredicate(format: "\(ProfilRecordKey.playerName) == %@", playerName)
         let query = CKQuery(recordType: ProfilRecordKey.publicUserInfoRecordType, predicate: predicate)
-
+        
         // Using the new fetch method with async/await
         return try await withCheckedThrowingContinuation { continuation in
             self.publicDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 1) { result in
@@ -225,18 +230,18 @@ extension CloudKitService {
             }
         }
     }
-
-
+    
+    
     // MARK: Fetch Public Profile
 }
 
 
 // MARK: - CloudKit Helpers
 extension CloudKitService {
-
-    private func isUsernameInPublicDatabase(username: String) async throws -> Bool {
-        let predicate = NSPredicate(format: "\(ProfilRecordKey.username) == %@", username)
-        let query = CKQuery(recordType: ProfilRecordKey.privateUserInfoRecordType, predicate: predicate)
+    
+    private func isPlayerNameInPublicDatabase(playerName: String) async throws -> Bool {
+        let predicate = NSPredicate(format: "\(ProfilRecordKey.playerName) == %@", playerName)
+        let query = CKQuery(recordType: ProfilRecordKey.publicUserInfoRecordType, predicate: predicate)
         
         return try await withCheckedThrowingContinuation { continuation in
             publicDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 1) { result in
@@ -275,7 +280,6 @@ extension CloudKitService {
         
         let existingRecords = try await fetchPrivateRecords(ofType: ProfilRecordKey.privateUserInfoRecordType)
         
-        
         // Guard: Check UserInfo record integrity
         guard existingRecords.count == 1 else {
             if existingRecords.isEmpty {
@@ -283,7 +287,6 @@ extension CloudKitService {
             } else {
                 
                 // TODO: Enter recovery mode. // Send notification for mannual handling
-                
                 throw NSError(domain: "CloudKitService", code: -6, userInfo: [NSLocalizedDescriptionKey: "Multiple user profiles found."])
             }
         }

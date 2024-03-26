@@ -80,8 +80,8 @@ class MatchmakingService: WebSocketService {
     func connect() throws {
         guard let url = URL(string: "wss://matchmakingserver-dtyigx66oa-nn.a.run.app") else { return }
         
-        let playerUUID = try UserDefaultsManager.shared.getUserUUID()
-        let playerName = try UserDefaultsManager.shared.getUsername()
+        let playerUUID = try PlayerDefaultsManager.shared.getUserUUID()
+        let playerName = try PlayerDefaultsManager.shared.getUsername()
         
         let headers = [
             "x-api-key": "4a7524be-0020-42c3-a259-cdc7208c5c7d",
@@ -157,9 +157,6 @@ class MatchmakingService: WebSocketService {
 // MARK: - Message received
 extension MatchmakingService {
     func handleJoinQueueSuccess(_ message: JoinQueueSuccessMessage) {
-        print("JoinedQueue")
-        
-        // Notify the delegate
         self.matcMatchmakingDelegate_Searching?.didJoinedQueue()
     }
 

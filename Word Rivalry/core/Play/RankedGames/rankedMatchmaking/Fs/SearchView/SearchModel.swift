@@ -30,6 +30,7 @@ struct GameInfo {
     var opponentElo: Int = 0
     var errorMessage: String?
     var preGameCountdown: Int = 0
+    var presentGameResut: Bool = false
     
     init(modeType: ModeType) {
         
@@ -46,6 +47,7 @@ struct GameInfo {
         self.gameModel.onGameEnded = { [weak self] in
             DispatchQueue.main.async {
                 self?.state = .gameResult
+                self?.presentGameResut = true
             }
         }
         
@@ -73,7 +75,7 @@ extension SearchModel: MatchmakingDelegate_onMatchFound {
             self.opponentElo = opponentElo
             self.gameModel.setOpponentName(playerName: opponentUsername)
             withAnimation(.easeInOut) {
-                self.state = .lobby
+                self.state = .inGame
             }
        
             // Start the connection

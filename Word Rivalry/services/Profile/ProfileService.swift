@@ -13,6 +13,7 @@ import CloudKit
     
     private let cloudKitService: CloudKitService
     private var cachedUsername: String?
+    private var cachedEloRating: Int?
     private var cachedUUID: String?
     
     private init() {
@@ -21,18 +22,22 @@ import CloudKit
     
     func loadProfile() async throws {
         do {
-            // Load from default
-            self.cachedUsername = try UserDefaultsManager.shared.getUsername()
-            self.cachedUUID = try UserDefaultsManager.shared.getUserUUID()
-            print("Profile loaded via defaults")
-        } catch { // Fails if first time oppening app on device
             self.cachedUsername = try await self.fetchUsername()
             self.cachedUUID = try await self.fetchUUID()
+            self.cachedEloRating = try await self.fetchEloRating()
             
             // Save
-            UserDefaultsManager.shared.setUsername(self.getUsername())
-            UserDefaultsManager.shared.setUserUUID(self.getUUID())
+            PlayerDefaultsManager.shared.setUsername(self.getUsername())
+            PlayerDefaultsManager.shared.setUserUUID(self.getUUID())
             print("Profile loaded via Cloud")
+        } catch { // Fails if first time oppening app on device
+           
+            // Load from default
+            self.cachedUsername = try PlayerDefaultsManager.shared.getUsername()
+            self.cachedUUID = try PlayerDefaultsManager.shared.getUserUUID()
+            self.cachedEloRating = try PlayerDefaultsManager.shared.getUserEloRating()
+            print("Player Profile loaded via defaults")
+       
         }
     }
     
@@ -50,7 +55,7 @@ import CloudKit
     
     // Creates a new user profile
     func createProfile(username: String) async throws {
-        try await self.cloudKitService.createUserRecord(username: username)
+        try await self.cloudKitService.createUserRecord(playerName: username)
         try await self.loadProfile()
     }
     
@@ -61,7 +66,7 @@ import CloudKit
             return username
         }
         // If self.username is nil, try to fetch the username asynchronously
-        let username = try await self.cloudKitService.fetchUsername()
+        let username = try await self.cloudKitService.fetchPlayerName()
         self.cachedUsername = username // Cache the username for future calls
         return username
     }
@@ -69,22 +74,33 @@ import CloudKit
     // Function to get the UUID for the current iCloud user
     func fetchUUID() async throws -> String {
         if let uuid = self.cachedUUID {
-            // Return cached UUID if available
+            // Return cache value if available
             return uuid
         } else {
-            // Fetch and cache the UUID if not already cached
+            // Fetch value and cache it
             let uuid = try await self.cloudKitService.fetchUUID()
             self.cachedUUID = uuid
             return uuid
         }
     }
+    
+    func fetchEloRating() async throws -> Int {
+        if let eloRating = self.cachedEloRating {
+            // Return cache value if available
+        } else {
+            // Fetch value and cache it
+            let eloRating = try await self.cloudKitService.fetchUUID()
+            self.cachedEloRating = eloRating
+            return eloRating
+        }
+    }
 
     // Updates the username for a given user record
-    func updateUsername(to newUsername: String) async throws -> Void {
+    func updateUsername(to newPlayerName: String) async throws -> Void {
         // Attempt to update the username record in CloudKit
-        try await self.cloudKitService.updateUsernameRecord(username: newUsername)
+        try await self.cloudKitService.updatePlayerNameRecord(playerName: newPlayerName)
         // Upon successful update, cache the new username
-        self.cachedUsername = newUsername
+        self.cachedUsername = newPlayerName
     }
     
     // Check if a profile already exists for the user
@@ -104,6 +120,6 @@ import CloudKit
     }
     
     func searchByUsername(username: String) async throws -> CKRecord? {
-        return try await self.cloudKitService.searchPublicUser(byUsername: username)
+        return try await self.cloudKitService.searchPublicUser(byPlayerName: username)
     }
 }

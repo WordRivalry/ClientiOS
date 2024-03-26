@@ -36,30 +36,27 @@ enum GameStatus {
 }
 
 struct GameResults {
-    private var winner: String?
-    private var scores: [PlayerResults]?
+    var winner: String
+    var playerResults: [PlayerResult]
  
     // Follow null pattern
-    init(winner: String, scores: [PlayerResults]) {
-        if (!winner.isEmpty) {
-            self.winner = winner
-        }
-        
-        if (!scores.isEmpty) {
-            self.scores = scores
-        }
-    }
-    
-    func getWinner() -> String {
-        guard let winner = self.winner else { fatalError("Winner is not defined") }
-    }
-    
-    func getScores() -> [PlayerResults] {
-        guard let scores = self.scores else { fatalError("Scores are not defined") }
+    init(winner: String, playerResults: [PlayerResult]) {
+        self.winner = winner
+        self.playerResults = playerResults
     }
 }
 
-@Observable class GameModel: BoardViewModel<LetterTile> {
+protocol GameType {
+    var modeType: ModeType { get }
+    func setupGameModel() -> GameModel
+}
+
+@Observable class GameModel: BoardViewModel<LetterTile>, GameType {
+    
+    var modeType: ModeType = .NORMAL
+    func setupGameModel() -> GameModel {
+        return self
+    }
     
     // MARK: OBSERVED PROPERTIES
     var currentScore: Int = 0
@@ -85,7 +82,7 @@ struct GameResults {
     
     init() {
         
-        self.gameResults = GameResults(winner: "", scores: [])
+        self.gameResults = GameResults(winner: "", playerResults: [])
         self.stats = GridStats(difficulty_rating: 0, diversity_rating: 0, total_words: 0)
         self.valid_words = []
         
@@ -157,8 +154,6 @@ struct GameResults {
             throw GameError.notOngoing
         }
         
-        print("going the length")
-        
         let word = path.compactMap { position -> String? in
             let cell = board.getCell(position.0, position.1)
             return cell.letter
@@ -205,7 +200,7 @@ struct GameResults {
     }
     
     // MARK: GAME FINISHED
-    func gameTimesUp() {
+    func gameEnded() {
         gameStatus = .finished
         timeLeft = "Time's up!"
     }
@@ -220,7 +215,6 @@ extension GameModel: Board_OnSwipe_Delegate {
         currentPathScore += cellScore
     }
     
-    
     func onCellHoverStayed(_ cellIndex: CellIndex) {
         
     }
@@ -229,7 +223,6 @@ extension GameModel: Board_OnSwipe_Delegate {
         let cellScore = scoreForTile(at: cellIndex)
         currentPathScore -= cellScore
     }
-    
     
     func onSwipeProcessed() {
         // Attempt to form and score the word based on the final path
@@ -248,8 +241,6 @@ extension GameModel: Board_OnSwipe_Delegate {
     
     
     private func scoreForTile(at cellIndex: CellIndex) -> Int {
-        print(cellIndex)
-        
         let tile = board.getCell(cellIndex.i, cellIndex.j)
         return tile.value * tile.letterMultiplier // You might also consider word multipliers here
     }
@@ -259,9 +250,9 @@ extension GameModel: Board_OnSwipe_Delegate {
 //MARK: TAP DELAGATE
 extension GameModel: Board_OnTap_Delegate {
     func onTapGesture(_ cellIndex: CellIndex) {
-        let tappedCell = getCell(cellIndex.i, cellIndex.j)
+        // let tappedCell = getCell(cellIndex.i, cellIndex.j)
         // Process the tap on the cell, e.g., select the cell, start a word, etc.
-        print("Tapped cell at \(cellIndex.i), \(cellIndex.j) with letter \(tappedCell.letter)")
+        // print("Tapped cell at \(cellIndex.i), \(cellIndex.j) with letter \(tappedCell.letter)")
     }
 }
 
@@ -269,12 +260,13 @@ extension GameModel: Board_OnTap_Delegate {
 extension GameModel {
     func quitGame() {
         self.onGameEnded?()
-        BattleServerService.shared.quitGame()
+        BattleServerService.shared.leaveGame()
     }
 }
 
 // MARK: WS DELEGATE
 extension GameModel: WebSocket_GameDelegate {
+    
     func didReceiveGameInformation(duration: Int, grid: [[LetterTile]], valid_words: [String], stats: GridStats) {
         DispatchQueue.main.async {
             self.gameDuration = duration
@@ -296,11 +288,15 @@ extension GameModel: WebSocket_GameDelegate {
         }
     }
     
-    func didReceiveGameResult(winner: String, scores: [PlayerResults]) {
+    func didReceiveGameResult(winner: String, playerResults: [PlayerResult]) {
         self.gameStatus = .finished
-        self.gameResults = GameResults(winner: winner, scores: scores)
+        self.gameResults = GameResults(winner: winner, playerResults: playerResults)
         self.message = "Game ended. Winner(s): \(winner)"
         print("Game Has Ended ! - Game Result Received ! ")
         self.onGameEnded!()
+    }
+    
+    func didReceiveOpponentLeft() {
+        self.message = "Opponent left"
     }
 }
