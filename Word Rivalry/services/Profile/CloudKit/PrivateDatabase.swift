@@ -49,4 +49,19 @@ class PrivateCloudKitService {
         // Save the modified record back to CloudKit
         return try await CKManager.saveRecord(saving: userRecord)
     }
+    
+    //    func addPlayerRecord2(playerName: String) async throws -> CKRecord {
+    //        let userRecordID = try await CKManager.userRecordID()
+    //        let playerRecord = CKRecord(recordType: RecordType.player)
+    //        playerRecord[PlayerRecord.userRecordID] = CKRecord.Reference(recordID: userRecordID, action: .none)
+    //        playerRecord[PlayerRecord.eloRating] = 800  // Unencrypted as it's a non-sensitive, numerical value
+    //
+    //        // CloudKit's built-in encryption for sensitive fields
+    //        playerRecord.encryptedValues[PlayerRecord.playerName] = playerName as NSString
+    //        playerRecord.encryptedValues[PlayerRecord.title] = "standard" as NSString
+    //        playerRecord.encryptedValues[PlayerRecord.banner] = "standard" as NSString
+    //        playerRecord.encryptedValues[PlayerRecord.profileImage] = "standard" as NSString
+    //
+    //        return try await CKManager.saveRecord(saving: playerRecord)
+    //    }
 }
