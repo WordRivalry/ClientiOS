@@ -6,9 +6,29 @@
 //
 
 import SwiftUI
+import SwiftData
+
+class LocalProfile {
+    static let shared = LocalProfile()
+    
+    private var profile: Profile?
+    private init() {}
+    
+    func setProfile(profile :Profile) {
+        self.profile = profile
+    }
+    
+    func getProfile() -> Profile {
+        if let profile = self.profile {
+            return profile
+        } else {
+            return Profile.preview
+        }
+       
+    }
+}
 
 struct HomeNavigationStack: View {
-    @State private var username: String = ""
     @State private var showingFriendsList = false
     
     var body: some View {
@@ -21,7 +41,6 @@ struct HomeNavigationStack: View {
                 }
                 
                 if (showingFriendsList) {
-                    
                     FriendsListView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(
@@ -32,10 +51,9 @@ struct HomeNavigationStack: View {
                                 showingFriendsList = false
                             }
                         }
-                        
                 }
             }
-            .navigationTitle(username)
+            .navigationTitle(LocalProfile.shared.getProfile().playerName)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .toolbar {
@@ -52,15 +70,11 @@ struct HomeNavigationStack: View {
                     }
                 }
             }
-            .onAppear {
-                username = ProfileService.shared.getUsername()
-            }
-   
         }
- 
     }
 }
 
 #Preview {
     HomeNavigationStack()
+        .modelContainer(previewContainer)
 }

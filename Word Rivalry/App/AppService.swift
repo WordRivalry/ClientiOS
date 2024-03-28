@@ -17,15 +17,11 @@ final class AppService: ObservableObject {
     
     func startApplication() {
         // Start theme service
-        let initialTheme = services.themeService.loadInitialTheme()
+        // let initialTheme = services.themeService.loadInitialTheme()
         
         Task {
-            // Load Profile
-            do {
-                try await ProfileService.shared.loadProfile()
-            } catch {
-                print("Profile not loaded")
-            }
+            iCloudService.shared.checkICloudStatus()
+            NetworkChecker.shared.startMonitoring()
             
             // Load Wordchecker
             WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")

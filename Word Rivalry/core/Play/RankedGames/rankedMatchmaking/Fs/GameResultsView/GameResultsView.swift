@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameResultsView: View {
     var gameResults: GameResults
@@ -14,13 +15,19 @@ struct GameResultsView: View {
     var board: Board<LetterTile>
     @State var showWordList: Bool = false
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query() var profiles: [Profile]
+    var profile: Profile {
+        profiles.first!
+    }
+    
     
     private var localPlayerRating: Int? {
-           gameResults.playerResults.first(where: { $0.playerName == ProfileService.shared.getUsername() })?.playerEloRating
+        gameResults.playerResults.first(where: { $0.playerName == profile.playerName })?.playerEloRating
     }
     
     private var gameOutcome: GameOutcome {
-        if gameResults.winner == ProfileService.shared.getUsername() {
+        if gameResults.winner == profile.playerName {
             GameOutcome.victory
         } else if gameResults.winner.isEmpty {
             GameOutcome.draw

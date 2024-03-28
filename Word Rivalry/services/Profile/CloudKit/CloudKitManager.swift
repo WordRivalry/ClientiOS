@@ -8,6 +8,12 @@
 import Foundation
 import CloudKit
 
+protocol CloudKitConvertible {
+    static var recordType: String { get }
+    var record: CKRecord { get }
+    init?(from ckRecord: CKRecord)
+}
+
 class CloudKitManager {
     private let container: CKContainer
     private var database: CKDatabase
@@ -26,6 +32,13 @@ class CloudKitManager {
         }
     }
     
+    // MARK: - User Icloud Accout
+    
+    // Async version
+    func getICloudAccountStatus() async throws -> CKAccountStatus {
+        try await self.container.accountStatus()
+    }
+    
     // MARK: - Fetch User Record ID
     func userRecordID(completionHandler: @escaping (Result<CKRecord.ID, Error>) -> Void) {
         container.fetchUserRecordID { recordID, error in
@@ -39,13 +52,13 @@ class CloudKitManager {
     
     // Async version
     func userRecordID() async throws -> CKRecord.ID {
-        return try await container.userRecordID()
+        try await container.userRecordID()
     }
     
     // MARK: - Fetch User Record
     
     func userRecord() async throws -> CKRecord {
-        return try await findRecord(for: userRecordID())
+        try await findRecord(for: userRecordID())
     }
     
     // MARK: - Fetch Records
@@ -114,7 +127,7 @@ class CloudKitManager {
     func findRecords(matching query: CKQuery, inZoneWith zoneID: CKRecordZone.ID? = nil, desiredKeys: [CKRecord.FieldKey]? = nil, resultsLimit: Int = CKQueryOperation.maximumResults) async throws -> ([CKRecord], CKQueryOperation.Cursor?) {
         let (matchResults, queryCursor) = try await database.records(matching: query, inZoneWith: zoneID, desiredKeys: desiredKeys, resultsLimit: resultsLimit)
         var records = [CKRecord]()
-        for (id, result) in matchResults {
+        for (_, result) in matchResults {
             switch result {
             case .success(let record):
                 records.append(record)
@@ -184,6 +197,16 @@ class CloudKitManager {
     }
     
     // MARK: - Modifying Records (Async)
+    
+    func saveRecord(saving recordToSave: CloudKitConvertible) async throws -> CKRecord {
+        let (saveResults, _) = try await modifyRecords(saving: [recordToSave.record], deleting: [], savePolicy: .ifServerRecordUnchanged, atomically: true)
+        
+        if let savedRecord = saveResults.values.first {
+            return savedRecord
+        } else {
+            throw NSError(domain: "CloudKitManager", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Failed to save the record."])
+        }
+    }
     
     func saveRecord(saving recordToSave: CKRecord) async throws -> CKRecord {
         let (saveResults, _) = try await modifyRecords(saving: [recordToSave], deleting: [], savePolicy: .ifServerRecordUnchanged, atomically: true)

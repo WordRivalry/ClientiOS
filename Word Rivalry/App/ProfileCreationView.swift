@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct ProfileCreationView: View {
-    var onProfileCreated: () -> Void
-    @State private var usernameTextField: String = ""
+    @Environment(\.modelContext) private var modelContext
+    var onProfileCreated: (_ profile: Profile) -> Void
+    @State private var playerNameTextField: String = ""
     @State private var errorMessage: String? = nil
     
     var body: some View {
@@ -19,7 +20,7 @@ struct ProfileCreationView: View {
                 .fontWeight(.bold) // Making title bold for emphasis
                 .padding(.bottom, 20) // Additional padding to separate title from text field
             
-            TextField("Enter Username", text: $usernameTextField)
+            TextField("Enter Username", text: $playerNameTextField)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .background(Color(.systemGray6)) // Adding a background color for better contrast
@@ -36,10 +37,10 @@ struct ProfileCreationView: View {
                     .frame(minWidth: 0, maxWidth: .infinity) // Button width extends to max available space
                     .padding()
                     .foregroundColor(.white) // White text for better contrast
-                    .background(usernameTextField.isEmpty ? Color.gray : Color.blue) // Dynamic background color
+                    .background(playerNameTextField.isEmpty ? Color.gray : Color.blue) // Dynamic background color
                     .cornerRadius(10) // Rounded corners for button
             }
-            .disabled(usernameTextField.isEmpty) // Disabling button when username is empty
+            .disabled(playerNameTextField.isEmpty) // Disabling button when username is empty
             
             Spacer()
             
@@ -55,17 +56,24 @@ struct ProfileCreationView: View {
     
     private func createProfile() async {
         do {
-            // Attempt to create the profile
-            _ = try await ProfileService.shared.createProfile(username: usernameTextField)
+            // Public profile
+            let profile = try await PublicDatabase.shared.addProfileRecord(playerName: playerNameTextField)
             
+            // Private profile
+            self.createProfile(profile)
+  
             // Callback
-            onProfileCreated()
+            onProfileCreated(profile)
         } catch {
             errorMessage = "Failed to create profile: \(error.localizedDescription)"
         }
     }
+    
+    private func createProfile(_ profile: Profile) {
+        modelContext.insert(profile)
+    }
 }
 
 #Preview {
-    ProfileCreationView(onProfileCreated: {})
+    ProfileCreationView(onProfileCreated: {profile in })
 }

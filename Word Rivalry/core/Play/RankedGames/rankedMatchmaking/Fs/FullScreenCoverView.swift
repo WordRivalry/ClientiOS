@@ -16,14 +16,14 @@ enum GameProcess {
 }
 
 import SwiftUI
+import SwiftData
 
 struct FullScreenCoverView: View {
     var onGameEnded: (() -> Void)?
     @Bindable var searchModel: SearchModel
     
     init(gameMode: GameMode, modeType: ModeType) {
-           self.searchModel = SearchModel(modeType: modeType)
-        searchModel.state = .gameResult
+        self.searchModel = SearchModel(modeType: modeType)
     }
      
     var showGameResult: Bool {

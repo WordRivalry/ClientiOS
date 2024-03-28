@@ -34,7 +34,7 @@ struct GameInfo {
     
     init(modeType: ModeType) {
         
-        self.myUsername = ProfileService.shared.getUsername()
+        self.myUsername = LocalProfile.shared.getProfile().playerName
       
         // Instanciate game model
         switch modeType {

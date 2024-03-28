@@ -8,24 +8,25 @@
 import Foundation
 import Network
 
-class NetworkUtility {
-    static let shared = NetworkUtility()
-
-    private init() {}
-
-    /// Checks if the internet is available.
-    /// - Returns: A `Bool` indicating internet availability.
-    func isInternetAvailable() async -> Bool {
-        let monitor = NWPathMonitor()
-        let queue = DispatchQueue(label: "NetworkMonitor")
-
-        return await withCheckedContinuation { continuation in
-            monitor.pathUpdateHandler = { path in
-                continuation.resume(returning: path.status == .satisfied)
-                monitor.cancel()
-            }
-
-            monitor.start(queue: queue)
+class NetworkChecker {
+    static let shared = NetworkChecker()
+    
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "NetworkMonitor")
+    
+    private(set) var isConnected: Bool = false
+    
+    private init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            self?.isConnected = path.status == .satisfied
         }
+    }
+    
+    public func startMonitoring() {
+        monitor.start(queue: queue)
+    }
+    
+    public func cancelMonitoring() {
+        monitor.cancel()
     }
 }

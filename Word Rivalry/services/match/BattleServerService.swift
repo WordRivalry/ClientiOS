@@ -155,8 +155,8 @@ class BattleServerService: WebSocketService {
     func connect(gameSessionUUID: String) {
         guard let url = URL(string: "wss://battleserver-dtyigx66oa-nn.a.run.app") else { return }
         
-        let playerUUID = try! PlayerDefaultsManager.shared.getUserUUID()
-        let playerName = try! PlayerDefaultsManager.shared.getUsername()
+        let playerUUID = LocalProfile.shared.getProfile().userRecordID
+        let playerName = LocalProfile.shared.getProfile().playerName
         
         let headers = [
             "x-api-key": "4a7524be-0020-42c3-a259-cdc7208c5c7d",

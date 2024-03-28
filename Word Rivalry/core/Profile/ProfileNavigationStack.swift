@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ProfileNavigationStack: View {
-    @State private var username: String = ""
+    @Environment(\.modelContext) private var modelContext
     @State private var showingFriendsList = false
     
     var body: some View {
@@ -36,7 +37,7 @@ struct ProfileNavigationStack: View {
                         
                 }
             }
-            .navigationTitle(username)
+            .navigationTitle(LocalProfile.shared.getProfile().playerName)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .toolbar {
@@ -53,19 +54,10 @@ struct ProfileNavigationStack: View {
                     }
                 }
             }
-            .onAppear {
-                username = ProfileService.shared.getUsername()
-            }
-   
         }
  
     }
 }
-
-#Preview {
-    HomeNavigationStack()
-}
-
 
 #Preview {
     ProfileNavigationStack()
