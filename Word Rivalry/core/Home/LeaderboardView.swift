@@ -9,9 +9,23 @@ import SwiftUI
 
 struct LeaderboardView: View {
     var body: some View {
-        Text("Leaderboard Page")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.background)
+        VStack {
+            Text("Leaderboard Page")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.background)
+            
+            BasicButton(text: "Send Achievment event") {
+                let longWordEvent = PlayerActionEvent(
+                    type: .buttonClick,
+                    data: [:],
+                    timestamp: Date()
+                )
+
+                EventSystem.shared.publish(event: longWordEvent)
+
+            }
+        }
+    
     }
 }
 

@@ -17,7 +17,7 @@ extension Profile: CloudKitConvertible { // For database interaction
     
     // Public field
     enum Key: String {
-        case userRecordID, playerName, eloRating, title, banner, profileImage
+        case userRecordID, playerName, eloRating, title, banner, profileImage, unlockedAchievementIDs
     }
     
     // Function to get the string value for a given key
@@ -29,23 +29,21 @@ extension Profile: CloudKitConvertible { // For database interaction
         guard let userRecordID = ckRecord[Profile.forKey(.userRecordID)] as? String,
               let playerName = ckRecord[Profile.forKey(.playerName)] as? String,
               let eloRating = ckRecord[Profile.forKey(.eloRating)] as? Int,
-              let title = ckRecord[Profile.forKey(.title)] as? Int,
-              let banner = ckRecord[Profile.forKey(.banner)] as? Int,
-              let profileImage = ckRecord[Profile.forKey(.profileImage)] as? Int else {
+              let title = ckRecord[Profile.forKey(.title)] as? String,
+              let banner = ckRecord[Profile.forKey(.banner)] as? String,
+              let profileImage = ckRecord[Profile.forKey(.profileImage)] as? String,
+              let unlockedAchievementIDs = ckRecord[Profile.forKey(.unlockedAchievementIDs)] as? [String] else {
             return nil
         }
-        self.init(userRecordID: userRecordID, playerName: playerName, eloRating: eloRating, title: title, banner: banner, profileImage: profileImage)
-    }
-    
-    convenience init?(forNew // Default provided define a new public profile values
-                      userRecordID: String,
-                      playerName: String,
-                      eloRating: Int = 800,
-                      title: Int = 0,
-                      banner: Int = 0,
-                      profileImage: Int = 0
-    ) {
-        self.init(userRecordID: userRecordID, playerName: playerName, eloRating: eloRating, title: title, banner: banner, profileImage: profileImage)
+        self.init(
+            userRecordID: userRecordID,
+            playerName: playerName,
+            eloRating: eloRating,
+            title: title,
+            banner: banner,
+            profileImage: profileImage,
+            unlockedAchievementIDs: unlockedAchievementIDs
+        )
     }
     
     var record: CKRecord {
@@ -56,6 +54,7 @@ extension Profile: CloudKitConvertible { // For database interaction
         record[Profile.forKey(.title)] = title
         record[Profile.forKey(.banner)] = banner
         record[Profile.forKey(.profileImage)] = profileImage
+        record[Profile.forKey(.unlockedAchievementIDs)] = unlockedAchievementIDs
         return record
     }
 }
@@ -155,11 +154,7 @@ extension PublicDatabase {
         try await checkIfPlayerNameAlreadyInDatabase(playerName)
         print("\(playerName) is unique")
         let userRecordID = try await CKManager.userRecordID()
-        let profile = Profile(forNew:
-                                userRecordID.recordName,
-                              playerName: playerName
-        )
-        guard let profile = profile else { throw DatabaseError.ProfileInitFailed }
+        let profile = Profile(userRecordID: userRecordID.recordName, playerName: playerName)
         _ = try await CKManager.saveRecord(saving: profile.record)
         print("Profile saved to public databse")
         return profile
@@ -185,21 +180,6 @@ extension PublicDatabase {
         try await self.updateProfileRecord(field: .eloRating, with: newEloRating)
     }
     
-    enum Title: Int {
-        case defaultTitle = 0
-        // other titles
-    }
-    
-    enum Banner: Int {
-        case defaultBanner = 0
-        // other banners
-    }
-    
-    enum ProfileImage: Int {
-        case defaultImage = 0
-        // other images
-    }
-    
     func updateTitle(saving newTitle: Title) async throws -> CKRecord {
         try await self.updateProfileRecord(field: .title, with: newTitle.rawValue)
     }
@@ -212,6 +192,10 @@ extension PublicDatabase {
         try await self.updateProfileRecord(field: .profileImage, with: newProfileImage.rawValue)
     }
     
+    func updateAchievementIDs(adding achievemntID: String) async throws -> CKRecord {
+        try await self.updateProfileRecord(field: .unlockedAchievementIDs, with: achievemntID)
+    }
+    
     // Generalized update function
     private func updateProfileRecord<T>(field: Profile.Key, with newValue: T) async throws -> CKRecord {
         let ckRecord = try await self.fetchLocalProfile()
@@ -220,6 +204,18 @@ extension PublicDatabase {
         case .playerName, .eloRating, .title, .banner, .profileImage:
             if let value = newValue as? CKRecordValue {
                 ckRecord[Profile.forKey(field)] = value
+            } else {
+                throw DatabaseError.invalidDataType
+            }
+        case .unlockedAchievementIDs:
+            if let newID = newValue as? String {
+                // Ensure we are working with an array of Strings
+                var existingIDs = ckRecord[Profile.forKey(field)] as? [String] ?? []
+                // Append the new value if it's not already present to prevent duplicates
+                if !existingIDs.contains(newID) {
+                    existingIDs.append(newID)
+                    ckRecord[Profile.forKey(field)] = existingIDs
+                }
             } else {
                 throw DatabaseError.invalidDataType
             }
@@ -249,7 +245,7 @@ extension PublicDatabase {
     
     func subscribeToChanges(for key: Profile.Key) async throws {
         switch key {
-        case .playerName, .eloRating, .title, .banner, .profileImage:
+        case .playerName, .eloRating, .title, .banner, .profileImage, .unlockedAchievementIDs:
             let userRecordID = try await CKManager.userRecordID()
             
             let predicate = NSPredicate(format: "%K == %@", Profile.forKey(.userRecordID), userRecordID.recordName)

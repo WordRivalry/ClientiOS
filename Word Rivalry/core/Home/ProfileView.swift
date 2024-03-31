@@ -8,133 +8,172 @@
 import SwiftUI
 import SwiftData
 
-// Placeholder enum for ProfileImage
-enum ProfileImage: Int, CaseIterable {
-    case defaultImage = 0
-    // Add more cases as needed
-    
-    var imageName: String {
-        switch self {
-        case .defaultImage: return "default-profile-image" // Placeholder image name
-            // Handle other cases
-        }
-    }
-}
-
-// Placeholder enum for BannerImage
-enum BannerImage: Int, CaseIterable {
-    case defaultBanner = 0
-    // Add more cases as needed
-    
-    var imageName: String {
-        switch self {
-        case .defaultBanner: return "default-profile-banner" // Placeholder banner name
-            // Handle other cases
-        }
-    }
-}
-
-struct ProfileBannerView: View {
-    var profileImageName: ProfileImage // Assuming this is the name of the profile image in your assets
-    var bannerImageName: BannerImage // Assuming this is the name of the banner image in your assets
+struct ProfileView: View {
+    var namespace: Namespace.ID
+    @State var profile: Profile
     
     var body: some View {
+        VStack(alignment: .center, spacing: 10) {
+            ProfileImageWithBannerView
+            playerNameView
+                .matchedGeometryEffect(id: "playerNameView", in: namespace)
+            titleView
+                .matchedGeometryEffect(id: "titleView", in: namespace)
+            eloRatingView
+                .matchedGeometryEffect(id: "eloRatingView", in: namespace)
+            
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(.ultraThinMaterial)
+                .matchedGeometryEffect(id: "profileBackground", in: namespace)
+        )
+        .shadow(radius: 5)
+    }
+    
+    @ViewBuilder
+    var ProfileImageWithBannerView: some View {
         ZStack {
-            Image(profileImageName.imageName)
+            Image(profile.profileImage)
                 .resizable()
+                .clipShape(Circle())
+                .matchedGeometryEffect(id: "profileImageView", in: namespace)
                 .scaledToFill()
                 .frame(width: 120, height: 120)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                .shadow(radius: 10)
             
-            Image(bannerImageName.imageName)
+            Image(profile.banner)
                 .resizable()
+                .matchedGeometryEffect(id: "profileBannerView", in: namespace)
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 140, height: 140)
         }
     }
-}
-
-// Example Enum for Title (implement similar enums for Banner and ProfileImage)
-enum ProfileTitle: Int, CaseIterable {
-    case none = 0
-    // Add more cases as needed
-    var description: String {
-        switch self {
-        case .none: return "No Title"
-            // Handle other cases
-        }
+    
+    @ViewBuilder
+    var playerNameView: some View {
+        Text(self.profile.playerName)
+    }
+    
+    @ViewBuilder
+    var titleView: some View {
+        Text(self.profile.title)
+    }
+    
+    @ViewBuilder
+    var eloRatingView: some View {
+        Text("Rating: \(self.profile.eloRating)")
     }
 }
 
-struct ProfileView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(Profile.local) var SD_profiles: [Profile]
-    @State var field: String = ""
-    @State private var isEditing: Bool = false
+struct ProfileView2: View {
+    var namespace: Namespace.ID
+    @State var profile: Profile
     
     var body: some View {
-        VStack {
-            if isEditing {
-                // Edit View - simplified for demonstration
-                TextField("Player Name", text: $field)
-                // Add selectors for title, banner, and profileImage based on enums
-                Button("Save") {
-                    Task {
-                        self.SD_profiles[0].playerName = field
-                        try? self.modelContext.save()
-                        self.isEditing = false
-                    }
-                    
-                }
-            } else {
-                VStack(alignment: .center, spacing: 10) {
-                    
-                    ProfileBannerView(
-                        profileImageName: ProfileImage(
-                            rawValue: self.SD_profiles[0].profileImage)!,
-                        bannerImageName: BannerImage(rawValue: self.SD_profiles[0].banner)!
-                    )
-//                    // Display banner
-//                    Image(BannerImage(rawValue: self.SD_profiles[0].banner)?.imageName ?? "default-banner")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 300, height: 100)
-//                    
-//                    // Profile image with circular framing
-//                    Image(ProfileImage(rawValue: self.SD_profiles[0].profileImage)?.imageName ?? "default-profile-image")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 100, height: 100)
-//                        .clipShape(Circle())
-//                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-//                        .shadow(radius: 10)
-//                        .padding(.bottom, -50) // Adjust as necessary based on banner design
-                    
-                    VStack {
-                        Text(self.SD_profiles[0].playerName)
-                        Text("Rating: \(self.SD_profiles[0].eloRating)")
-                        Text("Title: \(ProfileTitle(rawValue: self.SD_profiles[0].title)?.description ?? "Unknown")")
-                    }
-                    .padding(.top, 50) // Adjust to ensure text doesn't overlap with the image
-                }
-                
-                
-                // Display View
-                Button("Edit") {
-                    self.isEditing = true
-                }
+        HStack(alignment: .center, spacing: 20) {
+            ProfileImageWithBannerView
+                .padding()
+            VStack(alignment: .leading,spacing: 10) {
+                playerNameView
+                    .matchedGeometryEffect(id: "playerNameView", in: namespace)
+                Divider()
+                titleView
+                    .padding(.vertical)
+                    .matchedGeometryEffect(id: "titleView", in: namespace)
             }
+            .frame(maxWidth: .infinity)
+            Spacer()
         }
-        .padding()
-        .background(RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial))
+//        .background(
+//            RoundedRectangle(cornerRadius: 10)
+//                .fill(.ultraThinMaterial)
+//              
+//        )
         .shadow(radius: 5)
-        .frame(width: 300, height: 400) // Adjust size as needed
     }
+    
+    @ViewBuilder
+    var ProfileImageWithBannerView: some View {
+        ZStack {
+            Image(profile.profileImage)
+                .resizable()
+                .clipShape(
+                    Circle()
+                )
+                .matchedGeometryEffect(id: "profileImageView", in: namespace)
+                .scaledToFill()
+                .frame(width: 150, height: 150)
+            
+            Image(profile.banner)
+                .resizable()
+                .matchedGeometryEffect(id: "profileBannerView", in: namespace)
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 160, height: 160)
+        }
+    }
+    
+    @ViewBuilder
+    var playerNameView: some View {
+        HStack {
+               Text(self.profile.playerName)
+                   .font(.headline)
+               Spacer() // Pushes the content to the left and the icon to the right
+               Button(action: {
+                   // Action to perform on tap, like showing an edit view
+               }) {
+                   Image(systemName: "pencil")
+               }
+               .buttonStyle(BorderlessButtonStyle())
+               .accessibilityLabel("Edit player name")
+           }
+    }
+    
+    @ViewBuilder
+    var titleView: some View {
+        Text(self.profile.title)
+            .font(.headline)
+    }
+    
+    @ViewBuilder
+    var eloRatingView: some View {
+        Text("Rating: \(self.profile.eloRating)")
+    }
+    
+//    @ViewBuilder
+//    var profileId: some View {
+//        VStack(alignment: .center) {
+//            Text("Profile ID")
+//            HStack {
+//                Text(profile.userRecordID)
+//                Button(action: {
+//                    UIPasteboard.general.string = profile.userRecordID
+//                }) {
+//                    Image(systemName: "doc.on.doc")
+//                }
+//                .buttonStyle(BorderlessButtonStyle())
+//                .accessibilityLabel("Copy profile ID")
+//            }
+//        }
+//    }
 }
 
+
+
 #Preview {
-    ProfileView()
-        .modelContainer(previewContainer)
+    @Namespace var namespace
+    return ModelContainerPreview{
+        VStack {
+            Spacer()
+            ProfileView(namespace: namespace, profile: LocalProfile.shared.getProfile())
+            Spacer()
+            Divider()
+            Spacer()
+            ProfileView2(namespace: namespace, profile: LocalProfile.shared.getProfile())
+            Spacer()
+        }
+        
+    } modelContainer: {
+        previewContainer
+    }
 }

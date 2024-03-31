@@ -24,20 +24,57 @@ class LocalProfile {
         } else {
             return Profile.preview
         }
-       
+        
     }
 }
 
 struct HomeNavigationStack: View {
     @State private var showingFriendsList = false
+    @State var showDetailedProfile = false
+    @Namespace var namespace
+    
+    @Environment(\.modelContext) private var modelContext
+    @Query(Profile.local) var SD_profiles: [Profile]
+    var profile: Profile? { SD_profiles.first }
+    
+    // Initialize the achievements manager and subscribe it to the event system
+
     
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 20) {
-                    BasicNavButton(text: "Leaderboard", destination: LeaderboardView())
-                    BasicNavButton(text: "Statistics", destination: StatisticsView())
-                    BasicNavButton(text: "Friends", destination: FriendsListView())
+                    if (!showDetailedProfile) {
+                        ProfileView(namespace: namespace, profile: profile!)
+                            .onTapGesture {
+                                withAnimation(.easeInOut) {
+                                    showDetailedProfile = true
+                                }
+                            }
+                        
+                        BasicNavButton(text: "Leaderboard", destination: LeaderboardView())
+                            .matchedGeometryEffect(id: "button0", in: namespace)
+                        
+                        BasicNavButton(text: "Statistics", destination: StatisticsView())
+                            .matchedGeometryEffect(id: "button1", in: namespace)
+                        
+                        BasicNavButton(text: "Friends", destination: FriendsListView())
+                            .matchedGeometryEffect(id: "button2", in: namespace)
+                    } else {
+                        ProfileDetailView(
+                            namespace: namespace,
+                            profile: profile!,
+                            showDetailView: $showDetailedProfile
+                        )
+                            .matchedGeometryEffect(id: "profileDetailView", in: namespace)
+                           
+                            .background(
+                                RoundedRectangle(cornerRadius: 25.0).fill(.white.opacity(0.2))
+                                    .matchedGeometryEffect(id: "profileBackground", in: namespace)
+                            )
+                            .padding()
+                       
+                    }
                 }
                 
                 if (showingFriendsList) {
@@ -53,28 +90,38 @@ struct HomeNavigationStack: View {
                         }
                 }
             }
-            .navigationTitle(LocalProfile.shared.getProfile().playerName)
+            // .navigationTitle(LocalProfile.shared.getProfile().playerName)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    
-                    if (!showingFriendsList) {
-                        Button(action: {
-                            withAnimation(.easeIn) {
-                                showingFriendsList = true
+//                if !showDetailedProfile {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        
+                        if (!showingFriendsList) {
+                            Button(action: {
+                                withAnimation(.easeIn) {
+                                    showingFriendsList = true
+                                }
+                            }) {
+                                Image(systemName: "person.3.fill")
                             }
-                        }) {
-                            Image(systemName: "person.3.fill")
                         }
-                    }
+//                    }
+                   
                 }
+                
             }
+        }
+        .onAppear {
+            EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
         }
     }
 }
 
 #Preview {
-    HomeNavigationStack()
-        .modelContainer(previewContainer)
+    ModelContainerPreview{
+        HomeNavigationStack()
+    } modelContainer: {
+        previewContainer
+    }
 }

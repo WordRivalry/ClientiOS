@@ -24,6 +24,10 @@ struct AppTabView: View {
 }
 
 #Preview {
-    AppTabView(selection: .constant(.home))
+    ModelContainerPreview{
+        AppTabView(selection: .constant(.home))
+    } modelContainer: {
+        previewContainer
+    }
 }
 

@@ -23,7 +23,7 @@ struct Word_RivalryApp: App {
             ContentView()
                 .environmentObject(services.audioService)
                 .environmentObject(services.themeService)
-                .modelContainer(for: Profile.self)
+                .modelContainer(for: [Profile.self, AchievementProgression.self])
         }
     }
 }
