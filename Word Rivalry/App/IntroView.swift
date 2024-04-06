@@ -8,15 +8,21 @@
 import SwiftUI
 
 struct IntroView: View {
-    @State private var intros: [Intro] = []
+    @State private var intros: [Intro] = [] 
+    @State var progress: Double
     var onFinished: () -> Void
     @State var activeIntro: Intro?
     @State private var isAnimating: Bool = false
     @State private var animationTask: Task<Void, Never>?
     
     var body: some View {
-        ZStack {
+        VStack {
+            Spacer()
+            Spacer()
             bubble
+            Spacer()
+            ProgressView(value: progress)
+            Spacer()
         }
         .ignoresSafeArea()
         .onAppear {
@@ -26,11 +32,11 @@ struct IntroView: View {
                     textColor: Color.accentColor,
                     circleColor:Color.accentColor
                 ),
-                .init(
-                    text: "Enjoy!",
-                    textColor: Color.accentColor,
-                    circleColor: Color.accentColor
-                ),
+//                .init(
+//                    text: "Enjoy!",
+//                    textColor: Color.accentColor,
+//                    circleColor: Color.accentColor
+//                ),
                 .init(
                     text: "",
                     textColor: Color.accentColor,
@@ -149,7 +155,7 @@ struct IntroView: View {
 }
 
 #Preview {
-    IntroView(onFinished: {})
+    IntroView(progress: 0.0, onFinished: {})
 }
 
 /// Intro Model

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os.log
 
 protocol AnyEvent {
     var anyType: AnyEventType { get }
@@ -23,7 +24,8 @@ protocol EventSubscriber {
 
 class EventSystem {
     static let shared = EventSystem()
-
+    
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "EventSystem")
     private var subscribers: [String: [EventSubscriber]] = [:]
 
     func subscribe(_ subscriber: EventSubscriber, to eventTypes: [AnyEventType]) {
@@ -33,6 +35,7 @@ class EventSystem {
                 subscribers[key] = []
             }
             subscribers[key]?.append(subscriber)
+            self.logger.log("Subscription done for \(eventTypes)")
         }
     }
 
@@ -41,9 +44,7 @@ class EventSystem {
         for sub in subs {
             sub.handleEvent(event)
         }
-        
-        // Achievement hook
-        AchievementsManager.shared.handleEvent(event)
+        self.logger.log("Published done!")
     }
 }
 

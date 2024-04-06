@@ -6,40 +6,66 @@
 //
 
 import Foundation
+import os.log
+import SwiftUI
 
-final class AppService: ObservableObject {
+@Observable final class AppService: Service {
+    var isReady: Bool = false
+    var progress: Double = 0.0
+    var message: String = ""
     
-    var services: ServiceLocator
+    var services: ServiceLocator?
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "AppService")
     
-    init(services: ServiceLocator = .init()) {
-        self.services = services
-    }
+    init() {}
     
     func startApplication() {
-        // Start theme service
-        // let initialTheme = services.themeService.loadInitialTheme()
-        
         Task {
+            // Prepare shared instances
             iCloudService.shared.checkICloudStatus()
             NetworkChecker.shared.startMonitoring()
             
-            // Load Wordchecker
+            withAnimation {
+                self.message = "Network monitoring"
+                self.progress += 0.2
+            }
+ 
+            // Wait until the DataSource is ready
+            while !(await DataSource.shared.isReady) {
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                self.logger.info("Awaiting DataSource... 100ms")
+            }
+            
+            withAnimation {
+                self.message = "Data source"
+                self.progress += 0.1
+            }
+            // Initialize services
+            self.services = .init()
+            withAnimation {
+                self.message = "Services"
+                self.progress += 0.3
+            }
+            
+       
+            // Load french dict
             WordChecker.shared.loadTrieFromFile(rss: "french_trie_serialized")
-        }
+            withAnimation {
+                self.message = "Dictionnary loaded"
+                self.progress += 0.4
+            }
+            
+            // Starts audio service
+         //  if let songs = await services?.audioLoaderService.loadSongs() {
+                // start AudioService
+         //       services?.audioService.musicManager.setSongs(songs: songs)
 
-        // Starts audio service
-        Task {
-            // Load music
-            let songs = await services.audioLoaderService.loadSongs()
-            
-            // start AudioService
-            services.audioService.musicManager.setSongs(songs: songs)
-            
-            // Prepare the audio service for the initial theme.
-//            services.audioService.prepareAudioTheme(theme: initialTheme)
-            
-            // Play music
-//            services.audioService.playSong()
+                // Play music
+                // services?.audioService.playSong()
+       //     }
+            self.message = "Audio loaded"
+            self.message = "Ready"
+            self.isReady = true
         }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os.log
 
 protocol BattleServerDelegate_GameStartCountdown: AnyObject {
     func didReceivePreGameCountDown(countdown: Int)
@@ -147,17 +148,14 @@ class BattleServerService: WebSocketService {
     static let shared = BattleServerService()
     var gameDelegate: WebSocket_GameDelegate?
     var matchmakingDelegate: BattleServerDelegate_GameStartCountdown?
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "BattleServerService")
     
     private override init() {
         super.init()
     }
     
-    func connect(gameSessionUUID: String) {
+    func connect(gameSessionUUID: String, playerName: String, playerUUID: String) {
         guard let url = URL(string: "wss://battleserver-dtyigx66oa-nn.a.run.app") else { return }
-        
-        let playerUUID = LocalProfile.shared.getProfile().userRecordID
-        let playerName = LocalProfile.shared.getProfile().playerName
-        
         let headers = [
             "x-api-key": "4a7524be-0020-42c3-a259-cdc7208c5c7d",
             "x-game-session-uuid": gameSessionUUID,
@@ -178,11 +176,9 @@ class BattleServerService: WebSocketService {
     
     override func handleTextMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else {
-            print("Failed to convert string to data.")
+            self.logger.error("Failed to convert string to data.")
             return
         }
-        
-        print("\n \(data)")
         
         struct WrappedType: Codable {
             let type: RankedGameMessageReceived
@@ -191,9 +187,6 @@ class BattleServerService: WebSocketService {
         do {
             let messageTypeWrapper = try JSONDecoder().decode(WrappedType.self, from: data)
             let messageType = messageTypeWrapper.type
-            
-            print("message type : \(messageType)")
-            
             switch messageType {
             case .GAME_INFORMATION:
                 let decodedMessage = try JSONDecoder().decode(GameInformationMessage.self, from: data)
@@ -211,14 +204,14 @@ class BattleServerService: WebSocketService {
                 
             case .GAME_RESULT:
                 let decodedMessage = try JSONDecoder().decode(GameResultMessage.self, from: data)
-                print("DECODED")
+                self.logger.debug("DECODED")
                 handleGameResult(decodedMessage)
                 
             case .GAME_END_BY_PLAYER_LEFT:
                 handleOpponentLeft()
             }
         } catch {
-            print("Failed to parse message type: \(error)")
+            self.logger.error("Failed to parse message type: \(error)")
             return
         }
         

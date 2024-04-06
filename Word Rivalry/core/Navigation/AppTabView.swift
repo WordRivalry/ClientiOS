@@ -14,6 +14,7 @@ struct AppTabView: View {
         TabView(selection: $selection) {
             ForEach(AppScreen.allCases) { screen in
                 screen.destination
+                    .animation(.easeIn,value: selection)
                     .tag(screen as AppScreen?)
                     .tabItem { screen.label }
             }
@@ -24,10 +25,14 @@ struct AppTabView: View {
 }
 
 #Preview {
-    ModelContainerPreview{
-        AppTabView(selection: .constant(.home))
-    } modelContainer: {
+    ModelContainerPreview {
         previewContainer
+    } content: {
+        AppTabView(selection: .constant(.home))
+            .environment(Friends.preview)
+            .environment(Profile.preview)
+            .environment(AchievementsProgression.preview)
+            .environment(LeaderboardService.preview)
     }
 }
 

@@ -6,122 +6,134 @@
 //
 
 import SwiftUI
-import SwiftData
-
-class LocalProfile {
-    static let shared = LocalProfile()
-    
-    private var profile: Profile?
-    private init() {}
-    
-    func setProfile(profile :Profile) {
-        self.profile = profile
-    }
-    
-    func getProfile() -> Profile {
-        if let profile = self.profile {
-            return profile
-        } else {
-            return Profile.preview
-        }
-        
-    }
-}
-
 struct HomeNavigationStack: View {
-    @State private var showingFriendsList = false
-    @State var showDetailedProfile = false
+    @Environment(Profile.self) private var profile: Profile
     @Namespace var namespace
     
-    @Environment(\.modelContext) private var modelContext
-    @Query(Profile.local) var SD_profiles: [Profile]
-    var profile: Profile? { SD_profiles.first }
+    @State private var showDetailedProfile = false
+    @State private var showFriendsList = false
+    @State private var showLeaderboard = false
+    @State private var showAchievements = false
+    @State private var showStatictics = false
     
-    // Initialize the achievements manager and subscribe it to the event system
-
-    
+    // Initialize the achievements manager and subscribe it to the event systemå
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 20) {
                     if (!showDetailedProfile) {
-                        ProfileView(namespace: namespace, profile: profile!)
+                        ProfileCardView(namespace: namespace)
                             .onTapGesture {
                                 withAnimation(.easeInOut) {
                                     showDetailedProfile = true
                                 }
                             }
+                            .padding(.bottom).padding(.bottom)
                         
-                        BasicNavButton(text: "Leaderboard", destination: LeaderboardView())
-                            .matchedGeometryEffect(id: "button0", in: namespace)
+                        BasicButton(text: "Leaderboard") {
+                            showLeaderboard = true
+                        }
+                        .matchedGeometryEffect(id: "button0", in: namespace)
                         
-                        BasicNavButton(text: "Statistics", destination: StatisticsView())
-                            .matchedGeometryEffect(id: "button1", in: namespace)
+                        BasicButton(text: "Statistics") {
+                            showStatictics = true
+                        }
+                        .matchedGeometryEffect(id: "button1", in: namespace)
                         
-                        BasicNavButton(text: "Friends", destination: FriendsListView())
-                            .matchedGeometryEffect(id: "button2", in: namespace)
+                        BasicButton(text: "Achievements") {
+                            showAchievements = true
+                        }
+                        .matchedGeometryEffect(id: "button2", in: namespace)
                     } else {
-                        ProfileDetailView(
-                            namespace: namespace,
-                            profile: profile!,
-                            showDetailView: $showDetailedProfile
+                        EditableProfileCardView(
+                            namespace: namespace
                         )
-                            .matchedGeometryEffect(id: "profileDetailView", in: namespace)
-                           
-                            .background(
-                                RoundedRectangle(cornerRadius: 25.0).fill(.white.opacity(0.2))
-                                    .matchedGeometryEffect(id: "profileBackground", in: namespace)
-                            )
-                            .padding()
-                       
                     }
                 }
-                
-                if (showingFriendsList) {
-                    FriendsListView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(
-                            .ultraThinMaterial
-                        )
-                        .onTapGesture {
-                            withAnimation(.easeOut) {
-                                showingFriendsList = false
-                            }
-                        }
-                }
             }
-            // .navigationTitle(LocalProfile.shared.getProfile().playerName)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.background)
-            .toolbar {
-//                if !showDetailedProfile {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        
-                        if (!showingFriendsList) {
-                            Button(action: {
-                                withAnimation(.easeIn) {
-                                    showingFriendsList = true
-                                }
-                            }) {
-                                Image(systemName: "person.3.fill")
-                            }
-                        }
-//                    }
-                   
+            .background(
+                ZStack {
+                    Color.background
+                    
+//                    Image("bgMotif")
+//                        .resizable()
+//                        .ignoresSafeArea()
+//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                        .aspectRatio(contentMode: .fill)
+//                
+//                        .opacity(0.1)
+//                        .blur(radius: 10)
                 }
-                
+                    .ignoresSafeArea()
+              
+            )
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if (showDetailedProfile) {
+                        Button(action: {
+                            withAnimation(.easeIn) {
+                                showDetailedProfile = false
+                            }
+                        }) {
+                            Image(systemName: "xmark")
+                               
+                        }
+                        .matchedGeometryEffect(id: "homeTool1", in: namespace)
+                    }
+                }
+               
+                ToolbarItem(placement: .topBarTrailing) {
+                    if (!showDetailedProfile) {
+                        Button(action: {
+                            withAnimation(.easeIn) {
+                                showFriendsList = true
+                            }
+                        }) {
+                            Image(systemName: "person.3.fill")
+                              
+                        }
+                        .matchedGeometryEffect(id: "homeTool1", in: namespace)
+                    }
+                }
             }
-        }
-        .onAppear {
-            EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
+            .onAppear {
+                EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
+                
+                showDetailedProfile = false
+            }
+            .fullScreenCover(isPresented: $showAchievements) {
+                AchievementsView()
+                    .presentationBackground(.bar)
+                    .fadeIn()
+            }
+            .fullScreenCover(isPresented: $showLeaderboard) {
+                LeaderboardView()
+                    .presentationBackground(.bar)
+                    .fadeIn()
+            }
+            .fullScreenCover(isPresented: $showStatictics) {
+                StatisticsView()
+                    .presentationBackground(.bar)
+                    .fadeIn()
+            }
+            .fullScreenCover(isPresented: $showFriendsList) {
+                FriendsListView()
+                    .presentationBackground(.bar)
+                    .fadeIn()
+            }
         }
     }
 }
 
 #Preview {
-    ModelContainerPreview{
-        HomeNavigationStack()
-    } modelContainer: {
+    ModelContainerPreview {
         previewContainer
+    } content: {
+        HomeNavigationStack()
+            .environment(Friends.preview)
+            .environment(Profile.preview)
+            .environment(AchievementsProgression.preview)
+            .environment(LeaderboardService.preview)
     }
 }

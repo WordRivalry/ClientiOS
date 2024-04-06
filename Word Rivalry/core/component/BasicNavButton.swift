@@ -19,7 +19,7 @@ struct BasicNavButton<Destination: View>: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.accentColor)
+                .background(Color.accent)
                 .cornerRadius(8)
             
 //                .frame(width: 350)

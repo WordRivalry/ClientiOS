@@ -6,29 +6,18 @@
 //
 
 import Foundation
+import os.log
 
 class AchievementStore {
     private var achievements: [String: Achievement] = [:]
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "AchievementStore")
 
     func addAchievement(_ achievement: Achievement) {
-        achievements[achievement.name] = achievement
+        achievements[achievement.name.rawValue] = achievement
     }
     
     func getAchievements() -> [Achievement] {
         return Array(achievements.values)
-    }
-    
-    func evaluateAchievements(for event: AnyEvent) {
-        achievements.values.forEach { achievement in
-            achievement.evaluate(event: event)
-        }
-    }
-    
-    func getUnlockedAchievements() -> [Achievement] {
-        return achievements.values.filter( {
-            guard let progression = $0.progression else { return false }
-            return progression.isComplete
-        })
     }
     
     func getAchievement(name: String) -> Achievement? {

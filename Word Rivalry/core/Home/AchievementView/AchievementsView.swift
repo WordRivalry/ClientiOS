@@ -8,50 +8,65 @@
 import SwiftUI
 
 struct AchievementsView: View {
+    @Environment(AchievementsProgression.self) private var progressions: AchievementsProgression
     let achievementsByCategory = AchievementsManager.shared.getAllAchievements()
-    let unlockedAchievementIDs: Set<String>
-    @State private var selectedCategory: AchievementCategory? = nil
-    
-    var body: some View {
-        
-        List {
-                   ForEach(Array(achievementsByCategory.keys), id: \.self) { category in
-                       Section(header: Text(category.rawValue)) {
-                           ForEach(achievementsByCategory[category] ?? [], id: \.name) { achievement in
-                               AchievementRowView(achievement: achievement)
-                           }
-                       }
-                   }
-               }
-    }
-}
 
-struct AchievementRowView: View {
+    var body: some View {
+        VStack {
+            List {
+                ForEach(Array(achievementsByCategory.keys), id: \.rawValue) { category in
+                    Section(header: Text(category.rawValue)) {
+                        ForEach(achievementsByCategory[category] ?? [], id: \.name) { achievement in
+                            AchievementRowView(
+                                achievement: achievement,
+                                progression: progressions.progressions.first(where: { progression in
+                                    progression.name == achievement.name.rawValue
+                                })
+                            )
+                        }
+                    }
+                }
+            }
+            /// List Modifiers
+            .listStyle(.automatic)
+            .environment(\.defaultMinListRowHeight, 70)
+            .scrollContentBackground(.hidden)
+            
+            BasicDissmiss()
+        }
+    }
+} 
+
+struct AchievementRowView: View { 
     var achievement: Achievement
+    var progression: AchievementProgression?
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(achievement.name)
+                Text(achievement.name.rawValue)
                     .font(.headline)
                 Text(achievement.desc)
                     .font(.subheadline)
                 
-                if let progression = achievement.progression {
-                    ProgressBar2(progress: Float(progression.current) / Float(progression.target))
+                if (progression != nil) {
+                    AchievmentProgressBar(progress: Float(progression!.current) / Float(progression!.target))
                         .frame(height: 10)
                 }
+            
             }
+            
             Spacer()
-            Image(systemName: achievement.progression?.isComplete ?? false ? "lock.open" : "lock")
+            
+            Image(systemName: progression?.isComplete ?? false ? "lock.open" : "lock")
                 .foregroundColor(
-                    achievement.progression?.isComplete ?? false ? .green : .red
+                    progression?.isComplete ?? false ? .green : .red
                 )
         }
     }
 }
 
-struct ProgressBar2: View {
+struct AchievmentProgressBar: View {
     var progress: Float
     
     var body: some View {
@@ -63,12 +78,17 @@ struct ProgressBar2: View {
                 
                 Rectangle().frame(width: min(CGFloat(self.progress)*geometry.size.width, geometry.size.width), height: geometry.size.height)
                     .foregroundColor(Color(UIColor.systemBlue))
-                 //   .animation(.linear)
+                    .animation(.easeInOut, value: progress)
             }.cornerRadius(45.0)
         }
     }
 }
 
 #Preview {
-    AchievementsView(unlockedAchievementIDs: [AchievementName.wordConqueror.rawValue])
+    ModelContainerPreview {
+        previewContainer
+    } content: {
+        AchievementsView()
+            .environment(AchievementsProgression.preview)
+    }
 }

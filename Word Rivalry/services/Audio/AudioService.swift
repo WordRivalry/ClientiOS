@@ -12,19 +12,19 @@ import OSLog
 private let logger = Logger(subsystem: "PixelsAnima", category: "Audio")
 
 /// AudioController is responsible for controlling the audio player and sound effects manager.
-class AudioService: ObservableObject {
+@Observable class AudioService {
     
     // MARK: - Published
     
     /// An error object that can be observed.
-    @Published var error: Error?
+    var error: Error?
     
     // MARK: - Class variables
     
     /// The audio player.
-    let musicManager: MusicManager = MusicManager()
+    @ObservationIgnored let musicManager: MusicManager = MusicManager()
     /// The sound effects manager.
-    let soundEffectsManager: SoundEffectsManager = SoundEffectsManager()
+    @ObservationIgnored let soundEffectsManager: SoundEffectsManager = SoundEffectsManager()
     
     // MARK: - Initialisation
 
