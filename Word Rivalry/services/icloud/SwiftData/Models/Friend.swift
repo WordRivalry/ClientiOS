@@ -7,11 +7,17 @@
 
 import Foundation
 import SwiftData
+import os.log
 
 @Model final class Friend {
     let friendRecordID: String = ""
+    
+    @Transient
+    private let logger = Logger(subsystem: "SwiftData", category: "Friend")
+    
     init(friendRecordID: String) {
         self.friendRecordID = friendRecordID
+        logger.debug("Friend instanciated with id: [\(self.friendRecordID)]")
     }
     
     static var preview: [Friend] {

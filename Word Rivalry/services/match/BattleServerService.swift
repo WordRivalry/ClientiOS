@@ -204,7 +204,6 @@ class BattleServerService: WebSocketService {
                 
             case .GAME_RESULT:
                 let decodedMessage = try JSONDecoder().decode(GameResultMessage.self, from: data)
-                self.logger.debug("DECODED")
                 handleGameResult(decodedMessage)
                 
             case .GAME_END_BY_PLAYER_LEFT:
@@ -275,6 +274,7 @@ extension BattleServerService {
     }
     
     private func handleGameInformationMessage(_ message: GameInformationMessage) {
+        self.logger.info("Received Game Information")
         let duration = message.payload.duration
         let grid = message.payload.grid
         let valid_words = message.payload.valid_words
@@ -288,11 +288,13 @@ extension BattleServerService {
     }
     
     private func handleOpponentScoreUpdate(_ message: OpponentScoreUpdateMessage) {
+        self.logger.info("Received Opponent Score")
         let score = message.payload.score
         gameDelegate?.didReceiveOpponentScore(score)
     }
     
     private func handleGameResult(_ message: GameResultMessage) {
+        self.logger.info("Received Game Result")
         let winner = message.payload.winner
         let playerResults = message.payload.playerResults
         gameDelegate?.didReceiveGameResult(winner: winner, playerResults: playerResults)

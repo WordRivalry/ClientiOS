@@ -6,15 +6,22 @@
 //
 
 import SwiftUI
+import os.log
 
 enum PlayTab {
     case Multiplayer, SoloAdventures
 }
 
 struct PlayNavigationStack: View {
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "PlayNavigationStack")
+    
+    init() {
+        self.logger.debug("*** PlayNavigationStack init ***")
+    }
+    
     var body: some View {
         NavigationStack {
-            RankedGamesView()
+            PlayView()
                 .navigationTitle("Battle")
                 .navigationBarTitleDisplayMode(.large)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -23,34 +30,6 @@ struct PlayNavigationStack: View {
     }
 }
 
-struct MatchmakingButtonView<Destination: View>: View {
-    var text: String
-    var destination: Destination
-
-    var body: some View {
-        
-        
-        
-        NavigationLink(destination: destination) {
-            Text(text)
-                .bold()
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(8)
-        }
-    }
-}
-
-
-
-// Placeholder view for Dailies, replace with your actual view
-struct DailiesView: View {
-    var body: some View {
-        Text("Daily Challenges")
-    }
-}
 
 
 #Preview {

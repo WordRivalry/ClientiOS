@@ -16,8 +16,8 @@ enum LaunchScreen {
     case error
 }
 
-@Observable class LaunchService {
-    
+@Observable class LaunchService: Service {
+ 
     private let logger = Logger(subsystem: "com.WordRivalry", category: "LaunchService")
     
     var screenToPresent: LaunchScreen = .intro
@@ -27,95 +27,126 @@ enum LaunchScreen {
     var achievementsProgression: AchievementsProgression?
     var friends: Friends?
     
-    let dataService: DataService
+    let dataService: SwiftDataService
+    var isReady: Bool = false
     
-    init(dataService: DataService) {
+    init(dataService: SwiftDataService) {
         self.dataService = dataService
         self.logger.info("*** LaunchService STARTED ***")
-        prepareLaunchData()
+        Task {
+           await prepareLaunchData()
+        }
     }
     
     /// Starts the launch preparation process.
-    func prepareLaunchData() {
-        if iCloudService.shared.iCloudStatus == .available {
-            Task {
-                while !(dataService.isReady) {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    self.logger.info("Awaiting dataService... 100ms")
-                }
-                await findProfile()
-                checkIfMissingProgression()
-                
-                self.friends = Friends(friends: self.dataService.friends)
-                self.logger.info("Friends READY!")
-                
-                self.leaderboard = .init()
-                while !(leaderboard!.isReady) {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    self.logger.info("Awaiting leaderboard service... 100ms")
-                }
-                self.leaderboard?.startPeriodicUpdate()
-
-                self.logger.info("*** LaunchService COMPLETED ***")
-                self.screenToPresent = .home
-            }
-        } else {
-            screenToPresent = .noIcloud // END
-            self.logger.info("*** LaunchService ENDED due to no iCloud ***")
+    func prepareLaunchData() async {
+        guard iCloudService.shared.iCloudStatus == .available else {
+             logger.info("*** LaunchService ENDED due to no iCloud ***")
+             screenToPresent = .noIcloud
+             return
+         }
+        
+        await waitForDataService()
+        
+        do {
+            try await handleUserData()
+        } catch {
+            self.logger.error("\(error.localizedDescription)" )
+            screenToPresent = .error
+        }
+        
+        self.logger.info("*** LaunchService COMPLETED ***")
+        self.screenToPresent = .home
+        self.isReady = true // END
+            
+    }
+    
+    private func waitForDataService() async {
+          while !dataService.isReady {
+              try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+              logger.info("Awaiting dataService... 100ms")
+          }
+      }
+    
+    private func handleUserData() async throws {
+          try await findOrCreateProfile()
+          try await ensurePublicProfileExists()
+          checkIfMissingProgression()
+          
+          await fetchFriendList()
+          await fetchLeaderboard()
+      }
+    
+    private func findOrCreateProfile() async throws {
+        if let profile = try await self.findProfile() {
+            self.useProfile(profile)
+        } else { // New Player
+            try await self.createProfiles()
         }
     }
     
-    private func findProfile() async {
-        self.logger.info("Starting find profile...")
+    private func ensurePublicProfileExists() async throws {
+        await PublicProfileService.shared.fetchData()
+    }
+    
+    private func findProfile() async throws -> Profile? {
+        self.logger.info("Finding profile...")
         
         if let profile = self.dataService.profile {
-            useProfile(profile)
-            return
+            self.logger.info("Profile found!")
+            return profile
+        } else {
+            self.logger.info("Profile not found!")
+            return nil
         }
+    }
+    
+    private func createProfiles() async throws {
+        self.logger.info("Creating profiles...")
         
         guard NetworkChecker.shared.isConnected else {
             self.logger.debug("No Connection to internet found...")
             screenToPresent = .noInternet
             return
         }
-        
         self.logger.info("Connection to internet verified")
-        do {
-            self.logger.info("Recovering public profile...")
+        
+        // Check for recovery, else create all
+        
+        if let publicProfile = try await PublicDatabase.shared.fetchOwnPublicProfileIfExist() {
+            // Public profile
+            PublicProfileService.shared.player = publicProfile
+            self.logger.debug("Public profile exist")
             
-            if let profile = try await PublicDatabase.shared.fetchProfileIfExist() {
-                self.logger.debug("Public profile exist")
-                dataService.createProfile(profile: profile)
-                self.logger.debug("Profile added to SwiftData")
-                useProfile(profile)
-                
-            } else {
-                self.logger.debug("Public profile does not exist")
-                let profile = try await createProfile()
-                useProfile(profile)
-            }
-        } catch {
-            self.logger.debug("Verification with internet failed")
-            screenToPresent = .error
+            // SwiftData profile
+            self.createProfile()
+        } else {
+            self.logger.debug("Public profile does not exist")
+            try await createBothProfileAndPublicProfile()
         }
     }
     
-    private func createProfile() async throws -> Profile {
-        self.logger.info("Creating new profile...")
-        
+    private func createBothProfileAndPublicProfile() async throws {
+      
         // Public profile
-        let profile = try await PublicDatabase.shared.addProfileRecord(playerName: UUID().uuidString)
+        PublicProfileService.shared.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: UUID().uuidString)
         self.logger.debug("Public profile created")
         
         // SwiftData profile
+        self.createProfile()
+    }
+    
+    private func createProfile() -> Void {
+        // SwiftData profile
+        let profile = Profile.new
         dataService.createProfile(profile: profile)
         self.logger.debug("Swiftdata profile created")
-        return profile
+        self.useProfile(profile)
     }
     
     private func useProfile(_ profile: Profile) {
         self.profile = profile
-        self.logger.info("Profile READY!")
+        self.logger.info("Profile is READY!")
     }
     
     private func checkIfMissingProgression() {
@@ -139,10 +170,30 @@ enum LaunchScreen {
             progressions: self.dataService.achievementProgressions
         )
         
-        self.logger.info("Achievements Progressions READY!")
+        self.logger.info("Achievements are READY!")
     }
     
-    private func findTopPlayers() async {
-       
+    private func fetchFriendList() async {
+        self.friends = Friends(friends: self.dataService.friends)
+        self.logger.info("The friend list is READY!")
+    }
+    
+    private func fetchLeaderboard() async {
+//        self.leaderboard = .init()
+//        while !(leaderboard!.isReady) {
+//            try? await Task.sleep(nanoseconds: 100_000_000)
+//            self.logger.info("Awaiting leaderboard service... 100ms")
+//        }
+//        self.leaderboard?.startPeriodicUpdate()
+//        self.logger.info("Leaderboard is READY!")
+    }
+    
+    private func fetchPublicProfile2() async throws {
+        
+//        if let publicProfile = try await PublicDatabase.shared.fetchOwnPublicProfileIfExist() {
+//            // Public profile
+//            self.publicProfile = publicProfile
+//            self.logger.debug("Public profile exist")
+//        }
     }
 }

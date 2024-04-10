@@ -30,7 +30,7 @@ struct ShakeEffect: GeometryEffect {
 
 struct TitleEditingView: View {
     @Binding var titleSelected: String
-    @State var profile: Profile
+    @State var profile: PublicProfile
     
     @Environment(AchievementsProgression.self) private var progs: AchievementsProgression
     let shakeManager = ShakeStateManager<Title>()
@@ -141,7 +141,7 @@ struct ProgressionView: View {
 #Preview {
     TitleEditingView(
         titleSelected: .constant(Title.newLeaf.rawValue),
-        profile: Profile.preview
+        profile: PublicProfile.preview
     )
     .frame(height: 450)
     .environment(AchievementsProgression.preview)

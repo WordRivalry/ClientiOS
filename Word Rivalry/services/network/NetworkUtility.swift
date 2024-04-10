@@ -9,29 +9,47 @@ import Foundation
 import Network
 import os.log
 
+
+extension Notification.Name {
+    static let didConnectToInternet = Notification.Name("didConnectToInternet")
+}
+
 class NetworkChecker {
     static let shared = NetworkChecker()
     
-    private let monitor = NWPathMonitor()
+    private let monitor: NWPathMonitor
     private let queue = DispatchQueue(label: "NetworkMonitor")
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "NetworkChecker")
+    private let logger = Logger(subsystem: "Network", category: "NetworkChecker")
     
-    private(set) var isConnected: Bool = false
+    var isConnected: Bool = false {
+          didSet {
+              if isConnected {
+                  Task { @MainActor in
+                      self.logger.info("Connection status: \(self.isConnected)")
+                      // Notify observers about the connectivity change.
+                      NotificationCenter.default.post(name: .didConnectToInternet, object: nil)
+                  }
+              }
+          }
+    }
     
     private init() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            self?.isConnected = path.status == .satisfied
-        }
+        monitor = NWPathMonitor()
         self.logger.info("*** NetworkChecker STARTED ***")
     }
     
     public func startMonitoring() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            self?.isConnected = path.status == .satisfied
+        }
         monitor.start(queue: queue)
+        
         self.logger.debug("Network monitoring started")
     }
     
-    public func cancelMonitoring() {
+    public func stopMonitoring() {
         monitor.cancel()
         self.logger.debug("Network monitoring paused")
     }
 }
+

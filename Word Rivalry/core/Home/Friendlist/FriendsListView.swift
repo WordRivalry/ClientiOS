@@ -11,7 +11,7 @@ struct FriendsListView: View {
     @Environment(Friends.self) private var friends: Friends
     
     // Local state to store fetched profiles
-    @State private var profiles: [Profile] = []
+    @State private var profiles: [PublicProfile] = []
     
     var body: some View {
         VStack {
@@ -46,15 +46,15 @@ struct FriendsListView: View {
         let recordIDs = friends.friends.map { $0.friendRecordID }
         Task {
             do {
-                let fetchedProfiles = try await PublicDatabase.shared.fetchManyProfiles(forUserRecordIDs: recordIDs)
+                let fetchedProfiles = try await PublicDatabase.shared.fetchManyPublicProfiles(forUserRecordIDs: recordIDs)
                 
                 if (friends.friends.count != fetchedProfiles.count) {
                     profiles = [
-                        Profile(userRecordID: "234234234", playerName: "Player 1"),
-                        Profile(userRecordID: "234234234", playerName: "Player 2"),
-                        Profile(userRecordID: "234234234", playerName: "Player 3"),
-                        Profile(userRecordID: "234234234", playerName: "Player 4"),
-                        Profile(userRecordID: "234234234", playerName: "Player 5"),
+                        PublicProfile(userRecordID: "234234234", playerName: "Player 1"),
+                        PublicProfile(userRecordID: "234234234", playerName: "Player 2"),
+                        PublicProfile(userRecordID: "234234234", playerName: "Player 3"),
+                        PublicProfile(userRecordID: "234234234", playerName: "Player 4"),
+                        PublicProfile(userRecordID: "234234234", playerName: "Player 5"),
                     ]
                 } else {
                     profiles = fetchedProfiles

@@ -18,7 +18,7 @@ protocol CloudKitConvertible {
 class CloudKitManager {
     private let container: CKContainer
     private var database: CKDatabase
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "CloudKitManager")
+    private let logger = Logger(subsystem: "CloudKit", category: "CloudKitManager")
     
     init(containerIdentifier: String, databaseScope: CKDatabase.Scope) {
         self.container = CKContainer(identifier: containerIdentifier)

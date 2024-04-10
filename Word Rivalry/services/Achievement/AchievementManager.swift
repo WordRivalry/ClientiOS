@@ -28,11 +28,11 @@ class AchievementsManager {
     func checkIfMissingProgression() {
         AchievementName.allCases.forEach { achievementName in
             Task {
-                let progression = await DataSource.shared.fetchAchievementProgression().first(where: { progression in
+                let progression = await SwiftDataSource.shared.fetchAchievementProgression().first(where: { progression in
                     progression.name == achievementName.rawValue
                 })
                 if (progression == nil ) { // Add it to the achievements
-                    await DataSource.shared.appendAchievementProgression(self.newProgression(for: achievementName))
+                    await SwiftDataSource.shared.appendAchievementProgression(self.newProgression(for: achievementName))
                 }
             }
         }
@@ -146,7 +146,7 @@ extension AchievementsManager: EventSubscriber {
     
     @MainActor func isUnlocked(achievementName: AchievementName) -> Bool {
         self.logger.debug("isUnlocked for \(achievementName.rawValue)")
-        guard let progression: AchievementProgression = DataSource.shared
+        guard let progression: AchievementProgression = SwiftDataSource.shared
             .fetchAchievementProgression()
             .first(where: { progression in
                 progression.name == achievementName.rawValue
@@ -158,7 +158,7 @@ extension AchievementsManager: EventSubscriber {
     func evaluate(event: AnyEvent, achievement: Achievement) -> Void {
         Task {
             self.logger.debug("Evaluate for \(achievement.name.rawValue)")
-            let progression: AchievementProgression? = await DataSource.shared.fetchAchievementProgression()
+            let progression: AchievementProgression? = await SwiftDataSource.shared.fetchAchievementProgression()
                 .first(where: { progression in
                     progression.name == achievement.name.rawValue
                 })

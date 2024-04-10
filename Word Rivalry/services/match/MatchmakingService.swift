@@ -8,15 +8,11 @@
 import Foundation
 import os.log
 
-protocol MatchmakingDelegate_onMatchFound: AnyObject {
-    func didFoundMatch(gameSessionUUID: String, opponentUsername: String, opponentElo: Int)
-}
-
-protocol MatcMatchmakingDelegate_onSearch: AnyObject {
+protocol MatcMatchmakingDelegate: AnyObject {
     func didNotConnect()
-    func didNotSendMessage()
     func didJoinedQueue()
     func didNotJoinedQueue()
+    func didFoundMatch(gameSessionUUID: String, opponentUsername: String, opponentElo: Int)
 }
 
 // Message Type
@@ -71,8 +67,7 @@ enum GameMode: String, CaseIterable, Codable {
 class MatchmakingService: WebSocketService {
     static let shared = MatchmakingService()
     var webSocketTask: URLSessionWebSocketTask?
-    var matchmakingDelegate: MatchmakingDelegate_onMatchFound?
-    var matcMatchmakingDelegate_Searching: MatcMatchmakingDelegate_onSearch?
+    var matchmakingDelegate: MatcMatchmakingDelegate?
     private let logger = Logger(subsystem: "com.WordRivalry", category: "MatchmakingService")
     
     private override init() {
@@ -90,12 +85,8 @@ class MatchmakingService: WebSocketService {
         super.connect(url: url, headers: headers)
     }
     
-    func setMatchmakingDelegate_onMatchFound(_ delegate :MatchmakingDelegate_onMatchFound) {
+    func setMatchmakingDelegate(_ delegate :MatcMatchmakingDelegate) {
         self.matchmakingDelegate = delegate
-    }
-    
-    func setMatchmakingDelegate(_ delegate :MatcMatchmakingDelegate_onSearch) {
-        self.matcMatchmakingDelegate_Searching = delegate
     }
     
     enum MatchmakingMessageReceived: String, Codable {
@@ -118,6 +109,20 @@ class MatchmakingService: WebSocketService {
         }
         
         do {
+            
+            do {
+                // Decode the JSON data to a generic Swift type (e.g., [String: Any])
+                let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                
+                if let jsonDictionary = jsonObject as? [String: Any] {
+                    self.logger.debug("Decoded JSON: \(jsonDictionary)")
+                } else {
+                    self.logger.error("JSON is not a dictionary")
+                }
+            } catch {
+                self.logger.error("Failed to decode JSON: \(error.localizedDescription)")
+            }
+            
             let messageTypeWrapper = try JSONDecoder().decode(WrappedType.self, from: data)
             let messageType = messageTypeWrapper.type
             
@@ -125,7 +130,7 @@ class MatchmakingService: WebSocketService {
             
             switch messageType {
             case .CONNECTION_SUCCESS:
-                self.logger.debug("Connection success to matchmaking server")
+                self.logger.info("Connection success to matchmaking server")
             case .JOIN_QUEUE_SUCCESS:
                 if let decodedMessage = try? JSONDecoder().decode(JoinQueueSuccessMessage.self, from: data) {
                     handleJoinQueueSuccess(decodedMessage)
@@ -139,7 +144,7 @@ class MatchmakingService: WebSocketService {
                     handleMatchFound(decodedMessage)
                 }
             case .LEFT_QUEUE_SUCCESS:
-                self.logger.debug("Left queue")
+                self.logger.info("Left queue")
             }
         } catch {
             self.logger.error("Failed to parse message type: \(error)")
@@ -153,41 +158,28 @@ class MatchmakingService: WebSocketService {
 // MARK: - Message received
 extension MatchmakingService {
     func handleJoinQueueSuccess(_ message: JoinQueueSuccessMessage) {
-        self.matcMatchmakingDelegate_Searching?.didJoinedQueue()
+        self.logger.info("Joined matchmaking queue!")
+        self.matchmakingDelegate?.didJoinedQueue()
     }
 
-    
     func handleJoinQueueFailure(_ message: JoinQueueFailureMessage) {
-        // Access the code from the message payload
         let errorCode = message.payload.errorCode
-        
-        // Update the application state or UI with this information
         self.logger.error("Failed to joined queue. Error Code: \(errorCode)")
-        
-        // Notify the delegate
-        self.matcMatchmakingDelegate_Searching?.didNotJoinedQueue()
+        self.matchmakingDelegate?.didNotJoinedQueue()
     }
     
     func handleMatchFound(_ message: MatchFoundMessage) {
         
-        self.logger.debug("Did found match")
+        self.logger.info("Match found!")
         
-        // Access GameSessionUUID from the message payload
         let gameSessionUUID = message.payload.gameSessionId
-        
-        // Access opponentUsername from the message payload
         let opponentUsername = message.payload.opponent.opponentUsername
-        
-        // Access opponentElo from the message payload
         let opponentElo = message.payload.opponent.opponentElo
-        
-        // Now that we have successfully unwrapped the JSON, call the delegate method
         self.matchmakingDelegate?.didFoundMatch(
             gameSessionUUID: gameSessionUUID,
             opponentUsername: opponentUsername,
             opponentElo: opponentElo
         )
-        
         self.disconnect()
     }
 }
@@ -216,8 +208,8 @@ extension MatchmakingService {
         var type: MatchmakingMessageSend = .LEAVE_QUEUE
     }
     
-    func findMatch(gameMode: GameMode, modeType: ModeType) throws {
-        let payload = JoinQueueRequest.Payload(gameMode: gameMode, modeType: modeType, elo: 1000)
+    func findMatch(gameMode: GameMode, modeType: ModeType, eloRating: Int) throws {
+        let payload = JoinQueueRequest.Payload(gameMode: gameMode, modeType: modeType, elo: eloRating)
         let message = JoinQueueRequest(payload: payload)
         send(message)
     }

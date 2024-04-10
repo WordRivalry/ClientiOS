@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RankedGameCardView: View {
+struct GameCardView: View {
     var cardName: String
     var action: () -> Void
     @State private var showDetails = false
@@ -149,7 +149,7 @@ struct CardDetailsView: View {
 }
 
 #Preview {
-    return RankedGameCardView(
+    return GameCardView(
         cardName: "NORMAL",
         action: {}
     )

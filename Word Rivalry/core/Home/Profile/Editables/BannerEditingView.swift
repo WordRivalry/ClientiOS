@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BannerEditingView: View {
     @Binding var bannerSelected: String
-    @State var profile: Profile
+    @State var profile: PublicProfile
     @State var lockedImageSelected: String?
     @Environment(AchievementsProgression.self) private var progs: AchievementsProgression
     let content = ContentRepository.shared
@@ -106,7 +106,7 @@ struct BannerEditingView: View {
 #Preview {
     BannerEditingView(
         bannerSelected: .constant(Banner.PB_0.rawValue), profile:
-            Profile.preview
+            PublicProfile.preview
     )
     .environment(AchievementsProgression.preview)
     .frame(height: 450)

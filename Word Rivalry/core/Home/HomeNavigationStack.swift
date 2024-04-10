@@ -7,7 +7,7 @@
 
 import SwiftUI
 struct HomeNavigationStack: View {
-    @Environment(Profile.self) private var profile: Profile
+    @Environment(PublicProfile.self) private var profile: PublicProfile
     @Namespace var namespace
     
     @State private var showDetailedProfile = false

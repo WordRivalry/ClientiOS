@@ -9,11 +9,12 @@ import SwiftUI
 
 struct EditableProfileCardView: View {
     var namespace: Namespace.ID
-    @Environment(Profile.self) private var profile: Profile
+    @Environment(PublicProfile.self) private var profile: PublicProfile
     @State var rotation: CGFloat = 0
     @State var showEditNameAlert: Bool = false
     @State var textField: String = ""
     @State private var selectedTabIndex = 0
+    @State private var inPlayerNameEdite: Bool = false
     private let tabs = ["Picture", "Banner", "Title"]
     
     var body: some View {
@@ -27,6 +28,11 @@ struct EditableProfileCardView: View {
             ProfileCardBackground(namespace: namespace)
         )
         .padding()
+        .fullScreenCover(isPresented: $inPlayerNameEdite, content: {
+            PlayerNameEditingView()
+                .presentationBackground(.bar)
+                .fadeIn()
+        })
     }
     
     @ViewBuilder
@@ -44,8 +50,7 @@ struct EditableProfileCardView: View {
             Spacer()
             
             VStack(alignment: .leading,spacing: 10) {
-                PlayerNameView(playerName: profile.playerName)
-                    .matchedGeometryEffect(id: "playerNameView", in: namespace)
+                playerNameView
                     .frame(width: 150)
                 TitleView(title: profile.title)
                     .padding(.vertical)
@@ -60,25 +65,16 @@ struct EditableProfileCardView: View {
     var playerNameView: some View {
         HStack(spacing: 20) {
             PlayerNameView(playerName: profile.playerName)
+              
                 .font(.headline)
             Button(action: {
-                showEditNameAlert = true
+                inPlayerNameEdite = true
             }) {
                 Image(systemName: "pencil")
                     .tint(.accent)
             }
-            .alert(Text("Write desired player name"),
-                   isPresented: $showEditNameAlert,
-                   actions: {
-                Button("Confirm") { }
-                Button("Cancel", role: .cancel) {}
-            }, message: {
-                TextField("Player Name", text: $textField, onCommit: {
-                    // Update the profile's player name with the edited value on commit
-                    profile.playerName = self.textField
-                })
-            })
         }
+        .matchedGeometryEffect(id: "playerNameView", in: namespace)
     }
     
     @ViewBuilder
@@ -145,7 +141,7 @@ struct EditableProfileCardView: View {
         previewContainer
     } content: {
         EditableProfileCardView(namespace: namespace)
-           .environment(Profile.preview)
+           .environment(PublicProfile.preview)
            .environment(AchievementsProgression.preview)
     }
 }

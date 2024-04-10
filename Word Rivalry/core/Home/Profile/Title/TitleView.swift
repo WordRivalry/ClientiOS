@@ -12,6 +12,7 @@ struct TitleView: View {
     var body: some View {
         Text(title)
             .bold()
+            .lineLimit(1) // Ensure the text does not wrap to a new line
             .foregroundColor(.accent)
     }
 }

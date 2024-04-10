@@ -67,7 +67,7 @@ protocol GameType {
     var message: String = ""
     var gameStatus: GameStatus = .notStarted
     
-    var onGameEnded: (() -> Void)?
+    var onGameEnded: ((Bool) -> Void)?
     
     // Delegate
     var timeLeft: String = ""
@@ -262,7 +262,7 @@ extension GameModel: Board_OnTap_Delegate {
 // MARK: WS SEND
 extension GameModel {
     func quitGame() {
-        self.onGameEnded?()
+        self.onGameEnded?(false)
         BattleServerService.shared.leaveGame()
     }
 }
@@ -297,7 +297,7 @@ extension GameModel: WebSocket_GameDelegate {
         self.gameResults = GameResults(winner: winner, playerResults: playerResults)
         self.message = "Game ended. Winner(s): \(winner)"
         self.logger.debug("Game Has Ended ! - Game Result Received ! ")
-        self.onGameEnded!()
+        self.onGameEnded!(opponentName != winner)
     }
     
     func didReceiveOpponentLeft() {

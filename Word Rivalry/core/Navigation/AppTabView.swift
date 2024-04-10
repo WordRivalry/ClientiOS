@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import os.log
 
 struct AppTabView: View {
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "AppTabView")
     @Binding var selection: AppScreen?
     
     var body: some View {
@@ -19,6 +21,9 @@ struct AppTabView: View {
                     .tabItem { screen.label }
             }
         }
+        .onAppear {
+            self.logger.debug("*** PlayNavigationStack Appear ***")
+        }
         .ignoresSafeArea()
         .persistentSystemOverlays(.hidden)
     }
@@ -29,6 +34,7 @@ struct AppTabView: View {
         previewContainer
     } content: {
         AppTabView(selection: .constant(.home))
+            .environment(BattleOrchestrator(profile: PublicProfile.preview, modeType: .NORMAL))
             .environment(Friends.preview)
             .environment(Profile.preview)
             .environment(AchievementsProgression.preview)

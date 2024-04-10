@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RankedGameTournamentCardView: View {
+struct GameTournamentCardView: View {
     let nextTournament: Date
     
     var body: some View {
@@ -33,5 +33,5 @@ struct RankedGameTournamentCardView: View {
 }
 
 #Preview {
-    RankedGameTournamentCardView(nextTournament: Date.now)
+    GameTournamentCardView(nextTournament: Date.now)
 }

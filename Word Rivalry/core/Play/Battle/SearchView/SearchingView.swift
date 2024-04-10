@@ -6,27 +6,30 @@
 //
 
 import SwiftUI
+import os.log
 
 struct SearchingView: View {
-    var viewModel: SearchModel
-    @Environment(\.dismiss) var dismiss
-    
+    private let logger = Logger(subsystem: "com.WordRivalry", category: "SearchingView")
     @State private var textScale = 0.1 // Start scaled down
     @State private var textOpacity = 0.0 // Start almost invisible
-    
-    // Define specific animation durations for better control
+    @Environment(BattleOrchestrator.self) private var battleOrchestrator: BattleOrchestrator
     let textAppearDuration = 0.5
     let blinkDuration = 3.0
+    
+    init() {
+        self.logger.debug("*** SearchingView INITIATED ***")
+    }
     
     var body: some View {
         ZStack {
             AnimatedCirclesView()
             
             VStack {
-                Text(viewModel.modeType.rawValue)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.top, 50)
+                
+                Text(battleOrchestrator.modeType.rawValue)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 50)
                 
                 Spacer()
                 
@@ -57,21 +60,30 @@ struct SearchingView: View {
                 
                 Spacer()
                 
-                BasicButton(text: "Cancel Search") {
+                BasicDissmiss(text: "Cancel") {
                     do {
-                        try viewModel.cancelSearch()
+                        try SearchService.shared.cancelSearch()
+                        self.logger.debug("SearchView Dissmissed")
                     } catch {
-                        print("Error occurred: \(error)")
+                        self.logger.error("Error occurred: \(error)")
                     }
-                    dismiss()
                 }
                 .padding(.bottom, 50)
             }
         }
         .edgesIgnoringSafeArea(.all)
+        .onAppear {
+            self.logger.debug("* SearchingView Appeared *")
+        }.onDisappear {
+            self.logger.debug("* SearchingView Disappeared *")
+        }
     }
 }
 
 #Preview {
-    SearchingView(viewModel: SearchModel(modeType: ModeType.NORMAL, playerName: "Lighthouse", playerUUID: "LighthouseUUID"))
+    return ModelContainerPreview {
+        previewContainer
+    } content: {
+        SearchingView()
+    }
 }

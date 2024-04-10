@@ -33,6 +33,8 @@ extension AppScreen {
     
     @ViewBuilder
     var destination: some View {
+        
+        
         switch self {
         case .home:
             HomeNavigationStack()
@@ -45,5 +47,9 @@ extension AppScreen {
 }
 
 #Preview {
-    AppScreen.home.label
+    ModelContainerPreview {
+        previewContainer
+    } content: {
+        AppScreen.home.label
+    }
 }

@@ -9,31 +9,27 @@ import Foundation
 import SwiftData
 import os.log
 
-final class DataSource {
+final class SwiftDataSource {
     var isReady: Bool = false
     
     private var modelContainer: ModelContainer
     private let modelContext: ModelContext
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "datasource")
+    private let logger = Logger(subsystem: "SwiftData", category: "DataSource")
 
     @MainActor
-    static let shared = DataSource()
+    static let shared = SwiftDataSource()
 
     @MainActor
     init() {
         self.logger.info("*** Datasource STARTED ***")
-        if (true) {
-            self.logger.info("Datasource init with previewContainer")
-            self.modelContainer = previewContainer
-            self.modelContext = modelContainer.mainContext
-        } else {
-            self.logger.info("Datasource for DEV")
-            self.modelContainer = try! ModelContainer(
-                for: Profile.self, AchievementProgression.self, Friend.self,
-                configurations: ModelConfiguration(cloudKitDatabase: .private("iCloud.WordRivalryContainer"))
-            )
-            self.modelContext = modelContainer.mainContext
-        }
+     
+        self.logger.info("Datasource for DEV")
+        self.modelContainer = try! ModelContainer(
+            for: Profile.self, AchievementProgression.self, Friend.self,
+            configurations: ModelConfiguration(cloudKitDatabase: .private("iCloud.WordRivalryContainer"))
+        )
+        self.modelContext = modelContainer.mainContext
+        
         self.isReady = true
         self.logger.info("*** DataSource START COMPLETED ***")
     }

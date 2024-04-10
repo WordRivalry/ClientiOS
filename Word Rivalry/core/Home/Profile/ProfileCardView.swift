@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProfileCardView: View {
     var namespace: Namespace.ID
-    @Environment(Profile.self) private var profile: Profile
+    @Environment(PublicProfile.self) private var profile: PublicProfile
     @State var rotation: CGFloat = 0
     
     var body: some View {
@@ -47,6 +47,6 @@ struct ProfileCardView: View {
         previewContainer
     } content: {
         ProfileCardView(namespace: namespace)
-           .environment(Profile.preview)
+           .environment(PublicProfile.preview)
     }
 }
