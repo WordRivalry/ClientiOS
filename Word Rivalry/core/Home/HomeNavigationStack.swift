@@ -42,7 +42,7 @@ struct HomeNavigationStack: View {
                     .matchedGeometryEffect(id: "button1", in: namespace)
                     
                     BasicButton(text: "Achievements") {
-                        showAchievements = true
+                         showAchievements = true
                     }
                     .matchedGeometryEffect(id: "button2", in: namespace)
                 }
@@ -52,7 +52,6 @@ struct HomeNavigationStack: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
                 EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
-                
                 showDetailedProfile = false
             }
             .background(
@@ -102,18 +101,7 @@ struct HomeNavigationStack: View {
                         .matchedGeometryEffect(id: "homeTool1", in: namespace)
                     }
                 }
-                
-                ToolbarItem(placement: .automatic) {
-                    Button(action: {
-                        withAnimation(.easeInOut) {
-                            showFriendsList = true
-                        }
-                    }) {
-                        Image(systemName: "person.3.fill")
-                        
-                    }
-                }
-                
+
                 ToolbarItem(placement: .status) {
                     if (false) {
                         Button(action: {
@@ -141,10 +129,8 @@ struct HomeNavigationStack: View {
                                 .scaledToFit()
                                 .frame(width: 30, height: 30)
                             
-                            
-                            
                             // Text positioned above the capsule
-                            Text("233")
+                            Text("0")
                                 .foregroundColor(.white)
                                 .font(.title3)
                         }
@@ -160,7 +146,6 @@ struct HomeNavigationStack: View {
         previewContainer
     } content: {
         HomeNavigationStack()
-            .environment(AppDataService.preview)
             .environment(PublicProfile.preview)
             .environment(Friends.preview)
             .environment(Profile.preview)

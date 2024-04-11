@@ -16,7 +16,7 @@ enum LaunchScreen {
     case error
 }
 
-@Observable class LaunchService: Service {
+@Observable class LaunchService {
  
     private let logger = Logger(subsystem: "com.WordRivalry", category: "LaunchService")
     
@@ -86,7 +86,7 @@ enum LaunchScreen {
     }
     
     private func ensurePublicProfileExists() async throws {
-        await PPLocalService.shared.fetchData()
+        await PPLocalService.sharedInstace.fetchData()
     }
     
     private func findProfile() async throws -> Profile? {
@@ -115,7 +115,7 @@ enum LaunchScreen {
         
         if let publicProfile = try await PublicDatabase.shared.fetchOwnPublicProfileIfExist() {
             // Public profile
-            PPLocalService.shared.player = publicProfile
+            PPLocalService.sharedInstace.player = publicProfile
             self.logger.debug("Public profile exist")
             
             // SwiftData profile
@@ -129,7 +129,7 @@ enum LaunchScreen {
     private func createBothProfileAndPublicProfile() async throws {
       
         // Public profile
-        PPLocalService.shared.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: UUID().uuidString)
+        PPLocalService.sharedInstace.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: UUID().uuidString)
         self.logger.debug("Public profile created")
         
         // SwiftData profile

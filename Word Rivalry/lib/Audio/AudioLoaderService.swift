@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 import OSLog
 
-private let logger = Logger(subsystem: "PixelsAnima", category: "Audio")
+private let logger = Logger(subsystem: "audio", category: "AudioLoaderService")
 
 class AudioLoaderService {
     func loadSongs() async -> [Song] {
@@ -30,7 +30,7 @@ class AudioLoaderService {
                         do {
                             return try await self.createSong(from: songPath)
                         } catch {
-                            print("Failed to create song from URL \(songPath): \(error)")
+                            logger.error("Failed to create song from URL \(songPath): \(error)")
                             return nil
                         }
                     }
@@ -44,11 +44,10 @@ class AudioLoaderService {
                 }
             }
             
-            logger.notice("Songs loaded")
-            
+            logger.info("Songs loaded")
             return loadedSongs
         } catch {
-            print("Failed to load songs: \(error)")
+            logger.error("Failed to load songs: \(error)")
             return []
         }
     }

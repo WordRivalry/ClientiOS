@@ -9,7 +9,7 @@ import Foundation
 import GameKit
 import OSLog
 
-@Observable final class AchievementsService: DataService {
+@Observable final class AchievementsService: JITData {
     var gkAchievements: [GKAchievement] = []
       
     init() {

@@ -8,31 +8,49 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(AppService.self) private var appService: AppService
+    // Handle the entire color scheme of the app
+    @StateObject private var colorSchemeManager = ColorSchemeManager.shared
+    @Environment(AppServiceManager.self) private var appService: AppServiceManager
     var notificationManager = NotificationManager.shared
+    
+    @State var showNoInternet = false
+    
+    @State private var appScreen: AppScreen? = .home
     
     var body: some View {
         ZStack {
-            // Check if appService is ready
-            if !appService.isReady {
+            if appService.isReady {
+                Group {
+                    switch appService.screenToDisplay {
+                    case .noIcloud:
+                        IcloudStatusMessageView()
+                    case .noInternet:
+                        InternetStatusMessageView(message: "For profile creation")
+                    case .main:
+                        AppTabView(selection: $appScreen)
+                            .environment(appService.profileDataService.ppLocal.player!)
+                            .environment(appService.profileDataService.swiftData.profile!)
+                            .environment(appService.audioService)
+                            .environment((appService.jitData.getService(for: .leaderboard) as LeaderboardService))
+                            .environment((appService.jitData.getService(for: .achievements) as AchievementsService))
+                    case .error:
+                        Text("An error occured")
+                    }
+                }
+            } else {
                 VStack {
-                    //    Spacer()
-                    //   IntroView(onFinished: {})
                     Spacer()
                     ProgressView(value: appService.progress)
-                        .onAppear {
-                            appService.startApplication()
-                        }
-                    Text(appService.message)
+                        .onAppear {Task{
+                            await self.appService.start()
+                        }}
+                    Text(appService.messages.last ?? "Nothing to worry!")
                     Spacer()
                 }
                 .frame(width: 350)
                 
-            } else {
-                ScreenView()
-                // When appService is ready, services MUST be available
-                    .environment(appService.services!.launchService)
-                    .environment(appService.services!.audioService)
+                .transition(.opacity)
+                .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
                 
                 if notificationManager.showNotification {
                     AchievementNotificationView(achievementName: notificationManager.currentAchievementName)
@@ -41,18 +59,21 @@ struct ContentView: View {
                         .zIndex(1) // Ensure notification appears above other content
                 }
             }
-            
         }
-//        .onChange(of: iCloudService.shared.iCloudStatus) { b, a in
-//            if b != .available && a == .available {
-//                appService.startApplication()
-//            }
-//        }
     }
 }
 
 #Preview {
-    ContentView()
-        .environment(AppService())
-        .environment(AppDataService())
+    let jitDataService = JITDataService<JITDataType>()
+    jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
+    jitDataService.registerService(AchievementsService(), forType: .achievements)
+    
+    return ContentView()
+        .environment(
+            AppServiceManager(
+                audioService: AudioSessionService(),
+                profileDataService: ProfileDataService(),
+                jitData: jitDataService
+            )
+        )
 }

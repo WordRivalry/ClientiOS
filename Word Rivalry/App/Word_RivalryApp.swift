@@ -10,31 +10,32 @@ import SwiftData
 import OSLog
 import CloudKit
 
-protocol SceneLifeCycle {
-    func handleAppBecomingActive() -> Void
-    func handleAppGoingInactive() -> Void
-    func handleAppInBackground() -> Void
-}
-
-protocol ViewLifeCycle {
-    func handleViewDidAppear() -> Void
-    func handleViewDidDisappear() -> Void
+enum JITDataType: JITServiceType {
+    case leaderboard
+    case achievements
 }
 
 @main
 struct Word_RivalryApp: App {
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @Environment(\.scenePhase) private var scenePhase
-    let appDataService = AppDataService()
-    let appService = AppService()
+    let services: AppServiceManager
     
-    init() {}
+    init() {
+        let jitDataService = JITDataService<JITDataType>()
+        jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
+        jitDataService.registerService(AchievementsService(), forType: .achievements)
+        self.services = AppServiceManager(
+            audioService: AudioSessionService(),
+            profileDataService: ProfileDataService(),
+            jitData: jitDataService
+        )
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(appDataService)
-                .environment(appService)
+                .environment(services)
             .onChange(of: scenePhase) {
                 self.handleScheneChange()
             }
@@ -46,14 +47,14 @@ struct Word_RivalryApp: App {
         case .active:
             Logger.sceneEvents.info("!!! Scene is active !!!")
             NetworkChecker.shared.startMonitoring()
-            appDataService.handleAppBecomingActive()
+            services.handleAppBecomingActive()
         case .inactive:
             Logger.sceneEvents.info("!!! Scene is inactive !!!")
-            appDataService.handleAppGoingInactive()
+            services.handleAppGoingInactive()
         case .background:
             Logger.sceneEvents.info("!!! Scene on background !!!")
             NetworkChecker.shared.stopMonitoring()
-            appDataService.handleAppInBackground()
+            services.handleAppInBackground()
         default:
             break
         }
@@ -82,7 +83,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
            guard let zoneNotification = CKNotification(fromRemoteNotificationDictionary: userInfo) as? CKRecordZoneNotification else {
                print("CloudKit database changed")
                Task {
-                   await PPLocalService.shared.fetchData()
+                   await PPLocalService.sharedInstace.fetchData()
                }
                if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
                    

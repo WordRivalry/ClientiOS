@@ -7,25 +7,43 @@
 
 import Foundation
 import AVFAudio
+import OSLog
 
 /// AudioSessionController manages the lifecycle of an audio session.
 /// It handles interruptions from the system and notifies the audio controller.
-class AudioSessionService: ObservableObject {
-    let audioService: AudioService
+@Observable class AudioSessionService: ServiceCoordinator {
+    var audioService: AudioService
 
     /// Initializes an instance of AudioSessionController with an audio controller.
     /// - Parameter audioController: The audio controller to be used for controlling audio.
     init(audioService: AudioService = AudioService()) {
         self.audioService = audioService
-        let audioSession = AVAudioSession.sharedInstance()
+        super.init()
         
-        // Listen for audio interruption notifications.
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleAudioInterruptions),
-            name: AVAudioSession.interruptionNotification,
-            object: audioSession
-        )
+        // Need to await this service
+        self.addService(audioService)
+        
+        configureAudioSession()
+    }
+    
+    private func configureAudioSession() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            // Set the audio session category to playback with default mode.
+            // Adjust the category according to your app's audio usage.
+            try audioSession.setCategory(.playback, mode: .default)
+            
+            // Listen for audio interruption notifications.
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(handleAudioInterruptions),
+                name: AVAudioSession.interruptionNotification,
+                object: audioSession
+            )
+        } catch {
+            Logger.audio.error("Failed to set audio session category: \(error)")
+        }
+        Logger.audio.info("AudioSession configuration done")
     }
     
     deinit {
@@ -40,9 +58,12 @@ class AudioSessionService: ObservableObject {
               let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
             return
         }
+        
+        Logger.audio.info("!!! Audio interruption \(type.rawValue) notification received !!!")
 
         switch type {
         case .began:
+          
             // Pause audio when interruption begins.
             audioService.musicManager.pauseSong()
         case .ended:

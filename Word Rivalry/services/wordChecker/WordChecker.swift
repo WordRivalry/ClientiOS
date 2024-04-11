@@ -7,13 +7,10 @@
 
 import Foundation
 
-class WordChecker: ObservableObject {
+@Observable class WordChecker {
     private var root: TrieNode?
-    
     static let shared = WordChecker()
-    
-    private init() { // Make the initializer private to prevent external instantiation.
-    }
+    private init() {}
     
     func loadTrieFromFile(rss: String) {
         guard let url = Bundle.main.url(forResource: rss, withExtension: "json"),
@@ -43,5 +40,24 @@ class WordChecker: ObservableObject {
         // Le mot existe si le dernier nœud visité marque la fin d'un mot
         return currentNode.isEndOfWord
     }
+}
+
+extension WordChecker: AppService {
+    var isReady: Bool {
+        root != nil
+    }
+    
+    var isCritical: Bool {
+        true
+    }
+    
+    func start() async -> String {
+        self.loadTrieFromFile(rss: "french_trie_serialized")
+        return "French Dictionnary Loaded"
+    }
+    
+    func handleAppBecomingActive() { }
+    func handleAppGoingInactive() { }
+    func handleAppInBackground() { } // Should release
 }
 

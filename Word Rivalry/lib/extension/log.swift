@@ -15,6 +15,9 @@ extension Logger {
     /// Logs the scene events from the app
     static let sceneEvents = Logger(subsystem: subsystem, category: "sceneEvents")
     
+    /// Logs the service manager actions
+    static let serviceManager = Logger(subsystem: subsystem, category: "dataServices")
+    
     /// Logs the data services actions
     static let dataServices = Logger(subsystem: subsystem, category: "dataServices")
     
@@ -26,4 +29,9 @@ extension Logger {
     
     /// Logs the timer events from the app
     static let timer = Logger(subsystem: subsystem, category: "timer")
+    
+    /// Logs the audio events from the app
+    static let audio = Logger(subsystem: subsystem, category: "audio")
+    
+
 }

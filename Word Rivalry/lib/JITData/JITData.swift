@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-@Observable class DataService: SceneLifeCycle, ViewLifeCycle {
+@Observable class JITData: SceneLifeCycle, ViewLifeCycle {
     
     var isFetching: Bool = false
     var lastUpdateTime: Date?

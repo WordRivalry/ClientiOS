@@ -9,13 +9,16 @@ import Foundation
 import AVFoundation
 
 
-class MusicPlayer: NSObject, AudioPlayable, AVAudioPlayerDelegate, ObservableObject {
+@Observable class MusicPlayer: NSObject, AudioPlayable, AVAudioPlayerDelegate {
     
     static let shared = MusicPlayer()
     
-    @Published var isPlaying: Bool = false
+    var isPlaying: Bool = false
+    var songProgress: Double = 0
+    
+    @ObservationIgnored
     private(set) var audioPlayer: AVAudioPlayer?
-    @Published var songProgress: Double = 0
+    @ObservationIgnored
     private var progressTimer: Timer?
     
     public override init() {

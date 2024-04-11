@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-@Observable final class LeaderboardService: DataService {
+@Observable final class LeaderboardService: JITData {
     var players: [PublicProfile] = []
       
     @MainActor

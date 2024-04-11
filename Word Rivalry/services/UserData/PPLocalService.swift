@@ -9,21 +9,29 @@ import Foundation
 import OSLog
 
 @Observable final class PPLocalService {
+    
+    /// Public profile of the user
+    /// Is static sense we do not need multiple intances of the profile
     var player: PublicProfile?
+    static var sharedInstace: PPLocalService = PPLocalService()
+    
+    private init() {
+        Task {
+            try? await self.subscribeToChanges()
+        }
+    }
     
     func subscribeToChanges() async throws {
         try await PublicDatabase.shared.subscribeToChanges()
     }
     
-    static var shared: PPLocalService = PPLocalService()
-    private init() {}
-    
     func fetchData() async {
         do {
             if let player = try await fetchPlayer() {
                 self.player = player
+            } else {
+                Logger.dataServices.info("Local public profile not found")
             }
-            Logger.dataServices.info("Local public profile updated")
         } catch {
             Logger.dataServices.error("Failed to fetch local public profile: \(error.localizedDescription)")
         }
@@ -32,10 +40,32 @@ import OSLog
     private func fetchPlayer() async throws -> PublicProfile? {
         return try await PublicDatabase.shared.fetchOwnPublicProfileIfExist()
     }
+
+    // MARK: Preview
     
     static var preview: PPLocalService {
         let service = PPLocalService()
         service.player = PublicProfile.preview
         return service
     }
+}
+
+// MARK: AppService conformance
+extension PPLocalService: AppService {
+    var isReady: Bool {
+        self.player != nil
+    }
+    
+    var isCritical: Bool {
+        true
+    }
+    
+    func start() async -> String {
+        await self.fetchData()
+        return "Public profile loaded? [\(self.player != nil)]"
+    }
+    
+    func handleAppBecomingActive() {Task {await self.fetchData()}}
+    func handleAppGoingInactive() {}
+    func handleAppInBackground() {}
 }

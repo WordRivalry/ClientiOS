@@ -12,7 +12,7 @@ class AchievementsManager {
     static let shared = AchievementsManager()
     private var achievementStores: [AchievementCategory: AchievementStore] = [:]
     private let logger = Logger(subsystem: "com.WordRivalry", category: "AchievementsManager")
-
+ 
     init() {
         // Initialize the stores for each category
         AchievementCategory.allCases.forEach { category in

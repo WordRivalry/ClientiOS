@@ -49,15 +49,13 @@
 		5652D52B2B6814EC0071AE08 /* Word_RivalryUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5652D52A2B6814EC0071AE08 /* Word_RivalryUITestsLaunchTests.swift */; };
 		5652D5412B68E7800071AE08 /* NetworkUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5652D5402B68E7800071AE08 /* NetworkUtility.swift */; };
 		5654A01C2BC17E88001CF6BE /* LaunchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5654A01B2BC17E88001CF6BE /* LaunchService.swift */; };
-		5654A01E2BC19C34001CF6BE /* ServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5654A01D2BC19C34001CF6BE /* ServiceProtocol.swift */; };
 		5654A0202BC1B1E8001CF6BE /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5654A01F2BC1B1E8001CF6BE /* Friend.swift */; };
 		5654A0222BC1C525001CF6BE /* PlayerNameEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5654A0212BC1C525001CF6BE /* PlayerNameEditingView.swift */; };
 		565E14F92B8720B400AD7292 /* BasicButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565E14F82B8720B400AD7292 /* BasicButton.swift */; };
 		565E14FC2B8726B500AD7292 /* AnimatedCirclesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565E14FB2B8726B500AD7292 /* AnimatedCirclesViewModel.swift */; };
 		565E14FE2B8726D000AD7292 /* AnimatedCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565E14FD2B8726D000AD7292 /* AnimatedCirclesView.swift */; };
-		566F147D2B6A063B0069F06D /* ProfileRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F147C2B6A063A0069F06D /* ProfileRecord.swift */; };
 		566F14862B6A1F590069F06D /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14852B6A1F590069F06D /* IntroView.swift */; };
-		566F14882B6A207F0069F06D /* AppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14872B6A207F0069F06D /* AppService.swift */; };
+		566F14882B6A207F0069F06D /* AppServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14872B6A207F0069F06D /* AppServices.swift */; };
 		566F148A2B6A20C00069F06D /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14892B6A20C00069F06D /* ServiceLocator.swift */; };
 		566F149A2B6A21370069F06D /* AudioLoaderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F148E2B6A21360069F06D /* AudioLoaderService.swift */; };
 		566F149B2B6A21370069F06D /* MusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F148F2B6A21360069F06D /* MusicManager.swift */; };
@@ -71,7 +69,6 @@
 		566F14A32B6A21370069F06D /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14972B6A21370069F06D /* Playlist.swift */; };
 		566F14A42B6A21370069F06D /* SoundEffectsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14982B6A21370069F06D /* SoundEffectsManager.swift */; };
 		566F14A52B6A21370069F06D /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14992B6A21370069F06D /* AudioService.swift */; };
-		566F14AE2B6A22CF0069F06D /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14AD2B6A22CF0069F06D /* ThemeService.swift */; };
 		566F14B12B6A26340069F06D /* Music in Resources */ = {isa = PBXBuildFile; fileRef = 566F14B02B6A26330069F06D /* Music */; };
 		566F14B92B6C00200069F06D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14B82B6C00200069F06D /* SettingsView.swift */; };
 		566F14C02B6C4AEA0069F06D /* AppScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566F14BF2B6C4AEA0069F06D /* AppScreen.swift */; };
@@ -124,9 +121,8 @@
 		56BCCC7F2BC4218B00A3C2F0 /* AchievementProgression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCC7E2BC4218B00A3C2F0 /* AchievementProgression.swift */; };
 		56BCCC822BC42F7800A3C2F0 /* TaskQueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCC812BC42F7800A3C2F0 /* TaskQueueManager.swift */; };
 		56BCCC842BC432D100A3C2F0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCC832BC432D100A3C2F0 /* ContentView.swift */; };
-		56BCCCD32BC5BA4400A3C2F0 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD22BC5BA4400A3C2F0 /* DataService.swift */; };
+		56BCCCD32BC5BA4400A3C2F0 /* JITData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */; };
 		56BCCCD52BC5BA5F00A3C2F0 /* PausableTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */; };
-		56BCCCD72BC5BA7A00A3C2F0 /* AppDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */; };
 		56BCCCD92BC5BA9D00A3C2F0 /* log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD82BC5BA9D00A3C2F0 /* log.swift */; };
 		56BCCCDB2BC5BCA200A3C2F0 /* LeaderboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */; };
 		56BCCCDD2BC5C82F00A3C2F0 /* PPLocalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */; };
@@ -141,9 +137,16 @@
 		56BCCCF12BC72CC600A3C2F0 /* FriendListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF02BC72CC600A3C2F0 /* FriendListRow.swift */; };
 		56BCCCF32BC7503200A3C2F0 /* GameCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */; };
 		56BCCCF52BC759F200A3C2F0 /* AchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */; };
-		56BCCCF72BC7641600A3C2F0 /* DataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF62BC7641600A3C2F0 /* DataView.swift */; };
+		56BCCCF72BC7641600A3C2F0 /* JITDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF62BC7641600A3C2F0 /* JITDataView.swift */; };
+		56BCCCFD2BC822C000A3C2F0 /* AppServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCFC2BC822C000A3C2F0 /* AppServiceManager.swift */; };
+		56BCCCFF2BC82ADA00A3C2F0 /* ProfileDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCFE2BC82ADA00A3C2F0 /* ProfileDataService.swift */; };
+		56BCCD012BC82D4A00A3C2F0 /* ServiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD002BC82D4A00A3C2F0 /* ServiceCoordinator.swift */; };
+		56BCCD082BC84B0B00A3C2F0 /* AppServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD072BC84B0B00A3C2F0 /* AppServiceProtocol.swift */; };
+		56BCCD0A2BC84B2500A3C2F0 /* LifeCycleProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD092BC84B2500A3C2F0 /* LifeCycleProtocols.swift */; };
+		56BCCD0D2BC84F9D00A3C2F0 /* JITServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */; };
+		56BCCD0F2BC84FDA00A3C2F0 /* JITDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */; };
+		56BCCD112BC86D1400A3C2F0 /* ServiceEnvironmentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD102BC86D1400A3C2F0 /* ServiceEnvironmentModifier.swift */; };
 		56C1D0C72B84172E005D223F /* MatchmakingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0C62B84172E005D223F /* MatchmakingService.swift */; };
-		56C1D0C92B85BDCD005D223F /* PlayerDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0C82B85BDCD005D223F /* PlayerDefaultsManager.swift */; };
 		56C1D0CB2B86B441005D223F /* ColorSchemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */; };
 		56D5F7522BC21D8F005FBFCD /* EloRatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D5F7512BC21D8F005FBFCD /* EloRatingService.swift */; };
 		56D5F7542BC2CB34005FBFCD /* MatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D5F7532BC2CB34005FBFCD /* MatchService.swift */; };
@@ -215,15 +218,13 @@
 		5652D52A2B6814EC0071AE08 /* Word_RivalryUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word_RivalryUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5652D5402B68E7800071AE08 /* NetworkUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkUtility.swift; sourceTree = "<group>"; };
 		5654A01B2BC17E88001CF6BE /* LaunchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchService.swift; sourceTree = "<group>"; };
-		5654A01D2BC19C34001CF6BE /* ServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocol.swift; sourceTree = "<group>"; };
 		5654A01F2BC1B1E8001CF6BE /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		5654A0212BC1C525001CF6BE /* PlayerNameEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNameEditingView.swift; sourceTree = "<group>"; };
 		565E14F82B8720B400AD7292 /* BasicButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicButton.swift; sourceTree = "<group>"; };
 		565E14FB2B8726B500AD7292 /* AnimatedCirclesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCirclesViewModel.swift; sourceTree = "<group>"; };
 		565E14FD2B8726D000AD7292 /* AnimatedCirclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCirclesView.swift; sourceTree = "<group>"; };
-		566F147C2B6A063A0069F06D /* ProfileRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRecord.swift; sourceTree = "<group>"; };
 		566F14852B6A1F590069F06D /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
-		566F14872B6A207F0069F06D /* AppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppService.swift; sourceTree = "<group>"; };
+		566F14872B6A207F0069F06D /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
 		566F14892B6A20C00069F06D /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		566F148E2B6A21360069F06D /* AudioLoaderService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioLoaderService.swift; sourceTree = "<group>"; };
 		566F148F2B6A21360069F06D /* MusicManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicManager.swift; sourceTree = "<group>"; };
@@ -237,7 +238,6 @@
 		566F14972B6A21370069F06D /* Playlist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		566F14982B6A21370069F06D /* SoundEffectsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundEffectsManager.swift; sourceTree = "<group>"; };
 		566F14992B6A21370069F06D /* AudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
-		566F14AD2B6A22CF0069F06D /* ThemeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeService.swift; sourceTree = "<group>"; };
 		566F14B02B6A26330069F06D /* Music */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Music; sourceTree = "<group>"; };
 		566F14B82B6C00200069F06D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		566F14BF2B6C4AEA0069F06D /* AppScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreen.swift; sourceTree = "<group>"; };
@@ -290,9 +290,8 @@
 		56BCCC7E2BC4218B00A3C2F0 /* AchievementProgression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementProgression.swift; sourceTree = "<group>"; };
 		56BCCC812BC42F7800A3C2F0 /* TaskQueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueManager.swift; sourceTree = "<group>"; };
 		56BCCC832BC432D100A3C2F0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		56BCCCD22BC5BA4400A3C2F0 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITData.swift; sourceTree = "<group>"; };
 		56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausableTimer.swift; sourceTree = "<group>"; };
-		56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataService.swift; sourceTree = "<group>"; };
 		56BCCCD82BC5BA9D00A3C2F0 /* log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = log.swift; sourceTree = "<group>"; };
 		56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
 		56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPLocalService.swift; sourceTree = "<group>"; };
@@ -307,9 +306,16 @@
 		56BCCCF02BC72CC600A3C2F0 /* FriendListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListRow.swift; sourceTree = "<group>"; };
 		56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterView.swift; sourceTree = "<group>"; };
 		56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsService.swift; sourceTree = "<group>"; };
-		56BCCCF62BC7641600A3C2F0 /* DataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataView.swift; sourceTree = "<group>"; };
+		56BCCCF62BC7641600A3C2F0 /* JITDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITDataView.swift; sourceTree = "<group>"; };
+		56BCCCFC2BC822C000A3C2F0 /* AppServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServiceManager.swift; sourceTree = "<group>"; };
+		56BCCCFE2BC82ADA00A3C2F0 /* ProfileDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDataService.swift; sourceTree = "<group>"; };
+		56BCCD002BC82D4A00A3C2F0 /* ServiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCoordinator.swift; sourceTree = "<group>"; };
+		56BCCD072BC84B0B00A3C2F0 /* AppServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServiceProtocol.swift; sourceTree = "<group>"; };
+		56BCCD092BC84B2500A3C2F0 /* LifeCycleProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeCycleProtocols.swift; sourceTree = "<group>"; };
+		56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITServiceType.swift; sourceTree = "<group>"; };
+		56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITDataService.swift; sourceTree = "<group>"; };
+		56BCCD102BC86D1400A3C2F0 /* ServiceEnvironmentModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceEnvironmentModifier.swift; sourceTree = "<group>"; };
 		56C1D0C62B84172E005D223F /* MatchmakingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchmakingService.swift; sourceTree = "<group>"; };
-		56C1D0C82B85BDCD005D223F /* PlayerDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDefaultsManager.swift; sourceTree = "<group>"; };
 		56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSchemeManager.swift; sourceTree = "<group>"; };
 		56D5F7512BC21D8F005FBFCD /* EloRatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EloRatingService.swift; sourceTree = "<group>"; };
 		56D5F7532BC2CB34005FBFCD /* MatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchService.swift; sourceTree = "<group>"; };
@@ -357,7 +363,6 @@
 			children = (
 				5615F7942BB2FA5800177A44 /* PublicDatabase.swift */,
 				5615F79A2BB3086400177A44 /* CloudKitManager.swift */,
-				5615F79D2BB4F3C700177A44 /* PublicProfile.swift */,
 			);
 			path = CloudKit;
 			sourceTree = "<group>";
@@ -432,8 +437,8 @@
 		5624EE7F2BBB89A000F6980A /* icloud */ = {
 			isa = PBXGroup;
 			children = (
-				5624EE7A2BBB717700F6980A /* SwiftData */,
 				5615F7912BB2F95000177A44 /* CloudKit */,
+				5624EE7A2BBB717700F6980A /* SwiftData */,
 				56A6DD1E2BC0FB3A00E0A429 /* iCloudService.swift */,
 			);
 			path = icloud;
@@ -494,8 +499,8 @@
 		5652D5082B6814EA0071AE08 /* Word Rivalry */ = {
 			isa = PBXGroup;
 			children = (
+				56BCCD022BC8488D00A3C2F0 /* lib */,
 				567300CE2B6D7382005D79F2 /* french_trie_serialized.json */,
-				566F14D62B6CE7360069F06D /* extension */,
 				566F14B22B6A292C0069F06D /* App */,
 				566F14B02B6A26330069F06D /* Music */,
 				5652D5382B68DC8B0071AE08 /* services */,
@@ -536,6 +541,8 @@
 		5652D5372B68DC820071AE08 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				56BCCD052BC84AA200A3C2F0 /* Notification */,
+				56BCCD042BC84A8000A3C2F0 /* Intro */,
 				56A6DD1B2BC0800800E0A429 /* Settings */,
 				567300B72B6CFF57005D79F2 /* component */,
 				566F14C22B6C4C190069F06D /* Play */,
@@ -548,18 +555,12 @@
 		5652D5382B68DC8B0071AE08 /* services */ = {
 			isa = PBXGroup;
 			children = (
-				56BCCCD12BC5BA3400A3C2F0 /* Data */,
+				56BCCD0B2BC84B5E00A3C2F0 /* UserData */,
 				5654A01A2BC17CEC001CF6BE /* launch */,
-				5624EE7F2BBB89A000F6980A /* icloud */,
-				5624EE692BB87FEA00F6980A /* network */,
-				5624EE682BB87FCE00F6980A /* EventSystem */,
 				5624EE672BB87FBC00F6980A /* ContentRepository */,
 				5615F79C2BB38E5800177A44 /* Achievement */,
 				567173032B70CB9F0009607D /* match */,
 				567300C92B6D72CE005D79F2 /* wordChecker */,
-				566F148D2B6A212E0069F06D /* Audio */,
-				566F147B2B6A06160069F06D /* Profile */,
-				566F14AD2B6A22CF0069F06D /* ThemeService.swift */,
 				56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */,
 			);
 			path = services;
@@ -568,6 +569,7 @@
 		5654A01A2BC17CEC001CF6BE /* launch */ = {
 			isa = PBXGroup;
 			children = (
+				566F14872B6A207F0069F06D /* AppServices.swift */,
 				5654A01B2BC17E88001CF6BE /* LaunchService.swift */,
 			);
 			path = launch;
@@ -582,15 +584,6 @@
 				56466F762BAB33270008C985 /* PulsatingCircleView.swift */,
 			);
 			path = SearchAnimation;
-			sourceTree = "<group>";
-		};
-		566F147B2B6A06160069F06D /* Profile */ = {
-			isa = PBXGroup;
-			children = (
-				566F147C2B6A063A0069F06D /* ProfileRecord.swift */,
-				56C1D0C82B85BDCD005D223F /* PlayerDefaultsManager.swift */,
-			);
-			path = Profile;
 			sourceTree = "<group>";
 		};
 		566F148D2B6A212E0069F06D /* Audio */ = {
@@ -617,12 +610,9 @@
 			children = (
 				5652D5092B6814EA0071AE08 /* Word_RivalryApp.swift */,
 				5652D50B2B6814EA0071AE08 /* ScreenView.swift */,
-				566F14852B6A1F590069F06D /* IntroView.swift */,
-				566F14872B6A207F0069F06D /* AppService.swift */,
 				566F14892B6A20C00069F06D /* ServiceLocator.swift */,
-				5624EE802BBC603E00F6980A /* AchievementNotificationView.swift */,
-				5654A01D2BC19C34001CF6BE /* ServiceProtocol.swift */,
 				56BCCC832BC432D100A3C2F0 /* ContentView.swift */,
+				56BCCCFC2BC822C000A3C2F0 /* AppServiceManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -711,7 +701,6 @@
 				56A6DD132BC06F8200E0A429 /* BasicDissmiss.swift */,
 				56BCCCE42BC64F8500A3C2F0 /* CardBackgroundModifier.swift */,
 				56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */,
-				56BCCCF62BC7641600A3C2F0 /* DataView.swift */,
 			);
 			path = component;
 			sourceTree = "<group>";
@@ -864,17 +853,69 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		56BCCCD12BC5BA3400A3C2F0 /* Data */ = {
+		56BCCCD12BC5BA3400A3C2F0 /* JITData */ = {
 			isa = PBXGroup;
 			children = (
-				56BCCCD22BC5BA4400A3C2F0 /* DataService.swift */,
+				56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */,
 				56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */,
-				56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */,
-				56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */,
+				56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */,
+				56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */,
+				56BCCCF62BC7641600A3C2F0 /* JITDataView.swift */,
+			);
+			path = JITData;
+			sourceTree = "<group>";
+		};
+		56BCCD022BC8488D00A3C2F0 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				56BCCD062BC84ABE00A3C2F0 /* ServicesAndLifeCycles */,
+				566F148D2B6A212E0069F06D /* Audio */,
+				5624EE682BB87FCE00F6980A /* EventSystem */,
+				5624EE692BB87FEA00F6980A /* network */,
+				5624EE7F2BBB89A000F6980A /* icloud */,
+				56BCCCD12BC5BA3400A3C2F0 /* JITData */,
+				566F14D62B6CE7360069F06D /* extension */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		56BCCD042BC84A8000A3C2F0 /* Intro */ = {
+			isa = PBXGroup;
+			children = (
+				566F14852B6A1F590069F06D /* IntroView.swift */,
+			);
+			path = Intro;
+			sourceTree = "<group>";
+		};
+		56BCCD052BC84AA200A3C2F0 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				5624EE802BBC603E00F6980A /* AchievementNotificationView.swift */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+		56BCCD062BC84ABE00A3C2F0 /* ServicesAndLifeCycles */ = {
+			isa = PBXGroup;
+			children = (
+				56BCCD002BC82D4A00A3C2F0 /* ServiceCoordinator.swift */,
+				56BCCD072BC84B0B00A3C2F0 /* AppServiceProtocol.swift */,
+				56BCCD092BC84B2500A3C2F0 /* LifeCycleProtocols.swift */,
+				56BCCD102BC86D1400A3C2F0 /* ServiceEnvironmentModifier.swift */,
+			);
+			path = ServicesAndLifeCycles;
+			sourceTree = "<group>";
+		};
+		56BCCD0B2BC84B5E00A3C2F0 /* UserData */ = {
+			isa = PBXGroup;
+			children = (
 				56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */,
+				5615F79D2BB4F3C700177A44 /* PublicProfile.swift */,
+				56BCCCFE2BC82ADA00A3C2F0 /* ProfileDataService.swift */,
+				56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */,
 				56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */,
 			);
-			path = Data;
+			path = UserData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1010,13 +1051,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				5624EE7C2BBB718A00F6980A /* SwiftDataService.swift in Sources */,
+				56BCCCFD2BC822C000A3C2F0 /* AppServiceManager.swift in Sources */,
 				56D5F7562BC2CD47005FBFCD /* MatchView.swift in Sources */,
 				56BCCC792BC3C2F100A3C2F0 /* PlayView.swift in Sources */,
 				56BCCCE72BC650AF00A3C2F0 /* AchievementRow.swift in Sources */,
 				566F14CB2B6CD6570069F06D /* LeaderboardView.swift in Sources */,
+				56BCCD0F2BC84FDA00A3C2F0 /* JITDataService.swift in Sources */,
 				564549552B92195C002A289C /* GameCardView.swift in Sources */,
 				567173052B70CBAE0009607D /* BattleServerService.swift in Sources */,
 				5654A01C2BC17E88001CF6BE /* LaunchService.swift in Sources */,
+				56BCCD082BC84B0B00A3C2F0 /* AppServiceProtocol.swift in Sources */,
 				566F14A22B6A21370069F06D /* SoundEffectManageable.swift in Sources */,
 				56C1D0C72B84172E005D223F /* MatchmakingService.swift in Sources */,
 				56A6DD1F2BC0FB3A00E0A429 /* iCloudService.swift in Sources */,
@@ -1028,7 +1072,7 @@
 				567300C82B6D05A8005D79F2 /* GameModel.swift in Sources */,
 				56BCCC822BC42F7800A3C2F0 /* TaskQueueManager.swift in Sources */,
 				56BCCCDB2BC5BCA200A3C2F0 /* LeaderboardService.swift in Sources */,
-				5654A01E2BC19C34001CF6BE /* ServiceProtocol.swift in Sources */,
+				56BCCCFF2BC82ADA00A3C2F0 /* ProfileDataService.swift in Sources */,
 				56A6DCFD2BBF8E2500E0A429 /* RotatingCircleGradientStroke.swift in Sources */,
 				5624EE732BB8C21E00F6980A /* AchievementStore.swift in Sources */,
 				56A6DD0C2BC0138C00E0A429 /* SelectionOverlayModifier.swift in Sources */,
@@ -1039,7 +1083,6 @@
 				56BCCCD52BC5BA5F00A3C2F0 /* PausableTimer.swift in Sources */,
 				56D5F7522BC21D8F005FBFCD /* EloRatingService.swift in Sources */,
 				56BCCCDD2BC5C82F00A3C2F0 /* PPLocalService.swift in Sources */,
-				56BCCCD72BC5BA7A00A3C2F0 /* AppDataService.swift in Sources */,
 				566F149C2B6A21370069F06D /* AudioSessionService.swift in Sources */,
 				56A6DCF62BBF453400E0A429 /* PortraitView.swift in Sources */,
 				56BCCCF32BC7503200A3C2F0 /* GameCenterView.swift in Sources */,
@@ -1048,6 +1091,7 @@
 				566F148A2B6A20C00069F06D /* ServiceLocator.swift in Sources */,
 				566F14C72B6C4C720069F06D /* PlayNavigationStack.swift in Sources */,
 				566F14CF2B6CD7B70069F06D /* StatisticsView.swift in Sources */,
+				56BCCD0D2BC84F9D00A3C2F0 /* JITServiceType.swift in Sources */,
 				56A6DCF92BBF464F00E0A429 /* TitleView.swift in Sources */,
 				566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */,
 				5624EE662BB864C000F6980A /* ContentRepository.swift in Sources */,
@@ -1058,7 +1102,7 @@
 				5654A0202BC1B1E8001CF6BE /* Friend.swift in Sources */,
 				5652D50C2B6814EA0071AE08 /* ScreenView.swift in Sources */,
 				566F149F2B6A21370069F06D /* MusicPlayer.swift in Sources */,
-				56BCCCD32BC5BA4400A3C2F0 /* DataService.swift in Sources */,
+				56BCCCD32BC5BA4400A3C2F0 /* JITData.swift in Sources */,
 				56BCCCE52BC64F8500A3C2F0 /* CardBackgroundModifier.swift in Sources */,
 				56A6DCF12BBE925B00E0A429 /* ProfileImageEditingView.swift in Sources */,
 				56BCCCEF2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift in Sources */,
@@ -1073,24 +1117,24 @@
 				56BCCC722BC3203E00A3C2F0 /* SearchService.swift in Sources */,
 				566F149B2B6A21370069F06D /* MusicManager.swift in Sources */,
 				56466F752BAB33020008C985 /* AnimatedLinesView.swift in Sources */,
-				56C1D0C92B85BDCD005D223F /* PlayerDefaultsManager.swift in Sources */,
 				566F14CD2B6CD7560069F06D /* BasicNavButton.swift in Sources */,
 				5624EE812BBC603E00F6980A /* AchievementNotificationView.swift in Sources */,
 				56466F8B2BAEFB710008C985 /* PlayerScoresView.swift in Sources */,
 				567300C22B6D01F3005D79F2 /* BoardViewModel.swift in Sources */,
 				565E14F92B8720B400AD7292 /* BasicButton.swift in Sources */,
-				56BCCCF72BC7641600A3C2F0 /* DataView.swift in Sources */,
-				566F14882B6A207F0069F06D /* AppService.swift in Sources */,
+				56BCCCF72BC7641600A3C2F0 /* JITDataView.swift in Sources */,
+				566F14882B6A207F0069F06D /* AppServices.swift in Sources */,
 				56A6DD212BC0FB8900E0A429 /* AchievementsProgression.swift in Sources */,
 				566F14862B6A1F590069F06D /* IntroView.swift in Sources */,
+				56BCCD0A2BC84B2500A3C2F0 /* LifeCycleProtocols.swift in Sources */,
 				5624EE772BB9DF6600F6980A /* SwiftDataSource.swift in Sources */,
 				56A6DD0E2BC0141C00E0A429 /* EditingScrollView.swift in Sources */,
+				56BCCD112BC86D1400A3C2F0 /* ServiceEnvironmentModifier.swift in Sources */,
 				56D5F7542BC2CB34005FBFCD /* MatchService.swift in Sources */,
 				566F149E2B6A21370069F06D /* Song.swift in Sources */,
 				56BCCC7B2BC3C48600A3C2F0 /* BattleOrchestratorView.swift in Sources */,
 				56A6DD142BC06F8200E0A429 /* BasicDissmiss.swift in Sources */,
 				566F14D12B6CD97B0069F06D /* FriendsListView.swift in Sources */,
-				566F14AE2B6A22CF0069F06D /* ThemeService.swift in Sources */,
 				56BCCC762BC335ED00A3C2F0 /* BattleService.swift in Sources */,
 				566F14C52B6C4C610069F06D /* HomeNavigationStack.swift in Sources */,
 				566F149A2B6A21370069F06D /* AudioLoaderService.swift in Sources */,
@@ -1126,8 +1170,8 @@
 				56466F732BAB328B0008C985 /* CountdownOverlayView.swift in Sources */,
 				567300CB2B6D72F5005D79F2 /* TrieNode.swift in Sources */,
 				56A6DD042BBFA9E500E0A429 /* PlayerNameView.swift in Sources */,
-				566F147D2B6A063B0069F06D /* ProfileRecord.swift in Sources */,
 				566F14A12B6A21370069F06D /* SoundEffect.swift in Sources */,
+				56BCCD012BC82D4A00A3C2F0 /* ServiceCoordinator.swift in Sources */,
 				56466F8D2BAEFBD10008C985 /* WordHistoryTimelineView.swift in Sources */,
 				56A6DCEB2BBE0C6700E0A429 /* ProfileCardView.swift in Sources */,
 				566F14C92B6C50890069F06D /* AppTabView.swift in Sources */,

@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct LeaderboardView: View {
-    @Environment(AppDataService.self) private var appDataService: AppDataService
+    @Environment(LeaderboardService.self) private var leaderboard: LeaderboardService
     @Environment(PublicProfile.self) var localProfile: PublicProfile
     @State private var showLocalProfileBottomRow = true
     
     var body: some View {
-        DataView(dataService: appDataService.leaderboardService) {
+        JITDataView(dataService: leaderboard) {
             LeaderboardLoadingView()
         } content: {
             content
@@ -24,10 +24,10 @@ struct LeaderboardView: View {
     private var content: some View {
         VStack {
             header
-            listView(players: appDataService.leaderboardService.players)
+            listView(players: leaderboard.players)
             Spacer()
             if showLocalProfileBottomRow {
-                currentPlayerRow(players: appDataService.leaderboardService.players)
+                currentPlayerRow(players: leaderboard.players)
             }
             lastUpdatedView
          
@@ -102,7 +102,7 @@ struct LeaderboardView: View {
     @ViewBuilder
     private var lastUpdatedView: some View {
         Group {
-            if let lastUpdate = appDataService.leaderboardService.lastUpdateTime {
+            if let lastUpdate = leaderboard.lastUpdateTime {
                 Text("Last updated: \(lastUpdate.formatted())")
                     .font(.footnote)
                     .foregroundColor(.gray)
@@ -116,7 +116,7 @@ struct LeaderboardView: View {
         previewContainer
     } content: {
         LeaderboardView()
-            .environment(AppDataService.preview)
+            .environment(LeaderboardService.preview)
             .environment(PublicProfile.preview)
     }
 }

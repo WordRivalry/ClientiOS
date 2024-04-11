@@ -38,7 +38,6 @@ struct AppTabView: View {
     } content: {
         AppTabView(selection: .constant(.home))
             .environment(BattleOrchestrator(profile: PublicProfile.preview, modeType: .NORMAL))
-            .environment(AppDataService.preview)
             .environment(PublicProfile.preview)
             .environment(Friends.preview)
             .environment(Profile.preview)

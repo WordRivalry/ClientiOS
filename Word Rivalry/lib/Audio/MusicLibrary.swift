@@ -13,8 +13,7 @@ class MusicLibrary {
     var songs: [Song] = []
     
     
-    public init() {
-    }
+    public init() {}
     
     func setSongs(songs: [Song]) {
         self.songs = songs
@@ -27,8 +26,4 @@ class MusicLibrary {
     func getSong(title: String) -> Song? {
         return songs.first { $0.title == title }
     }
-    
-//    func getSongs(by theme: ColorScheme) -> [Song] {
-//        return songs.filter { $0.theme == theme }
-//    }
 }

@@ -7,14 +7,21 @@
 
 import SwiftUI
 
-struct DataView<Service: DataService, LoadingView: View, Content: View>: View {
-    let dataService: DataService
+struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
+    let dataService: JITData
     let loadingView: () -> LoadingView
     let content: () -> Content
 
     var body: some View {
         VStack {
             contentView
+                .onChange(of: NetworkChecker.shared.isConnected) { oldValue, newValue in
+                    if oldValue == false || newValue == true {
+                        Task {
+                            await dataService.fetchData()
+                        }
+                    }
+                }
         }
             .onAppear {
                 dataService.handleViewDidAppear()
@@ -27,7 +34,12 @@ struct DataView<Service: DataService, LoadingView: View, Content: View>: View {
     @ViewBuilder
     private var contentView: some View {
         if !dataService.isDataAvailable() && !NetworkChecker.shared.isConnected {
-            noConnectionView
+            VStack {
+                Spacer()
+                InternetStatusMessageView(message: "No available data")
+                Spacer()
+                BasicDissmiss()
+            }
         } else if !dataService.isDataAvailable()  {
             loadingView()
         } else {
@@ -54,7 +66,7 @@ struct DataView<Service: DataService, LoadingView: View, Content: View>: View {
 
 
 #Preview {
-    DataView(dataService: LeaderboardService.preview) {
+    JITDataView(dataService: LeaderboardService.preview) {
         LeaderboardLoadingView()
     } content: {
         VStack {
