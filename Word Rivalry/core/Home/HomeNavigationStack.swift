@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import GameKit
+
 struct HomeNavigationStack: View {
     @Environment(PublicProfile.self) private var profile: PublicProfile
     @Namespace var namespace
@@ -16,94 +18,58 @@ struct HomeNavigationStack: View {
     @State private var showAchievements = false
     @State private var showStatictics = false
     
-    // Initialize the achievements manager and subscribe it to the event systemå
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 20) {
-                    if (!showDetailedProfile) {
-                        ProfileCardView(namespace: namespace)
-                            .onTapGesture {
-                                withAnimation(.easeInOut) {
-                                    showDetailedProfile = true
-                                }
+                    ProfileCardView(namespace: namespace)
+                        .onTapGesture {
+                            withAnimation(.snappy) {
+                                showDetailedProfile = true
                             }
-                            .padding(.bottom).padding(.bottom)
-                        
-                        BasicButton(text: "Leaderboard") {
-                            showLeaderboard = true
                         }
-                        .matchedGeometryEffect(id: "button0", in: namespace)
-                        
-                        BasicButton(text: "Statistics") {
-                            showStatictics = true
-                        }
-                        .matchedGeometryEffect(id: "button1", in: namespace)
-                        
-                        BasicButton(text: "Achievements") {
-                            showAchievements = true
-                        }
-                        .matchedGeometryEffect(id: "button2", in: namespace)
-                    } else {
-                        EditableProfileCardView(
-                            namespace: namespace
-                        )
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                ZStack {
-                    Color.background
+                        .padding(.bottom)
+                        .padding(.bottom)
                     
-//                    Image("bgMotif")
-//                        .resizable()
-//                        .ignoresSafeArea()
-//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                        .aspectRatio(contentMode: .fill)
-//                
-//                        .opacity(0.1)
-//                        .blur(radius: 10)
-                }
-                    .ignoresSafeArea()
-              
-            )
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    if (showDetailedProfile) {
-                        Button(action: {
-                            withAnimation(.easeIn) {
-                                showDetailedProfile = false
-                            }
-                        }) {
-                            Image(systemName: "xmark")
-                               
-                        }
-                        .matchedGeometryEffect(id: "homeTool1", in: namespace)
+                    BasicButton(text: "Leaderboard") {
+                        showLeaderboard = true
                     }
-                }
-               
-                ToolbarItem(placement: .topBarTrailing) {
-                    if (!showDetailedProfile) {
-                        Button(action: {
-                            withAnimation(.easeIn) {
-                                showFriendsList = true
-                            }
-                        }) {
-                            Image(systemName: "person.3.fill")
-                              
-                        }
-                        .matchedGeometryEffect(id: "homeTool1", in: namespace)
+                    .matchedGeometryEffect(id: "button0", in: namespace)
+                    
+                    BasicButton(text: "Statistics") {
+                        showStatictics = true
                     }
+                    .matchedGeometryEffect(id: "button1", in: namespace)
+                    
+                    BasicButton(text: "Achievements") {
+                        showAchievements = true
+                    }
+                    .matchedGeometryEffect(id: "button2", in: namespace)
                 }
             }
+            .navigationTitle(profile.playerName)
+            .navigationBarTitleDisplayMode(.automatic)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
                 EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
                 
                 showDetailedProfile = false
             }
+            .background(
+                Image("bg")
+                    .resizable()
+                    .ignoresSafeArea()
+            )
+            .fullScreenCover(isPresented: $showDetailedProfile) {
+                EditableProfileCardView(
+                    namespace: namespace
+                )
+                .presentationBackground(.bar)
+                .fadeIn()
+            }
+            
             .fullScreenCover(isPresented: $showAchievements) {
-                AchievementsView()
+                GameCenterView(isVisible: $showAchievements, state: .leaderboards   )
                     .presentationBackground(.bar)
                     .fadeIn()
             }
@@ -122,6 +88,69 @@ struct HomeNavigationStack: View {
                     .presentationBackground(.bar)
                     .fadeIn()
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if (showDetailedProfile) {
+                        Button(action: {
+                            withAnimation(.easeIn) {
+                                showDetailedProfile = false
+                            }
+                        }) {
+                            Image(systemName: "xmark")
+                            
+                        }
+                        .matchedGeometryEffect(id: "homeTool1", in: namespace)
+                    }
+                }
+                
+                ToolbarItem(placement: .automatic) {
+                    Button(action: {
+                        withAnimation(.easeInOut) {
+                            showFriendsList = true
+                        }
+                    }) {
+                        Image(systemName: "person.3.fill")
+                        
+                    }
+                }
+                
+                ToolbarItem(placement: .status) {
+                    if (false) {
+                        Button(action: {
+                            withAnimation(.easeIn) {
+                                showFriendsList = true
+                            }
+                        }) {
+                            Image(systemName: "envelope.badge.fill")
+                                .foregroundStyle(.accent)
+                                .blinkingEffect(duration: 0.8, minOpacity: 0.5)
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        // Capsule shape simulating the cylinder
+                        Capsule()
+                            .fill(.accent.opacity(0.5))
+                            .frame(width: 100, height: 30)
+                        
+                        HStack {
+                            Image("currency")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
+                            
+                            
+                            
+                            // Text positioned above the capsule
+                            Text("233")
+                                .foregroundColor(.white)
+                                .font(.title3)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -131,9 +160,12 @@ struct HomeNavigationStack: View {
         previewContainer
     } content: {
         HomeNavigationStack()
+            .environment(AppDataService.preview)
+            .environment(PublicProfile.preview)
             .environment(Friends.preview)
             .environment(Profile.preview)
             .environment(AchievementsProgression.preview)
             .environment(LeaderboardService.preview)
+            .navigationBarColor(.white)
     }
 }

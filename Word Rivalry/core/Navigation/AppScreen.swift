@@ -20,21 +20,16 @@ extension AppScreen {
     var label: some View {
         switch self {
         case .home:
-            Label("Home", systemImage: "house.fill")
-                .foregroundStyle(Color.accentColor)
+            Image(systemName: "heart.fill")
         case .play:
-            Label("Play", systemImage: "flag.checkered")
-                .foregroundStyle(Color.accentColor)
+            Image(systemName: "flag.filled.and.flag.crossed") // "flag.checkered")
         case .settings:
-            Label("Settings", systemImage: "gear")
-                .foregroundStyle(Color.accentColor)
+            Image(systemName: "gear")
         }
     }
     
     @ViewBuilder
     var destination: some View {
-        
-        
         switch self {
         case .home:
             HomeNavigationStack()
@@ -50,6 +45,6 @@ extension AppScreen {
     ModelContainerPreview {
         previewContainer
     } content: {
-        AppScreen.home.label
+        AppScreen.play.label
     }
 }

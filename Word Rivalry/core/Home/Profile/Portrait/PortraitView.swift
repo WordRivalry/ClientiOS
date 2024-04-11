@@ -60,7 +60,7 @@ struct PortraitView: View {
 
 #Preview {
     PortraitView(
-        profileImage: ProfileImage.PI_0.rawValue,
-        banner: Banner.PB_0.rawValue
+        profileImage: ProfileImage.PI_13.rawValue,
+        banner: Banner.PB_4.rawValue
     )
 }

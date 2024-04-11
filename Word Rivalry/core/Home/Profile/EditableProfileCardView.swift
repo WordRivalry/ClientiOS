@@ -70,7 +70,7 @@ struct EditableProfileCardView: View {
             Button(action: {
                 inPlayerNameEdite = true
             }) {
-                Image(systemName: "pencil")
+                Image(systemName: "pencil.line")
                     .tint(.accent)
             }
         }

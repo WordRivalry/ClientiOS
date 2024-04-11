@@ -82,7 +82,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
            guard let zoneNotification = CKNotification(fromRemoteNotificationDictionary: userInfo) as? CKRecordZoneNotification else {
                print("CloudKit database changed")
                Task {
-                   await PublicProfileService.shared.fetchData()
+                   await PPLocalService.shared.fetchData()
                }
                if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
                    

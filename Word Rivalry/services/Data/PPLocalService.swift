@@ -8,32 +8,33 @@
 import Foundation
 import OSLog
 
-@Observable final class PublicProfileService {
+@Observable final class PPLocalService {
     var player: PublicProfile?
     
     func subscribeToChanges() async throws {
         try await PublicDatabase.shared.subscribeToChanges()
     }
     
-    static var shared: PublicProfileService = PublicProfileService()
+    static var shared: PPLocalService = PPLocalService()
     private init() {}
     
     func fetchData() async {
         do {
-            self.player = try await fetchPlayer()
-            Logger.dataServices.info("PublicProfile updated")
+            if let player = try await fetchPlayer() {
+                self.player = player
+            }
+            Logger.dataServices.info("Local public profile updated")
         } catch {
-            Logger.dataServices.error("Failed to fetch top players: \(error.localizedDescription)")
+            Logger.dataServices.error("Failed to fetch local public profile: \(error.localizedDescription)")
         }
     }
     
     private func fetchPlayer() async throws -> PublicProfile? {
-        //try await Task.sleep(nanoseconds: 1_000_000_000) // Simulate network delay
         return try await PublicDatabase.shared.fetchOwnPublicProfileIfExist()
     }
     
-    static var preview: PublicProfileService {
-        let service = PublicProfileService()
+    static var preview: PPLocalService {
+        let service = PPLocalService()
         service.player = PublicProfile.preview
         return service
     }

@@ -129,10 +129,19 @@
 		56BCCCD72BC5BA7A00A3C2F0 /* AppDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */; };
 		56BCCCD92BC5BA9D00A3C2F0 /* log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD82BC5BA9D00A3C2F0 /* log.swift */; };
 		56BCCCDB2BC5BCA200A3C2F0 /* LeaderboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */; };
-		56BCCCDD2BC5C82F00A3C2F0 /* PublicProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDC2BC5C82F00A3C2F0 /* PublicProfileService.swift */; };
+		56BCCCDD2BC5C82F00A3C2F0 /* PPLocalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */; };
 		56BCCCDF2BC5F8C000A3C2F0 /* LeaderboardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDE2BC5F8C000A3C2F0 /* LeaderboardRow.swift */; };
 		56BCCCE12BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCE02BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift */; };
 		56BCCCE32BC633C800A3C2F0 /* VisibilityTrackingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCE22BC633C800A3C2F0 /* VisibilityTrackingScrollView.swift */; };
+		56BCCCE52BC64F8500A3C2F0 /* CardBackgroundModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCE42BC64F8500A3C2F0 /* CardBackgroundModifier.swift */; };
+		56BCCCE72BC650AF00A3C2F0 /* AchievementRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCE62BC650AF00A3C2F0 /* AchievementRow.swift */; };
+		56BCCCEB2BC6FF8800A3C2F0 /* BlinkingEffectModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCEA2BC6FF8800A3C2F0 /* BlinkingEffectModifier.swift */; };
+		56BCCCED2BC7022500A3C2F0 /* AdaptiveForegroundStyleModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCEC2BC7022500A3C2F0 /* AdaptiveForegroundStyleModifier.swift */; };
+		56BCCCEF2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCEE2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift */; };
+		56BCCCF12BC72CC600A3C2F0 /* FriendListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF02BC72CC600A3C2F0 /* FriendListRow.swift */; };
+		56BCCCF32BC7503200A3C2F0 /* GameCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */; };
+		56BCCCF52BC759F200A3C2F0 /* AchievementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */; };
+		56BCCCF72BC7641600A3C2F0 /* DataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCF62BC7641600A3C2F0 /* DataView.swift */; };
 		56C1D0C72B84172E005D223F /* MatchmakingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0C62B84172E005D223F /* MatchmakingService.swift */; };
 		56C1D0C92B85BDCD005D223F /* PlayerDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0C82B85BDCD005D223F /* PlayerDefaultsManager.swift */; };
 		56C1D0CB2B86B441005D223F /* ColorSchemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */; };
@@ -286,10 +295,19 @@
 		56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataService.swift; sourceTree = "<group>"; };
 		56BCCCD82BC5BA9D00A3C2F0 /* log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = log.swift; sourceTree = "<group>"; };
 		56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
-		56BCCCDC2BC5C82F00A3C2F0 /* PublicProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileService.swift; sourceTree = "<group>"; };
+		56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPLocalService.swift; sourceTree = "<group>"; };
 		56BCCCDE2BC5F8C000A3C2F0 /* LeaderboardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRow.swift; sourceTree = "<group>"; };
 		56BCCCE02BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRowLoading.swift; sourceTree = "<group>"; };
 		56BCCCE22BC633C800A3C2F0 /* VisibilityTrackingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibilityTrackingScrollView.swift; sourceTree = "<group>"; };
+		56BCCCE42BC64F8500A3C2F0 /* CardBackgroundModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardBackgroundModifier.swift; sourceTree = "<group>"; };
+		56BCCCE62BC650AF00A3C2F0 /* AchievementRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementRow.swift; sourceTree = "<group>"; };
+		56BCCCEA2BC6FF8800A3C2F0 /* BlinkingEffectModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkingEffectModifier.swift; sourceTree = "<group>"; };
+		56BCCCEC2BC7022500A3C2F0 /* AdaptiveForegroundStyleModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveForegroundStyleModifier.swift; sourceTree = "<group>"; };
+		56BCCCEE2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarColorModifier.swift; sourceTree = "<group>"; };
+		56BCCCF02BC72CC600A3C2F0 /* FriendListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListRow.swift; sourceTree = "<group>"; };
+		56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterView.swift; sourceTree = "<group>"; };
+		56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsService.swift; sourceTree = "<group>"; };
+		56BCCCF62BC7641600A3C2F0 /* DataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataView.swift; sourceTree = "<group>"; };
 		56C1D0C62B84172E005D223F /* MatchmakingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchmakingService.swift; sourceTree = "<group>"; };
 		56C1D0C82B85BDCD005D223F /* PlayerDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDefaultsManager.swift; sourceTree = "<group>"; };
 		56C1D0CA2B86B441005D223F /* ColorSchemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSchemeManager.swift; sourceTree = "<group>"; };
@@ -359,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				5624EE632BB8553200F6980A /* AchievementsView.swift */,
+				56BCCCE62BC650AF00A3C2F0 /* AchievementRow.swift */,
 			);
 			path = AchievementView;
 			sourceTree = "<group>";
@@ -650,6 +669,9 @@
 				56A6DD0B2BC0138C00E0A429 /* SelectionOverlayModifier.swift */,
 				56A6DD112BC06E3400E0A429 /* FadeInModifier.swift */,
 				56BCCCD82BC5BA9D00A3C2F0 /* log.swift */,
+				56BCCCEA2BC6FF8800A3C2F0 /* BlinkingEffectModifier.swift */,
+				56BCCCEC2BC7022500A3C2F0 /* AdaptiveForegroundStyleModifier.swift */,
+				56BCCCEE2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift */,
 			);
 			path = extension;
 			sourceTree = "<group>";
@@ -687,6 +709,9 @@
 				565E14F82B8720B400AD7292 /* BasicButton.swift */,
 				56A6DCFC2BBF8E2500E0A429 /* RotatingCircleGradientStroke.swift */,
 				56A6DD132BC06F8200E0A429 /* BasicDissmiss.swift */,
+				56BCCCE42BC64F8500A3C2F0 /* CardBackgroundModifier.swift */,
+				56BCCCF22BC7503200A3C2F0 /* GameCenterView.swift */,
+				56BCCCF62BC7641600A3C2F0 /* DataView.swift */,
 			);
 			path = component;
 			sourceTree = "<group>";
@@ -806,6 +831,7 @@
 			isa = PBXGroup;
 			children = (
 				566F14D02B6CD97B0069F06D /* FriendsListView.swift */,
+				56BCCCF02BC72CC600A3C2F0 /* FriendListRow.swift */,
 			);
 			path = Friendlist;
 			sourceTree = "<group>";
@@ -845,7 +871,8 @@
 				56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */,
 				56BCCCD62BC5BA7A00A3C2F0 /* AppDataService.swift */,
 				56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */,
-				56BCCCDC2BC5C82F00A3C2F0 /* PublicProfileService.swift */,
+				56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */,
+				56BCCCF42BC759F200A3C2F0 /* AchievementsService.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -985,6 +1012,7 @@
 				5624EE7C2BBB718A00F6980A /* SwiftDataService.swift in Sources */,
 				56D5F7562BC2CD47005FBFCD /* MatchView.swift in Sources */,
 				56BCCC792BC3C2F100A3C2F0 /* PlayView.swift in Sources */,
+				56BCCCE72BC650AF00A3C2F0 /* AchievementRow.swift in Sources */,
 				566F14CB2B6CD6570069F06D /* LeaderboardView.swift in Sources */,
 				564549552B92195C002A289C /* GameCardView.swift in Sources */,
 				567173052B70CBAE0009607D /* BattleServerService.swift in Sources */,
@@ -1010,10 +1038,12 @@
 				565E14FE2B8726D000AD7292 /* AnimatedCirclesView.swift in Sources */,
 				56BCCCD52BC5BA5F00A3C2F0 /* PausableTimer.swift in Sources */,
 				56D5F7522BC21D8F005FBFCD /* EloRatingService.swift in Sources */,
-				56BCCCDD2BC5C82F00A3C2F0 /* PublicProfileService.swift in Sources */,
+				56BCCCDD2BC5C82F00A3C2F0 /* PPLocalService.swift in Sources */,
 				56BCCCD72BC5BA7A00A3C2F0 /* AppDataService.swift in Sources */,
 				566F149C2B6A21370069F06D /* AudioSessionService.swift in Sources */,
 				56A6DCF62BBF453400E0A429 /* PortraitView.swift in Sources */,
+				56BCCCF32BC7503200A3C2F0 /* GameCenterView.swift in Sources */,
+				56BCCCEB2BC6FF8800A3C2F0 /* BlinkingEffectModifier.swift in Sources */,
 				5615F7A02BB4FB4100177A44 /* ModelContainerPreview.swift in Sources */,
 				566F148A2B6A20C00069F06D /* ServiceLocator.swift in Sources */,
 				566F14C72B6C4C720069F06D /* PlayNavigationStack.swift in Sources */,
@@ -1021,6 +1051,7 @@
 				56A6DCF92BBF464F00E0A429 /* TitleView.swift in Sources */,
 				566F14D82B6CE7460069F06D /* GlassModifier.swift in Sources */,
 				5624EE662BB864C000F6980A /* ContentRepository.swift in Sources */,
+				56BCCCF12BC72CC600A3C2F0 /* FriendListRow.swift in Sources */,
 				5615F7882BAFC53A00177A44 /* AnimationManager.swift in Sources */,
 				5624EE642BB8553200F6980A /* AchievementsView.swift in Sources */,
 				56A6DD012BBFA83B00E0A429 /* ProfileCardBackground.swift in Sources */,
@@ -1028,7 +1059,9 @@
 				5652D50C2B6814EA0071AE08 /* ScreenView.swift in Sources */,
 				566F149F2B6A21370069F06D /* MusicPlayer.swift in Sources */,
 				56BCCCD32BC5BA4400A3C2F0 /* DataService.swift in Sources */,
+				56BCCCE52BC64F8500A3C2F0 /* CardBackgroundModifier.swift in Sources */,
 				56A6DCF12BBE925B00E0A429 /* ProfileImageEditingView.swift in Sources */,
+				56BCCCEF2BC70C2700A3C2F0 /* NavigationBarColorModifier.swift in Sources */,
 				56466F842BAC8A260008C985 /* WebSocketService.swift in Sources */,
 				5615F79B2BB3086400177A44 /* CloudKitManager.swift in Sources */,
 				56A6DD072BBFAA7C00E0A429 /* EloRatingView.swift in Sources */,
@@ -1046,6 +1079,7 @@
 				56466F8B2BAEFB710008C985 /* PlayerScoresView.swift in Sources */,
 				567300C22B6D01F3005D79F2 /* BoardViewModel.swift in Sources */,
 				565E14F92B8720B400AD7292 /* BasicButton.swift in Sources */,
+				56BCCCF72BC7641600A3C2F0 /* DataView.swift in Sources */,
 				566F14882B6A207F0069F06D /* AppService.swift in Sources */,
 				56A6DD212BC0FB8900E0A429 /* AchievementsProgression.swift in Sources */,
 				566F14862B6A1F590069F06D /* IntroView.swift in Sources */,
@@ -1076,6 +1110,7 @@
 				567300C42B6D03A6005D79F2 /* LetterBoardView.swift in Sources */,
 				5615F78A2BAFE0F500177A44 /* StarryNightView.swift in Sources */,
 				56A6DD122BC06E3400E0A429 /* FadeInModifier.swift in Sources */,
+				56BCCCED2BC7022500A3C2F0 /* AdaptiveForegroundStyleModifier.swift in Sources */,
 				56C1D0CB2B86B441005D223F /* ColorSchemeManager.swift in Sources */,
 				5615F78E2BB12E9800177A44 /* RankUpdateView.swift in Sources */,
 				567300CD2B6D730E005D79F2 /* WordChecker.swift in Sources */,
@@ -1101,6 +1136,7 @@
 				5645495E2B923955002A289C /* GameTournamentView.swift in Sources */,
 				56A6DCFF2BBFA1CB00E0A429 /* BannerEditingView.swift in Sources */,
 				567300C62B6D0452005D79F2 /* LetterCellView.swift in Sources */,
+				56BCCCF52BC759F200A3C2F0 /* AchievementsService.swift in Sources */,
 				56A6DD102BC0280700E0A429 /* DescriptionView.swift in Sources */,
 				56A6DCFB2BBF497800E0A429 /* ifLet.swift in Sources */,
 				56466F792BAB33890008C985 /* GameResultsView.swift in Sources */,

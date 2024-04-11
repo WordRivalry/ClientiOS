@@ -86,7 +86,7 @@ enum LaunchScreen {
     }
     
     private func ensurePublicProfileExists() async throws {
-        await PublicProfileService.shared.fetchData()
+        await PPLocalService.shared.fetchData()
     }
     
     private func findProfile() async throws -> Profile? {
@@ -115,7 +115,7 @@ enum LaunchScreen {
         
         if let publicProfile = try await PublicDatabase.shared.fetchOwnPublicProfileIfExist() {
             // Public profile
-            PublicProfileService.shared.player = publicProfile
+            PPLocalService.shared.player = publicProfile
             self.logger.debug("Public profile exist")
             
             // SwiftData profile
@@ -129,7 +129,7 @@ enum LaunchScreen {
     private func createBothProfileAndPublicProfile() async throws {
       
         // Public profile
-        PublicProfileService.shared.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: UUID().uuidString)
+        PPLocalService.shared.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: UUID().uuidString)
         self.logger.debug("Public profile created")
         
         // SwiftData profile

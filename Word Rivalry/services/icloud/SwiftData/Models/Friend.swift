@@ -21,11 +21,12 @@ import os.log
     }
     
     static var preview: [Friend] {
-        return [
-            Friend(friendRecordID: "1"),
-            Friend(friendRecordID: "2"),
-            Friend(friendRecordID: "3"),
-            Friend(friendRecordID: "4")
+        return[
+            Friend(friendRecordID: "234234234"),
+            Friend(friendRecordID: "234234234"),
+            Friend(friendRecordID: "234234234"),
+            Friend(friendRecordID: "234234234"),
+            Friend(friendRecordID: "234234234"),
         ]
     }
 }

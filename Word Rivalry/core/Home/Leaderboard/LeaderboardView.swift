@@ -13,9 +13,18 @@ struct LeaderboardView: View {
     @State private var showLocalProfileBottomRow = true
     
     var body: some View {
+        DataView(dataService: appDataService.leaderboardService) {
+            LeaderboardLoadingView()
+        } content: {
+            content
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
         VStack {
             header
-            contentView
+            listView(players: appDataService.leaderboardService.players)
             Spacer()
             if showLocalProfileBottomRow {
                 currentPlayerRow(players: appDataService.leaderboardService.players)
@@ -24,30 +33,12 @@ struct LeaderboardView: View {
          
             BasicDissmiss()
         }
-        .onAppear {
-            appDataService.leaderboardService.handleViewDidAppear()
-        }
-        .onDisappear {
-            appDataService.leaderboardService.handleViewDidDisappear()
-        }
     }
     
     @ViewBuilder
     private var header: some View {
         Text("Leaderboard")
             .font(.largeTitle)
-    }
-    
-    @ViewBuilder
-    private var contentView: some View {
-        if !appDataService.leaderboardService.isDataAvailable() && !NetworkChecker.shared.isConnected {
-            noConnectionView
-        } else if !appDataService.leaderboardService.isDataAvailable()  {
-            LeaderboardLoadingView()
-        } else {
-            listView(players: appDataService.leaderboardService.players)
-            
-        }
     }
     
     @ViewBuilder
@@ -88,7 +79,6 @@ struct LeaderboardView: View {
         }
     }
 
-    
     struct ScrollOffsetPreferenceKey: PreferenceKey {
         static var defaultValue: CGPoint = .zero
         
@@ -107,16 +97,6 @@ struct LeaderboardView: View {
         } else {
             Text("You are not ranked")
         }
-    }
-    
-    @ViewBuilder
-    private var noConnectionView: some View {
-        Text("No internet connection and no cached data.")
-    }
-    
-    @ViewBuilder
-    private var loadingView: some View {
-        Text("Loading...")
     }
     
     @ViewBuilder

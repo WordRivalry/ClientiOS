@@ -16,6 +16,7 @@ struct LeaderboardRow: View {
             rankAndPlayerView
             achievementsView
         }
+        .cardBackground()
     }
     
     private var rankAndPlayerView: some View {
@@ -30,10 +31,6 @@ struct LeaderboardRow: View {
             playerView
             Spacer()
         }
-        .padding(.vertical)
-        .background(.bar)
-        .cornerRadius(10)
-        .shadow(radius: 2)
     }
     
     private var rankImageView: some View {

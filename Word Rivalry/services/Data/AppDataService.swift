@@ -8,20 +8,21 @@
 import Foundation
 import OSLog
 
-
-
 @Observable class AppDataService: SceneLifeCycle {
     var leaderboardService: LeaderboardService
-   // var publicProfileService: PublicProfileService
+    var gkAchievementsService: AchievementsService
     
     @ObservationIgnored
     var dataServicesHooked: [SceneLifeCycle] = []
     
-    init(leaderboardService: LeaderboardService = LeaderboardService()) {
+    init(
+        leaderboardService: LeaderboardService = LeaderboardService(),
+        gkAchievementsService: AchievementsService = AchievementsService()
+    ) {
         self.leaderboardService = leaderboardService
-     //   self.publicProfileService = PublicProfileService()
+        self.gkAchievementsService = gkAchievementsService
         dataServicesHooked.append(self.leaderboardService)
-     //   dataServicesHooked.append(self.publicProfileService)
+        dataServicesHooked.append(self.gkAchievementsService)
     }
 
     func handleAppBecomingActive() {

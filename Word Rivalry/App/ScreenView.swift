@@ -20,7 +20,7 @@ struct ScreenView: View {
     
     // For setting environnement
     @Environment(LaunchService.self) private var launchService: LaunchService
-    var ppService = PublicProfileService.shared
+    var ppService = PPLocalService.shared
     // Handle the entire color scheme of the app
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     

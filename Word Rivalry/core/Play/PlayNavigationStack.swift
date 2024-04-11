@@ -25,7 +25,9 @@ struct PlayNavigationStack: View {
                 .navigationTitle("Battle")
                 .navigationBarTitleDisplayMode(.large)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.background)
+                .background( Image("bg")
+                    .resizable()
+                    .ignoresSafeArea())
         }
     }
 }

@@ -21,8 +21,8 @@ struct ProfileCardView: View {
                 profileImageID: "profileImageView",
                 bannerID: "profileBannerView"
             )
-            PlayerNameView(playerName: profile.playerName)
-                .matchedGeometryEffect(id: "playerNameView", in: namespace)
+//            PlayerNameView(playerName: profile.playerName)
+//                .matchedGeometryEffect(id: "playerNameView", in: namespace)
             TitleView(title: profile.computedTitle.rawValue)
                 .matchedGeometryEffect(id: "titleView", in: namespace)
             EloRatingView(eloRating: profile.eloRating)
@@ -30,7 +30,7 @@ struct ProfileCardView: View {
         }
         .background(
             ProfileCardBackground(namespace: namespace)
-                .frame(width: 200, height: 300)
+                .frame(width: 200, height: 250)
         )
         .onAppear {
             withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {

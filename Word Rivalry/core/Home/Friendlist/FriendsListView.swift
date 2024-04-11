@@ -15,31 +15,30 @@ struct FriendsListView: View {
     
     var body: some View {
         VStack {
-            List(profiles, id: \.userRecordID) { profile in
-                HStack {
-                    PortraitView(profileImage: profile.profileImage, banner: profile.banner)
-                        .scaleEffect(0.4)
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(profile.playerName)
-                            .font(.headline)
-                        Text("Elo \(profile.eloRating)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+            header
+            ScrollView {
+                LazyVStack {
+                    ForEach(profiles.indices, id: \.self) { index in
+                        FriendListRow(profile: profiles[index])
+                            .padding(.horizontal)
                     }
                 }
+                .scrollTargetLayout()
             }
-         //   .environment(\.defaultMinListRowHeight, 70)
             .scrollContentBackground(.hidden)
             .onAppear {
                 fetchProfiles()
             }
-            
             Spacer()
             BasicDissmiss()
         }
+    }
+    
+    
+    @ViewBuilder
+    private var header: some View {
+        Text("Friends")
+            .font(.largeTitle)
     }
     
     private func fetchProfiles() {

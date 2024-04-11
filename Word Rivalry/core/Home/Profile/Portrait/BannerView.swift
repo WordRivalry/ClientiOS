@@ -26,5 +26,5 @@ struct BannerView: View {
 
 
 #Preview {
-    BannerView(banner: Banner.PB_0.rawValue)
+    BannerView(banner: Banner.PB_3.rawValue)
 }

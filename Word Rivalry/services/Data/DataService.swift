@@ -19,18 +19,17 @@ import OSLog
     @ObservationIgnored
     var fetchTimer: PausableTimer?
     @ObservationIgnored
-    private let fetchCooldown: TimeInterval = 10
-    @ObservationIgnored
-    private let timerInterval: TimeInterval = 15
+    private let fetchInterval: TimeInterval
     
-    init() {
+    init(fetchEvery fetchInterval: TimeInterval = 300) {
+        self.fetchInterval = fetchInterval
         setupFetchTimer()
     }
     
     // MARK: - Timer Setup
     
     private func setupFetchTimer() {
-        fetchTimer = PausableTimer(interval: timerInterval, repeats: true) { [weak self] in
+        fetchTimer = PausableTimer(interval: fetchInterval, repeats: true) { [weak self] in
             Task { [weak self] in
                 await self?.fetchAndUpdateDataIfNeeded()
             }
@@ -85,11 +84,6 @@ import OSLog
         }
     }
     
-    /// Determine if enough time has elapsed since the last update.
-    func shouldUpdateImmediatly() -> Bool {
-        lastUpdateTime != nil && Date().timeIntervalSince(lastUpdateTime!) > fetchCooldown
-    }
-    
     func handleViewDidDisappear() {
         isOnViewTree = false
         fetchTimer?.pause()
@@ -118,11 +112,6 @@ import OSLog
             return false
         }
         
-        guard shouldFetch() else {
-            Logger.dataServices.debug("Fetch cooldown active. Skipping fetch.")
-            return false
-        }
-        
         return true
     }
     
@@ -133,11 +122,6 @@ import OSLog
     private func markFetchTime() {
         lastUpdateTime = Date()
         Logger.dataServices.info("Data successfully fetched and marked at \(String(describing: self.lastUpdateTime)).")
-    }
-    
-    private func shouldFetch() -> Bool {
-        guard let lastUpdateTime = lastUpdateTime else { return true }
-        return Date().timeIntervalSince(lastUpdateTime) >= fetchCooldown
     }
     
     // MARK: - Data Fetch Implementation

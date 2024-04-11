@@ -8,6 +8,7 @@
 import Foundation
 import os.log
 import SwiftUI
+import GameKit
 
 @Observable final class AppService: Service {
     var isReady: Bool = false
@@ -27,13 +28,72 @@ import SwiftUI
             NetworkChecker.shared.startMonitoring()
             
             do {
-                await PublicProfileService.shared.fetchData()
+                await PPLocalService.shared.fetchData()
             } catch {
                 debugPrint("Failed first profile load")
             }
             
+            GKLocalPlayer.local.authenticateHandler = { viewController, error in
+               // Handle the authorization callbacks.
+                
+                if let viewController = viewController {
+                        // Present the view controller so the player can sign in.
+                    self.logger.info("GameCenter need sign-in.")
+                        return
+                    }
+                    if error != nil {
+                        // Player could not be authenticated.
+                        // Disable Game Center in the game.
+                        self.logger.info("GameCenter disabled")
+                        return
+                    }
+                    
+                    // Player was successfully authenticated.
+                    // Check if there are any player restrictions before starting the game.
+                self.logger.info("GameCenter authenticated.")
+                
+                // Place the access point on the upper-left corner.
+                GKAccessPoint.shared.location = .topLeading
+                GKAccessPoint.shared.showHighlights = true
+          //      GKAccessPoint.shared.isActive = true
+                
+                Task {
+                    
+                 
+                    
+                    let val = try await GKAchievement.loadAchievements()
+                    if val.isEmpty {
+                        let achie = GKAchievement(identifier: "newleaf")
+                        achie.percentComplete += 10
+                        try await GKAchievement.report([achie])
+                        
+                        let val2 = try await GKAchievement.loadAchievements()
+                        self.logger.info( "\(val2.debugDescription)" )
+                    }
+                    self.logger.info( "\(val.debugDescription)" )
+                }
+             
+                            
+                    if GKLocalPlayer.local.isUnderage {
+                        // Hide explicit game content.
+                        self.logger.info("Is under age.")
+                    }
+
+
+                    if GKLocalPlayer.local.isMultiplayerGamingRestricted {
+                        // Disable multiplayer game features.
+                        self.logger.info("No multiplayer.")
+                    }
+
+
+                    if GKLocalPlayer.local.isPersonalizedCommunicationRestricted {
+                        // Disable in game communication UI.
+                        self.logger.info("No communication.")
+                    }
+            }
+            
             do {
-                try await PublicProfileService.shared.subscribeToChanges()
+                try await PPLocalService.shared.subscribeToChanges()
             } catch {
                 debugPrint("Failed first subscription \(error)")
             }

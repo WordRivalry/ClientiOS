@@ -21,13 +21,16 @@ struct AppTabView: View {
                     .tabItem { screen.label }
             }
         }
+        .navigationBarColor(.white)
         .onAppear {
-            self.logger.debug("*** PlayNavigationStack Appear ***")
-        }
+            self.logger.debug("*** AppTabView Appear ***")
+        } 
         .ignoresSafeArea()
         .persistentSystemOverlays(.hidden)
     }
 }
+
+
 
 #Preview {
     ModelContainerPreview {
@@ -35,6 +38,8 @@ struct AppTabView: View {
     } content: {
         AppTabView(selection: .constant(.home))
             .environment(BattleOrchestrator(profile: PublicProfile.preview, modeType: .NORMAL))
+            .environment(AppDataService.preview)
+            .environment(PublicProfile.preview)
             .environment(Friends.preview)
             .environment(Profile.preview)
             .environment(AchievementsProgression.preview)

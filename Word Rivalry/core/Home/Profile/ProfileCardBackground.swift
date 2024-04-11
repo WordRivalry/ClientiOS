@@ -13,7 +13,7 @@ struct ProfileCardBackground: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: 25)
-            .fill(.bar)
+            .fill(.bar.opacity(0.8))
             .matchedGeometryEffect(id: "profileBackground", in: namespace)
             .overlay {
                 RoundedRectangle(cornerRadius: 0, style: .continuous)
@@ -25,10 +25,11 @@ struct ProfileCardBackground: View {
                     .matchedGeometryEffect(id: "rotationOverlay", in: namespace)
                     .mask {
                         RoundedRectangle(cornerRadius: 25)
-                            .stroke(lineWidth: 4)
+                            .stroke(lineWidth: 5)
                             .matchedGeometryEffect(id: "strokeOverlay", in: namespace)
                     }
             }
+        
 //            .onAppear {
 //                withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
 //                    self.rotation = 360
