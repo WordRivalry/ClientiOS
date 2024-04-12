@@ -7,15 +7,20 @@
 
 import SwiftUI
 
+@Observable class InGameDisplaySettings {
+    var showScorePath: Bool = true
+    var showOpponentScore: Bool = true
+    var showMessage: Bool = true
+}
+
 struct SettingsView: View {
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @State private var hapticFeedbackEnabled = true
-    @State private var pathScoreEnabled = true
-    @State private var opponentScoreEnabled = true
     @State private var gameCenterAccessEnabled = true
     @State private var gameCenterFriendNotification = true
     @State private var musicVolume: Double = 0
     @State private var sfxVolume: Double = 0
+    @Environment(InGameDisplaySettings.self) private var inGameDisplay
     
     
     // Simple feedback mechanism
@@ -27,6 +32,8 @@ struct SettingsView: View {
     }
     
     var body: some View {
+        @Bindable var inGameDisplay = inGameDisplay
+        
         NavigationStack {
             List {
                 
@@ -48,12 +55,17 @@ struct SettingsView: View {
                 )
                 
                 Section(header: Text("In Game - Display")) {
-                    Toggle(isOn: $pathScoreEnabled) {
+                    Toggle(isOn: $inGameDisplay.showMessage) {
+                        Text("Action message")
+                    }
+                    .tint(.accent)
+                    
+                    Toggle(isOn: $inGameDisplay.showScorePath) {
                         Text("Path score")
                     }
                     .tint(.accent)
                     
-                    Toggle(isOn: $opponentScoreEnabled) {
+                    Toggle(isOn: $inGameDisplay.showOpponentScore) {
                         Text("Opponent score")
                     }
                     .tint(.accent)
@@ -205,5 +217,7 @@ struct PrivacyPolicyView: View {
 }
 
 #Preview {
-    SettingsView()
+    ViewPreview {
+        SettingsView()
+    }
 }

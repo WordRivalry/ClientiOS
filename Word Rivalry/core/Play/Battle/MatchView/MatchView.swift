@@ -63,9 +63,7 @@ struct MatchView: View {
 }
 
 #Preview {
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         MatchView(
             profile: PublicProfile.preview,
             modeType: .NORMAL,

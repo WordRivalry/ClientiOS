@@ -63,8 +63,7 @@ import os.log
     }
 }
 
-extension PublicProfile: EventSubscriber {
-    
+extension PublicProfile {
     static var nullProfile: PublicProfile {
         PublicProfile(
             userRecordID: "",
@@ -84,26 +83,5 @@ extension PublicProfile: EventSubscriber {
             userRecordID: "AQSuadaQUNDa",
             playerName: "Lighthouse"
         )
-    }
-
-    func subscribeToEvents() {
-          EventSystem.shared.subscribe(self, to: [AchievementEventType.achievementUnlocked])
-    }
-    
-    func handleEvent(_ event: AnyEvent) {
-        logger.debug("Received event in profile")
-        // Check if the event is an AchievementUnlockedEvent
-        if let unlockEvent = event as? AchievementUnlockedEvent {
-            self.logger.debug("Event is of type Unlock")
-            Task { // Public profile
-                do {
-                    _ = try await PublicDatabase.shared.updateAchievementIDs(adding: unlockEvent.name)
-                    self.logger.debug("Completed Achievement \(unlockEvent.name) added to public profile")
-                } catch {
-                    self.logger.error("\(error.localizedDescription)")
-                }
-            }
-            // Update the UI or notify the user as necessary
-        }
     }
 }

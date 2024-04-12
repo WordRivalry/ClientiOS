@@ -142,7 +142,6 @@ struct EditableProfileCardView: View {
     } content: {
         EditableProfileCardView(namespace: namespace)
            .environment(PublicProfile.preview)
-           .environment(AchievementsProgression.preview)
     }
 }
 

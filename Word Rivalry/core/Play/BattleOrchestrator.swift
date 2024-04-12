@@ -61,8 +61,8 @@ extension BattleOrchestrator: MatcMatchmakingDelegate {
     }
     
     func didFoundMatch(gameSessionUUID: String, opponentUsername: String, opponentElo: Int) {
-    //    self.eloService.setPendingAmount(amount: 10)
-    //    self.eloService.deductPoint()
+        self.eloService.setPendingAmount(amount: 10)
+        self.eloService.deductPoint()
 
         // Connect to battle server
         BattleServerService.shared.connect(
@@ -71,11 +71,14 @@ extension BattleOrchestrator: MatcMatchmakingDelegate {
             playerUUID: self.profile.userRecordID
         )
         
-        self.currentPage = .match(
-            self.modeType,
-            gameSessionUUID,
-            opponentUsername
-        )
+        Task { @MainActor in
+            self.currentPage = .match(
+                self.modeType,
+                gameSessionUUID,
+                opponentUsername
+            )
+        }
+
         self.logger.info("*** didFoundMatch delegate called ***")
     }
 }

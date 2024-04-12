@@ -70,5 +70,7 @@ struct LeaderboardRow: View {
 }
 
 #Preview {
-    LeaderboardRow(rank: 23, player: PublicProfile.preview)
+    ViewPreview {
+        LeaderboardRow(rank: 23, player: PublicProfile.preview)
+    }
 }

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import Combine
 import os.log
 
 struct AppTabView: View {
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "AppTabView")
     @Binding var selection: AppScreen?
+    @State var isOverlayOpen: Bool = false
     
     var body: some View {
         TabView(selection: $selection) {
@@ -21,28 +22,34 @@ struct AppTabView: View {
                     .tabItem { screen.label }
             }
         }
-        .navigationBarColor(.white)
-        .onAppear {
-            self.logger.debug("*** AppTabView Appear ***")
-        } 
+        .blur(radius: isOverlayOpen ? 3 : 0)
+        .allowsHitTesting(isOverlayOpen ? false : true)
+        .overlay {
+            if isOverlayOpen {
+                RoundedRectangle(cornerRadius: 0)
+                    .foregroundStyle(.clear)
+                    .background(.black.opacity(0.3))
+                    .overlay {
+                        NoInternetConnectionView()
+                    }
+            }
+        }
         .ignoresSafeArea()
         .persistentSystemOverlays(.hidden)
+        .navigationBarColor(.white)
+        .handleNetworkChanges(
+            onDisconnect: {
+                isOverlayOpen = true
+            }, onConnect:  {
+                isOverlayOpen = false
+            }
+        )
+        .logLifecycle(viewName: "AppTabView")
     }
 }
-
-
 
 #Preview {
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         AppTabView(selection: .constant(.home))
-            .environment(BattleOrchestrator(profile: PublicProfile.preview, modeType: .NORMAL))
-            .environment(PublicProfile.preview)
-            .environment(Friends.preview)
-            .environment(Profile.preview)
-            .environment(AchievementsProgression.preview)
-            .environment(LeaderboardService.preview)
     }
 }
-

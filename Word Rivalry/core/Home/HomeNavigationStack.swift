@@ -40,18 +40,12 @@ struct HomeNavigationStack: View {
                         showStatictics = true
                     }
                     .matchedGeometryEffect(id: "button1", in: namespace)
-                    
-                    BasicButton(text: "Achievements") {
-                         showAchievements = true
-                    }
-                    .matchedGeometryEffect(id: "button2", in: namespace)
                 }
             }
             .navigationTitle(profile.playerName)
             .navigationBarTitleDisplayMode(.automatic)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
-                EventSystem.shared.subscribe(AchievementsManager.shared, to: [PlayerActionEventType.buttonClick])
                 showDetailedProfile = false
             }
             .background(
@@ -66,12 +60,6 @@ struct HomeNavigationStack: View {
                 .presentationBackground(.bar)
                 .fadeIn()
             }
-            
-            .fullScreenCover(isPresented: $showAchievements) {
-                GameCenterView(isVisible: $showAchievements, state: .leaderboards   )
-                    .presentationBackground(.bar)
-                    .fadeIn()
-            }
             .fullScreenCover(isPresented: $showLeaderboard) {
                 LeaderboardView()
                     .presentationBackground(.bar)
@@ -79,11 +67,6 @@ struct HomeNavigationStack: View {
             }
             .fullScreenCover(isPresented: $showStatictics) {
                 StatisticsView()
-                    .presentationBackground(.bar)
-                    .fadeIn()
-            }
-            .fullScreenCover(isPresented: $showFriendsList) {
-                FriendsListView()
                     .presentationBackground(.bar)
                     .fadeIn()
             }
@@ -101,21 +84,6 @@ struct HomeNavigationStack: View {
                         .matchedGeometryEffect(id: "homeTool1", in: namespace)
                     }
                 }
-
-                ToolbarItem(placement: .status) {
-                    if (false) {
-                        Button(action: {
-                            withAnimation(.easeIn) {
-                                showFriendsList = true
-                            }
-                        }) {
-                            Image(systemName: "envelope.badge.fill")
-                                .foregroundStyle(.accent)
-                                .blinkingEffect(duration: 0.8, minOpacity: 0.5)
-                        }
-                    }
-                }
-                
                 ToolbarItem(placement: .principal) {
                     ZStack {
                         // Capsule shape simulating the cylinder
@@ -130,7 +98,7 @@ struct HomeNavigationStack: View {
                                 .frame(width: 30, height: 30)
                             
                             // Text positioned above the capsule
-                            Text("0")
+                            Text("233")
                                 .foregroundColor(.white)
                                 .font(.title3)
                         }
@@ -138,19 +106,12 @@ struct HomeNavigationStack: View {
                 }
             }
         }
+        .logLifecycle(viewName: "HomeNavigationStack")
     }
 }
 
 #Preview {
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         HomeNavigationStack()
-            .environment(PublicProfile.preview)
-            .environment(Friends.preview)
-            .environment(Profile.preview)
-            .environment(AchievementsProgression.preview)
-            .environment(LeaderboardService.preview)
-            .navigationBarColor(.white)
     }
 }

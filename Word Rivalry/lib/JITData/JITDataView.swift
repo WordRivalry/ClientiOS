@@ -6,29 +6,41 @@
 //
 
 import SwiftUI
+import Combine
+import OSLog
+
+extension Logger {
+    /// Bundle identifier is a great way to ensure a unique identifier.
+    private static var subsystem = Bundle.main.bundleIdentifier!
+    
+    /// Logs the JIT Data events from the app
+    static let jitDataView = Logger(subsystem: subsystem, category: "JITDataView")
+}
 
 struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
+    @Environment(Network.self) private var network: Network
     let dataService: JITData
     let loadingView: () -> LoadingView
     let content: () -> Content
-
+    
     var body: some View {
-        VStack {
-            contentView
-                .onChange(of: NetworkChecker.shared.isConnected) { oldValue, newValue in
-                    if oldValue == false || newValue == true {
-                        Task {
-                            await dataService.fetchData()
-                        }
-                    }
-                }
-        }
+        contentView
             .onAppear {
                 dataService.handleViewDidAppear()
             }
             .onDisappear {
                 dataService.handleViewDidDisappear()
             }
+            .onChange(of: network.isConnected) { oldValue, newValue in
+                if oldValue == false && newValue == true {
+                    Task {
+                        Logger.jitDataView.debug("Attempting to fetch data as the internet connection was detected.")
+                        await self.dataService.fetchData()
+                        Logger.jitDataView.debug("Data fetched successfully.")
+                    }
+                }
+            }
+            .logLifecycle(viewName: "JITDataView")
     }
     
     @ViewBuilder
@@ -68,10 +80,11 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
 #Preview {
     JITDataView(dataService: LeaderboardService.preview) {
         LeaderboardLoadingView()
+          
     } content: {
         VStack {
             Text("No update time.")
         }
     }
-
+    .environment(Network()) // Is needed!
 }

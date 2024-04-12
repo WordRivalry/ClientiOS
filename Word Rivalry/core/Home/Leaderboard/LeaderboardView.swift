@@ -18,6 +18,7 @@ struct LeaderboardView: View {
         } content: {
             content
         }
+        .logLifecycle(viewName: "LeaderboardView")
     }
     
     @ViewBuilder
@@ -112,23 +113,7 @@ struct LeaderboardView: View {
 }
 
 #Preview {
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         LeaderboardView()
-            .environment(LeaderboardService.preview)
-            .environment(PublicProfile.preview)
     }
 }
-
-
-//
-//BasicButton(text: "Send Achievment event") {
-//    let buttonClickEvent = PlayerActionEvent(
-//        type: .buttonClick,
-//        data: [:],
-//        timestamp: Date()
-//    )
-//
-//    EventSystem.shared.publish(event: buttonClickEvent)
-//}

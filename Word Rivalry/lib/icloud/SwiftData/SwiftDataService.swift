@@ -15,7 +15,6 @@ class SwiftDataService {
     @ObservationIgnored
     private let logger = Logger(subsystem: "SwiftData", category: "DataService")
     var profile: Profile?
-    var achievementProgressions: [AchievementProgression] = []
     var friends: [Friend] = []
 
     init() {
@@ -63,11 +62,6 @@ class SwiftDataService {
         }
     }
     
-    func createProgression(progression: AchievementProgression) {
-        guard let dataSource = self.dataSource else { logger.error("\(self.NO_DATA_SOURCE)"); return }
-        dataSource.appendAchievementProgression(progression)
-    }
-    
     private let NO_DATA_SOURCE: String = "No datasource available!"
 }
 
@@ -94,10 +88,6 @@ extension SwiftDataService: AppService {
             logger.debug("Profile not found")
             self.profile = nil
         }
-        
-        //   self.achievementProgressions = dataSource.fetchAchievementProgression()
-        //   logger.debug("[\(self.achievementProgressions.count)] Achievement Progressions found")
-        
         
         //  self.friends = dataSource.fetchFriends()
         //  logger.debug("[\(self.friends.count)] Friends found")

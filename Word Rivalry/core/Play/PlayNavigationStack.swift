@@ -13,12 +13,6 @@ enum PlayTab {
 }
 
 struct PlayNavigationStack: View {
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "PlayNavigationStack")
-    
-    init() {
-        self.logger.debug("*** PlayNavigationStack init ***")
-    }
-    
     var body: some View {
         NavigationStack {
             PlayView()
@@ -29,16 +23,14 @@ struct PlayNavigationStack: View {
                     .resizable()
                     .ignoresSafeArea())
         }
+        .logLifecycle(viewName: "PlayNavigationStack")
     }
 }
 
-
-
 #Preview {
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         PlayNavigationStack()
             .environment(Profile.preview)
+            .environment(Network())
     }
 }

@@ -90,10 +90,10 @@ class WebSocketService: NSObject {
     
     // MARK: - Reconnection Logic
     private func reconnect() {
-        
         guard self.shouldReconnect else { return }
         guard reconnectionAttempts < maxReconnectionAttempts else {
             self.log("Max reconnection attempts reached. Giving up.", category: LogCategory.connection, type: .error)
+            disconnect()
             return
         }
         
@@ -127,16 +127,21 @@ class WebSocketService: NSObject {
     // MARK: - Receive Messages
     private func listenForMessages() {
         guard let webSocketTask = webSocketTask else {
-              self.log("Connection is closed or disconnecting, stopping message listening.", category: LogCategory.connection, type: .info)
-              return
-          }
+            self.log("Connection is closed or disconnecting, stopping message listening.", category: LogCategory.connection, type: .info)
+            return
+        }
         
         webSocketTask.receive { [weak self] result in
             switch result {
             case .failure(let error):
                 self?.handleError(error, context: "receiveMessage")
+                if (self?.shouldReconnect != nil) && !((self?.isConnected) != nil) {
+                    self?.reconnect() // Ensure reconnect is only called under appropriate conditions.
+                }
             case .success(let message):
-                self?.handleMessage(message)
+                if ((self?.isConnected) != nil) {
+                    self?.handleMessage(message)
+                }
             }
             
             // Continue listening for messages
@@ -193,32 +198,32 @@ extension WebSocketService: URLSessionWebSocketDelegate {
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-           isConnected = false
-           shouldReconnect = false // Prevent reconnection attempts after a server-initiated close
-           
-           // Handle specific close codes
-           switch closeCode {
-           case .goingAway:
-               log("Server initiated disconnect with 'Going Away'. No reconnection attempt will be made.", category: LogCategory.connection, type: .info)
+        isConnected = false
+        shouldReconnect = false // Prevent reconnection attempts after a server-initiated close
+        
+        // Handle specific close codes
+        switch closeCode {
+        case .goingAway:
+            log("Server initiated disconnect with 'Going Away'. No reconnection attempt will be made.", category: LogCategory.connection, type: .info)
             
-               // Additional cleanup or reset logic can be placed here if needed
-               teardownConnection()
-           case .noStatusReceived, .abnormalClosure:
-               // These could indicate network issues or unexpected drops.
-             
-               handleError(URLError(URLError.networkConnectionLost))
-           default:
-               log("Connection closed with code \(closeCode). No reconnection attempt will be made.", category: LogCategory.connection, type: .info)
-               
-               // Additional cleanup or reset logic can be placed here if needed
-               teardownConnection()
-           }
-       }
-       
-       private func teardownConnection() {
-           webSocketTask = nil // Ensure the webSocketTask is cleared to release resources
-           messageQueue.removeAll() // Optionally clear the message queue or handle unsent messages
-       }
+            // Additional cleanup or reset logic can be placed here if needed
+            teardownConnection()
+        case .noStatusReceived, .abnormalClosure:
+            // These could indicate network issues or unexpected drops.
+            
+            handleError(URLError(URLError.networkConnectionLost))
+        default:
+            log("Connection closed with code \(closeCode). No reconnection attempt will be made.", category: LogCategory.connection, type: .info)
+            
+            // Additional cleanup or reset logic can be placed here if needed
+            teardownConnection()
+        }
+    }
+    
+    private func teardownConnection() {
+        webSocketTask = nil // Ensure the webSocketTask is cleared to release resources
+        messageQueue.removeAll() // Optionally clear the message queue or handle unsent messages
+    }
 }
 
 // MARK: - Log
@@ -252,6 +257,7 @@ extension WebSocketService {
         if nsError.domain == NSPOSIXErrorDomain && nsError.code == 57 {
             // Log this specific error or handle it accordingly
             log("Socket is not connected. Dump.", category: LogCategory.networkError, type: .info)
+            reconnect()
             return // Early return to avoid executing further error handling logic
         } else {
             // Non-URL errors are handled based on the context

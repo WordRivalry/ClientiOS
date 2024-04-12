@@ -14,6 +14,7 @@ struct GameView: View {
     @State private var showingQuitAlert = false
     @Environment(\.dismiss) var dismiss
     @Environment(PublicProfile.self) private var profile: PublicProfile
+    @Environment(InGameDisplaySettings.self) private var inGameDisplay
     
     private let logger = Logger(subsystem: "com.WordRivalry", category: "GameView")
     
@@ -49,9 +50,12 @@ struct GameView: View {
                         .clipShape(Circle())
                     
                     PlayerNameView(playerName: gameModel.opponentName)
-                    Text("Score: \(gameModel.opponentScore)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                    
+                    if inGameDisplay.showOpponentScore {
+                        Text("Score: \(gameModel.opponentScore)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                    }
                 }
                 Spacer()
             }
@@ -64,13 +68,20 @@ struct GameView: View {
            
             Spacer()
             HStack {
-                Text("Path: \(gameModel.currentPathScore)")
-                    .padding(.horizontal)
-                Spacer()
+                if inGameDisplay.showOpponentScore {
+                    Text("Path: \(gameModel.currentPathScore)")
+                        .padding(.horizontal)
+                    Spacer()
+                }
+             
+                
                 Text("\(gameModel.currentScore - gameModel.opponentScore)")
                 Spacer()
-                Text("\(gameModel.message)")
-                    .padding(.horizontal)
+                
+                if inGameDisplay.showMessage {
+                    Text("\(gameModel.message)")
+                        .padding(.horizontal)
+                }
             }
             LetterBoardView(viewModel: gameModel)
                 .cornerRadius(10)
@@ -137,10 +148,7 @@ struct GameView: View {
     gameModel.timeLeft = "10"
     gameModel.message = "Message field"
     
-    return ModelContainerPreview {
-        previewContainer
-    } content: {
+    return ViewPreview {
         GameView(gameModel: gameModel, opponentProfile: PublicProfile.preview)
-            .environment(PublicProfile.preview)
     }
 }

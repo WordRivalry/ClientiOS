@@ -20,6 +20,7 @@ struct Word_RivalryApp: App {
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @Environment(\.scenePhase) private var scenePhase
     let services: AppServiceManager
+    let network = Network()
     
     init() {
         let jitDataService = JITDataService<JITDataType>()
@@ -35,10 +36,13 @@ struct Word_RivalryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(network)
                 .environment(services)
-            .onChange(of: scenePhase) {
-                self.handleScheneChange()
-            }
+                .environment(InGameDisplaySettings())
+                .onChange(of: scenePhase) {
+                    self.handleScheneChange()
+                }
+                .logLifecycle(viewName: "Word_RivalryApp")
         }
     }
     
@@ -67,48 +71,48 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Override point for customization after application launch.
         debugPrint("Registering for remote notifications")
         UIApplication.shared.registerForRemoteNotifications()
-
+        
         return true
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-           debugPrint("Did register for remote notifications")
-       }
-
-       func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-           debugPrint("ERROR: Failed to register for notifications: \(error.localizedDescription)")
-       }
+        debugPrint("Did register for remote notifications")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        debugPrint("ERROR: Failed to register for notifications: \(error.localizedDescription)")
+    }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-           guard let zoneNotification = CKNotification(fromRemoteNotificationDictionary: userInfo) as? CKRecordZoneNotification else {
-               print("CloudKit database changed")
-               Task {
-                   await PPLocalService.sharedInstace.fetchData()
-               }
-               if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
-                   
-                   debugPrint(notification.debugDescription)
-                   
-                   debugPrint(userInfo.debugDescription)
-                  // NotificationCenter.default.post(name: .change, object: nil)
-                   completionHandler(.newData)
-                   return
-               }
-             
-               completionHandler(.noData)
-               return
-           }
-
-           debugPrint("Received zone notification: \(zoneNotification)")
-
-           Task {
-               do {
-                   debugPrint(try await PublicDatabase.shared.fetchOwnPublicProfile().debugDescription)
-                   completionHandler(.newData)
-               } catch {
-                   debugPrint("Error in fetchLatestChanges: \(error)")
-                   completionHandler(.failed)
-               }
-           }
-       }
+        guard let zoneNotification = CKNotification(fromRemoteNotificationDictionary: userInfo) as? CKRecordZoneNotification else {
+            print("CloudKit database changed")
+            Task {
+                await PPLocalService.sharedInstace.fetchData()
+            }
+            if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
+                
+                debugPrint(notification.debugDescription)
+                
+                debugPrint(userInfo.debugDescription)
+                // NotificationCenter.default.post(name: .change, object: nil)
+                completionHandler(.newData)
+                return
+            }
+            
+            completionHandler(.noData)
+            return
+        }
+        
+        debugPrint("Received zone notification: \(zoneNotification)")
+        
+        Task {
+            do {
+                debugPrint(try await PublicDatabase.shared.fetchOwnPublicProfile().debugDescription)
+                completionHandler(.newData)
+            } catch {
+                debugPrint("Error in fetchLatestChanges: \(error)")
+                completionHandler(.failed)
+            }
+        }
+    }
 }

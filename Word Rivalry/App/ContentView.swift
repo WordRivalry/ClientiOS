@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import Combine
+import OSLog
 
 struct ContentView: View {
     // Handle the entire color scheme of the app
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @Environment(AppServiceManager.self) private var appService: AppServiceManager
-    var notificationManager = NotificationManager.shared
-    
+    @State private var cancellable: AnyCancellable?
     @State var showNoInternet = false
     
     @State private var appScreen: AppScreen? = .home
@@ -38,28 +39,40 @@ struct ContentView: View {
                     }
                 }
             } else {
-                VStack {
-                    Spacer()
-                    ProgressView(value: appService.progress)
-                        .onAppear {Task{
-                            await self.appService.start()
-                        }}
-                    Text(appService.messages.last ?? "Nothing to worry!")
-                    Spacer()
+                Group {
+                    switch appService.screenToDisplay {
+                    case .noIcloud:
+                        IcloudStatusMessageView()
+                    case .noInternet:
+                        InternetStatusMessageView(message: "This is required to create your profile or fetch it on this device")
+                    case .main:
+                        VStack {
+                            Spacer()
+                            ProgressView(value: appService.progress)
+                            Text(appService.messages.last ?? "Nothing to worry!")
+                            Spacer()
+                                .onAppear {
+                                    Task {
+                                        Logger.serviceManager.debug("Attempting to start app services.")
+                                        _ = await self.appService.start()
+                                    }
+                                }
+                        }
+                        .frame(width: 350)
+                        .transition(.opacity)
+                        .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
+                    case .error:
+                        Text("An error occured")
+                    }
                 }
-                .frame(width: 350)
-                
-                .transition(.opacity)
-                .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
-                
-                if notificationManager.showNotification {
-                    AchievementNotificationView(achievementName: notificationManager.currentAchievementName)
-                        .transition(.move(edge: .top))
-                        .animation(.easeOut, value: notificationManager.showNotification)
-                        .zIndex(1) // Ensure notification appears above other content
-                }
+                .handleNetworkChanges(onConnect:  {
+                    Task {
+                        Logger.serviceManager.debug("Attempting to start app services.")
+                        _ = await self.appService.start()
+                    }
+                })
             }
-        }
+        }.logLifecycle(viewName: "ContentView")
     }
 }
 
@@ -68,12 +81,14 @@ struct ContentView: View {
     jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
     jitDataService.registerService(AchievementsService(), forType: .achievements)
     
-    return ContentView()
-        .environment(
-            AppServiceManager(
-                audioService: AudioSessionService(),
-                profileDataService: ProfileDataService(),
-                jitData: jitDataService
+    return ViewPreview {
+        ContentView()
+            .environment(
+                AppServiceManager(
+                    audioService: AudioSessionService(),
+                    profileDataService: ProfileDataService(),
+                    jitData: jitDataService
+                )
             )
-        )
+    }
 }

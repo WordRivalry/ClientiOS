@@ -9,11 +9,9 @@ import SwiftUI
 import os.log
 
 struct BattleOrchestratorView: View {
-    private let logger = Logger(subsystem: "com.WordRivalry", category: "BattleOrchestratorView")
     var battleOrchestrator: BattleOrchestrator
     
     init(profile: PublicProfile, modeType: ModeType) {
-        self.logger.debug("*** BattleOrchestratorView init ***")
         self.battleOrchestrator = BattleOrchestrator(profile: profile, modeType: modeType)
     }
     
@@ -32,15 +30,12 @@ struct BattleOrchestratorView: View {
             }
         }
         .environment(self.battleOrchestrator)
-        .onAppear {
-            self.logger.debug("*** BattleOrchestratorView Appeared ***")
-        }
-        .onDisappear {
-            self.logger.debug("*** BattleOrchestratorView Disappeared ***")
-        }
+        .logLifecycle(viewName: "BattleOrchestratorView")
     }
 }
 
 #Preview {
-    BattleOrchestratorView(profile: PublicProfile.preview, modeType: .NORMAL)
+    ViewPreview {
+        BattleOrchestratorView(profile: PublicProfile.preview, modeType: .NORMAL)
+    }
 }

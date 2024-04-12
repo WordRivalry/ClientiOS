@@ -101,7 +101,11 @@ import OSLog
         repeat {
             allCriticalReady = criticalServices.allSatisfy { $0.isReady }
             Logger.serviceManager.info("Critical sub-services readyness: \(allCriticalReady)")
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            if !allCriticalReady {
+                let allNonReadyCritical = criticalServices.filter( { $0.isReady == false })
+                Logger.serviceManager.warning("\(allNonReadyCritical.debugDescription)")
+            }
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         } while !allCriticalReady
     }
     

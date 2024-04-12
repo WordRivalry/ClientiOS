@@ -33,47 +33,46 @@ struct GameCardView: View {
                     }
             }
         }
+        .padding(.horizontal)
+        .cornerRadius(12)
+        .shadow(radius: 2)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(.bar)
+        )
     }
 
     @ViewBuilder
     private var compactView: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        HStack(alignment: .center, spacing: 10) {
             Text(cardName)
                 .font(.headline.weight(.semibold))
-                .padding(.bottom, 5)
                 .matchedGeometryEffect(id: "cardName\(cardName)", in: namespace)
             
-            HStack {
-                Spacer()
+            Spacer()
                 ActionButton(title: "FIND MATCH", action: action)
                     .matchedGeometryEffect(id: "actionButtom\(cardName)", in: namespace)
-            }
-            .padding(.vertical)
         }
-        .padding()
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
-        .shadow(radius: 2)
+        .frame(width: 300, height: 80)
     }
 
     @ViewBuilder
     private var detailedView: some View {
         VStack(alignment: .center, spacing: 10)  {
             Text(cardName)
+                .foregroundStyle(.primary)
                 .font(.headline.weight(.bold))
                 .padding(.top, 20)
                 .matchedGeometryEffect(id: "cardName\(cardName)", in: namespace)
             Spacer()
             detailsByModeType
+                .foregroundStyle(.secondary)
             Spacer()
             ActionButton(title: "FIND MATCH", action: action)
                 .padding(.bottom, 20)
                 .matchedGeometryEffect(id: "actionButtom\(cardName)", in: namespace)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
-        .shadow(radius: 2)
+        .frame(width: 300, height: 300)
     }
     
     @ViewBuilder

@@ -22,6 +22,7 @@ enum Screen {
     let audioService: AudioSessionService
     let profileDataService: ProfileDataService
     let jitData: JITDataService<JITDataType>
+    
     init(
         audioService: AudioSessionService,
         profileDataService: ProfileDataService,
@@ -42,22 +43,40 @@ enum Screen {
     
     override func precondition() async -> Bool {
         
-        NetworkChecker.shared
+        let check = NetworkChecker.shared
         iCloudService.shared.checkICloudStatus()
         
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        self.messages.append("Getting ready!")
         
-        if !NetworkChecker.shared.isConnected {
-            self.messages.append("No internet connection found")
-            self.screenToDisplay = .noInternet
-            return false
+        // Sleep for 500 ms before check internet
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        // Loop until the internet connection is available
+        while !check.isConnected {
+            self.messages.append("No internet connection found. Retrying...")
+            
+            if self.screenToDisplay != .noInternet {
+                Task { @MainActor in
+                    self.screenToDisplay = .noInternet
+                }
+            }
+
+            // Sleep for 1 sec before checking again
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
         
         if iCloudService.shared.iCloudStatus != .available {
             self.messages.append(iCloudService.shared.statusMessage())
-            self.screenToDisplay = .noInternet
+            Task { @MainActor in
+                self.screenToDisplay = .noIcloud
+            }
             return false
         }
+        
+        Task { @MainActor in
+            self.screenToDisplay = .main
+        }
+        
         return true
     }
 }

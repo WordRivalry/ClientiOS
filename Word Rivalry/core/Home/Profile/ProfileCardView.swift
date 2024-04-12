@@ -37,16 +37,13 @@ struct ProfileCardView: View {
                 self.rotation = 360
             }
         }
+        .logLifecycle(viewName: "ProfileCardView")
     }
 }
 
 #Preview {
     @Namespace var namespace
-    
-    return ModelContainerPreview {
-        previewContainer
-    } content: {
+    return ViewPreview {
         ProfileCardView(namespace: namespace)
-           .environment(PublicProfile.preview)
     }
 }

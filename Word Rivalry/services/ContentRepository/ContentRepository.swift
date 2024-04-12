@@ -8,77 +8,21 @@
 import Foundation
 import os.log
 
-// MARK: - CONTENT DEFINITION
-enum ContentAccessibility: Equatable {
-    case base
-    case unlockable(source: ContentSource)
-    
-    enum ContentAccessibilityError: Error {
-        case BaseHasNotProgression
-    }
-    
-    func isUnlocked(using progressions: AchievementsProgression) -> Bool {
-        switch self {
-        case .base:
-             true
-        case .unlockable(source: let source):
-            switch source {
-            case .achievement(let achievementName):
-                progressions.isUnlocked(for: achievementName)
-            }
-        }
-    }
-    
-    func progression(using progressions: AchievementsProgression) -> AchievementProgression? {
-        switch self {
-        case .base:
-            nil
-        case .unlockable(source: let source):
-            switch source {
-            case .achievement(let achievementName):
-                progressions.getProgression(for: achievementName)
-            }
-        }
-    }
-    
-    func achievementName() -> AchievementName? {
-        switch self {
-        case .base:
-            nil
-        case .unlockable(source: let source):
-            switch source {
-            case .achievement(let achievementName):
-                achievementName
-            }
-        }
-    }
-}
-
-enum ContentSource: Equatable {
-    case achievement(AchievementName)  // Tied to an achievement
-}
-
 protocol ContentItem {
     var id: String { get }
     var description: String { get }
-    var requirement: String? { get }
-    var accessibility: ContentAccessibility { get }
 }
 
 struct TitleItem: ContentItem {
     var id: String { display }
     var display: String
     var description: String
-    var requirement: String?
-    var accessibility: ContentAccessibility
 }
 
 struct ProfileImageItem: ContentItem {
     var id: String { assetName }
     var assetName: String
     var description: String
-    var requirement: String?
-    var accessibility: ContentAccessibility
 }
 
 struct BannerItem: ContentItem {
@@ -86,7 +30,6 @@ struct BannerItem: ContentItem {
     var assetName: String
     var description: String
     var requirement: String?
-    var accessibility: ContentAccessibility
 }
 
 // MARK: - REPOSITORY
@@ -106,16 +49,6 @@ class ContentRepository {
         self.logger.debug("Initiated and loaded")
     }
     
-    func getAchievement(for title: Title) -> AchievementName? {
-        forKey(title).accessibility.achievementName()
-    }
-    func getAchievement(for banner: Banner) -> AchievementName? {
-        forKey(banner).accessibility.achievementName()
-    }
-    func getAchievement(for profileImage: ProfileImage) -> AchievementName? {
-        forKey(profileImage).accessibility.achievementName()
-    }
-    
     func getDescription(for title: Title) -> String {
         forKey(title).description
     }
@@ -124,24 +57,6 @@ class ContentRepository {
     }
     func getDescription(for profileImage: ProfileImage) -> String {
         forKey(profileImage).description
-    }
-    func isUnlocked(using progressions: AchievementsProgression, _ title: Title) -> Bool {
-        forKey(title).accessibility.isUnlocked(using: progressions)
-    }
-    func isUnlocked(using progressions: AchievementsProgression, _ banner: Banner) -> Bool {
-        forKey(banner).accessibility.isUnlocked(using: progressions)
-    }
-    func isUnlocked(using progressions: AchievementsProgression, _ profileImage: ProfileImage) -> Bool {
-        forKey(profileImage).accessibility.isUnlocked(using: progressions)
-    }
-    func getProgression(using progressions: AchievementsProgression, _ title: Title) -> AchievementProgression? {
-        forKey(title).accessibility.progression(using: progressions)
-    }
-    func getProgression(using progressions: AchievementsProgression, _ banner: Banner) -> AchievementProgression? {
-        forKey(banner).accessibility.progression(using: progressions)
-    }
-    func getProgression(using progressions: AchievementsProgression, _ profileImage: ProfileImage) -> AchievementProgression? {
-        forKey(profileImage).accessibility.progression(using: progressions)
     }
 }
 
@@ -198,20 +113,17 @@ extension ContentRepository {
         case .newLeaf:
             TitleItem(
                 display: key.rawValue,
-                description: "Title For a new leaf",
-                accessibility: .base
+                description: "Title For a new leaf"
             )
         case .wordConqueror:
             TitleItem(
                 display: key.rawValue,
-                description: "Title for a word conqueror",
-                accessibility: .unlockable(source: .achievement(.wordConqueror))
+                description: "Title for a word conqueror"
             )
         case .wordSmith:
             TitleItem(
                 display: key.rawValue,
-                description: "Title For a word smith",
-                accessibility: .unlockable(source: .achievement(.wordSmith))
+                description: "Title For a word smith"
             )
         }
     }
@@ -221,92 +133,77 @@ extension ContentRepository {
         case .PB_0:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_1:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for a word conqueror",
-                accessibility: .unlockable(source: .achievement(.wordConqueror))
+                description: "Banner for a word conqueror"
             )
         case .PB_3:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for a wordsmith",
-                accessibility: .unlockable(source: .achievement(.wordSmith))
+                description: "Banner for a wordsmith"
             )
         case .PB_4:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_5:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_6:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_7:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_8:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_9:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_10:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_11:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_12:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_13:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_14:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         case .PB_15:
             BannerItem(
                 assetName: key.rawValue,
-                description: "Banner for default",
-                accessibility: .base
+                description: "Banner for default"
             )
         }
     }
@@ -316,104 +213,87 @@ extension ContentRepository {
         case .PI_0:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 0",
-                accessibility: .base
+                description: "Default image 0"
             )
         case .PI_1:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "image 1",
-                accessibility: .unlockable(source: .achievement(.wordConqueror))
+                description: "image 1"
             )
         case .PI_2:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "image 2",
-                accessibility: .unlockable(source: .achievement(.wordSmith))
+                description: "image 2"
             )
         case .PI_3:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 3",
-                accessibility: .base
+                description: "Default image 3"
             )
         case .PI_4:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 4",
-                accessibility: .base
+                description: "Default image 4"
             )
         case .PI_5:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 5",
-                accessibility: .base
+                description: "Default image 5"
             )
         case .PI_6:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 6",
-                accessibility: .base
+                description: "Default image 6"
             )
         case .PI_7:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 7",
-                accessibility: .base
+                description: "Default image 7"
             )
         case .PI_8:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 8",
-                accessibility: .base
+                description: "Default image 8"
             )
         case .PI_9:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 9",
-                accessibility: .base
+                description: "Default image 9"
             )
         case .PI_10:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 10",
-                accessibility: .base
+                description: "Default image 10"
             )
         case .PI_11:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 11",
-                accessibility: .base
+                description: "Default image 11"
             )
         case .PI_12:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 12",
-                accessibility: .base
+                description: "Default image 12"
             )
         case .PI_13:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 13",
-                accessibility: .base
+                description: "Default image 13"
             )
         case .PI_14:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 14",
-                accessibility: .base
+                description: "Default image 14"
             )
         case .PI_15:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 15",
-                accessibility: .base
+                description: "Default image 15"
             )
         case .PI_16:
             ProfileImageItem(
                 assetName: key.rawValue,
-                description: "Default image 16",
-                accessibility: .base
+                description: "Default image 16"
             )
         }
     }
@@ -449,8 +329,6 @@ extension ContentRepository {
     
     class ContentQuery {
         private var manager: ContentRepository
-        private var sourceFilter: ContentSource?
-        private var unlocked: Bool = false
         private var typeFilter: ContentTypeFilter = .all
         private let logger = Logger(subsystem: "com.WordRivalry", category: "ContentQuery")
         
@@ -472,11 +350,6 @@ extension ContentRepository {
             self.manager = manager
         }
         
-        func bySource(_ source: ContentSource) -> ContentQuery {
-            self.sourceFilter = source
-            return self
-        }
-        
         func only(_ filter: ContentTypeFilter) -> ContentQuery {
             self.typeFilter = filter
             return self
@@ -484,19 +357,7 @@ extension ContentRepository {
         
         func execute() -> [ContentItem] {
             var results: [ContentItem] = []
-            
-            if typeFilter.contains(.banner) {
-                results += manager.banners.applyFilters(source: sourceFilter)
-            }
-            if typeFilter.contains(.title) {
-                results += manager.titles.applyFilters(source: sourceFilter)
-            }
-            if typeFilter.contains(.profileImage) {
-                results += manager.profileImages.applyFilters(source: sourceFilter)
-            }
-            
             self.logger.debug("Query effectued")
-            
             return results
         }
     }
@@ -516,44 +377,5 @@ class ContentStore<T: ContentItem> {
     
     func getAllItems() -> [T] {
         return Array(items.values)
-    }
-}
-
-// MARK: - QUERY STORE
-extension ContentStore {
-    func applyFilters(source: ContentSource?) -> [T]  {
-        var query = self.query()
-        if let source = source {
-            query = query.bySource(source)
-        }
-        return query.execute()
-    }
-    
-    private func query() -> ContentQuery {
-        return ContentQuery(items: getAllItems())
-    }
-    
-    private class ContentQuery {
-        private var items: [T]
-        
-        init(items: [T]) {
-            self.items = items
-        }
-        
-        func bySource(_ source: ContentSource) -> ContentQuery {
-            let filteredItems = items.filter {
-                switch $0.accessibility {
-                case .unlockable(let itemSource) where itemSource == source:
-                    return true
-                default:
-                    return false
-                }
-            }
-            return ContentQuery(items: filteredItems)
-        }
-        
-        func execute() -> [T] {
-            return items
-        }
     }
 }

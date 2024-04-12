@@ -26,7 +26,6 @@ final class Profile {
 extension Profile {
     
     static var new: Profile {Profile(currency: 0)}
-    
     static var preview: Profile {Profile(currency: 100)}
     
     static var local: FetchDescriptor<Profile> {

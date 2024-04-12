@@ -32,7 +32,6 @@ struct TitleEditingView: View {
     @Binding var titleSelected: String
     @State var profile: PublicProfile
     
-    @Environment(AchievementsProgression.self) private var progs: AchievementsProgression
     let shakeManager = ShakeStateManager<Title>()
     let content = ContentRepository.shared
 
@@ -50,44 +49,9 @@ struct TitleEditingView: View {
     
     @ViewBuilder
     private func titleCard(for title: Title) -> some View {
-        let isUnlocked = content.isUnlocked(using: progs, title)
-        
         VStack(alignment: .leading, spacing: 10) {
-            
-            HStack {
-                TitleView(title: title.rawValue)
-                if titleSelected == title.rawValue {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                }
-                Spacer()
-                Group {
-                    Image(systemName: "clock")
-                        .foregroundColor(isUnlocked ? .green : .red)
-                    Text(isUnlocked ? "Permanent": "Not obtained")
-                }
-              
-                    .modifier(ShakeEffect(
-                        animatableData: shakeManager.itemToShake == title ? 1 : 0)
-                    )
-            }
-           
-            
+            TitleView(title: title.rawValue)
             Text(content.getDescription(for: title))
-            
-           
-            
-            if let achievementName = content.getAchievement(for:title) {
-                Divider()
-                HStack {
-                    Text("Achievement :")
-                    Text("\(achievementName.rawValue)")
-                        .foregroundStyle(.cyan)
-                        .onTapGesture {
-                           print("Tapped")
-                        }
-                }
-            }
         }
         .padding()
         .background(
@@ -95,46 +59,9 @@ struct TitleEditingView: View {
                 .stroke(lineWidth: 1.0)
         )
         .onTapGesture {
-            if isUnlocked {
-                titleSelected = title.rawValue
-                profile.title = title.rawValue
-            } else {
-                withAnimation {
-                    shakeManager.triggerShake(for: title)
-                }
-            }
+            titleSelected = title.rawValue
+            profile.title = title.rawValue
         }
-        
-    }
-}
-
-struct ProgressionView: View {
-    var progression: AchievementProgression
-    var body: some View {
-        ProgressView(
-            value: Float(progression.current),
-            total: Float(progression.target)
-        ) {
-            Text("Need to do some things")
-        } currentValueLabel: {
-            Text("\(progression.current)/\(progression.target)")
-                .font(.caption)
-                .fontWeight(.semibold)
-                .padding(4)
-                .background(Color.orange.opacity(0.85))
-                .cornerRadius(4)
-                .foregroundColor(.white)
-        }
-        .padding()
-        .tint(.accent)
-        .progressViewStyle(.linear)
-        .frame(width: 250)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(.bar)
-                
-        )
-   
     }
 }
 
@@ -144,5 +71,4 @@ struct ProgressionView: View {
         profile: PublicProfile.preview
     )
     .frame(height: 450)
-    .environment(AchievementsProgression.preview)
 }

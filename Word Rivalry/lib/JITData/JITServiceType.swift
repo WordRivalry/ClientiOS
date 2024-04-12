@@ -8,6 +8,6 @@
 import Foundation
 
 protocol JITServiceType {
-    // This is a marker protocol for your service type enums
-    // It doesn't need to contain anything, but it enforces type safety
+    // This is a marker protocol for service type enums
+    // It doesn't contain anything, but it enforces type safety
 }

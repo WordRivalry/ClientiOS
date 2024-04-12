@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 extension Logger {
-    /// Using your bundle identifier is a great way to ensure a unique identifier.
+    /// Bundle identifier is a great way to ensure a unique identifier.
     private static var subsystem = Bundle.main.bundleIdentifier!
 
     /// Logs the scene events from the app
@@ -32,6 +32,4 @@ extension Logger {
     
     /// Logs the audio events from the app
     static let audio = Logger(subsystem: subsystem, category: "audio")
-    
-
 }

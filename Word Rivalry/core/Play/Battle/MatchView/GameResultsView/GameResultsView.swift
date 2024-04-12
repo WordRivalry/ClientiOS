@@ -31,9 +31,7 @@ struct GameResultsView: View {
     }
     
     var body: some View {
-        // Use a ZStack to layer content and buttons
         ZStack {
-            // Main content in a VStack for alignment
             VStack(spacing: 20) {
                 Spacer()
                 OutcomeView(gameOutcome: gameOutcome)
@@ -58,25 +56,23 @@ struct GameResultsView: View {
                 }
                 .onAppearAnimate(delay: 1.1)
                 
-                
                 BasicDissmiss(text: "Confirm") {
-                 //   battleOrchestrator.eloService.attributePoint()
+                   
                 }
                     .scaleEffect(0.8)
                     .padding()
                     .onAppearAnimate(delay: 1.2)
                 Spacer()
             }
-            
-            // Position the 'Confirm' button at the bottom
-            VStack {
-                
-            }
         }
         .onAppear {
-            self.logger.debug("* GameResultsView Appeared *")
-        }.onDisappear {
-            self.logger.debug("* GameResultsView Disappeared *")
+            if gameOutcome == .victory {
+                battleOrchestrator.eloService.attributePoint()
+            } else if gameOutcome == .draw {
+                battleOrchestrator.eloService.cancel()
+            } else {
+                // Lost, do nothing
+            }
         }
         .cornerRadius(15)
         // for smooth entering and exiting
@@ -89,14 +85,12 @@ struct GameResultsView: View {
                 CompleteWordListView(completeWordList: completeWordList)
             }
         }
+        .logLifecycle(viewName: "GameResultsView")
     }
 }
 
 #Preview {
-    
-    ModelContainerPreview {
-        previewContainer
-    } content: {
+    ViewPreview {
         ZStack {
             Text("Hi")
         }
@@ -206,242 +200,6 @@ struct GameResultsView: View {
                             "avertiras",
                             "bar",
                             "barete",
-                            "bareter",
-                            "baretes",
-                            "barre",
-                            "barree",
-                            "barrees",
-                            "barres",
-                            "barri",
-                            "barrit",
-                            "barrites",
-                            "bas",
-                            "base",
-                            "basee",
-                            "basees",
-                            "baser",
-                            "bat",
-                            "bate",
-                            "batee",
-                            "batees",
-                            "bater",
-                            "bates",
-                            "bati",
-                            "batir",
-                            "bats",
-                            "bave",
-                            "baver",
-                            "bavera",
-                            "baveras",
-                            "baves",
-                            "bea",
-                            "beas",
-                            "beat",
-                            "beate",
-                            "beates",
-                            "beats",
-                            "bee",
-                            "beer",
-                            "beera",
-                            "beeras",
-                            "bees",
-                            "bel",
-                            "ber",
-                            "bers",
-                            "beta",
-                            "betas",
-                            "bete",
-                            "betel",
-                            "betels",
-                            "betes",
-                            "ebat",
-                            "ebats",
-                            "erra",
-                            "erras",
-                            "errat",
-                            "errates",
-                            "erre",
-                            "erres",
-                            "es",
-                            "est",
-                            "ester",
-                            "et",
-                            "ete",
-                            "etes",
-                            "etira",
-                            "etiras",
-                            "etire",
-                            "etires",
-                            "etre",
-                            "etres",
-                            "ira",
-                            "iras",
-                            "ire",
-                            "ires",
-                            "irreel",
-                            "irreels",
-                            "itera",
-                            "iteras",
-                            "le",
-                            "les",
-                            "lest",
-                            "lesta",
-                            "lestas",
-                            "leste",
-                            "lester",
-                            "lestera",
-                            "lesteras",
-                            "lestes",
-                            "let",
-                            "lev",
-                            "leva",
-                            "leve",
-                            "lever",
-                            "levera",
-                            "leveras",
-                            "leves",
-                            "ra",
-                            "ras",
-                            "rase",
-                            "rasee",
-                            "rasees",
-                            "rat",
-                            "rate",
-                            "ratee",
-                            "ratees",
-                            "ratel",
-                            "ratels",
-                            "rater",
-                            "rates",
-                            "rats",
-                            "re",
-                            "rea",
-                            "reas",
-                            "reat",
-                            "reates",
-                            "rebab",
-                            "rebabs",
-                            "rebat",
-                            "rebati",
-                            "rebatir",
-                            "rebats",
-                            "ree",
-                            "reel",
-                            "reels",
-                            "reer",
-                            "reera",
-                            "reeras",
-                            "rees",
-                            "resta",
-                            "restas",
-                            "reste",
-                            "rester",
-                            "restera",
-                            "resteras",
-                            "restes",
-                            "retira",
-                            "retiras",
-                            "retire",
-                            "retires",
-                            "rets",
-                            "reva",
-                            "reve",
-                            "rever",
-                            "revera",
-                            "reveras",
-                            "reverat",
-                            "revers",
-                            "reves",
-                            "revet",
-                            "revetir",
-                            "revetira",
-                            "revetiras",
-                            "revets",
-                            "ri",
-                            "rira",
-                            "riras",
-                            "rire",
-                            "rires",
-                            "rit",
-                            "rite",
-                            "rites",
-                            "sa",
-                            "sari",
-                            "sati",
-                            "satire",
-                            "satires",
-                            "se",
-                            "sel",
-                            "sels",
-                            "sera",
-                            "serra",
-                            "serras",
-                            "serrat",
-                            "serrate",
-                            "serrates",
-                            "serre",
-                            "serres",
-                            "sers",
-                            "sert",
-                            "serte",
-                            "sertes",
-                            "serti",
-                            "sertir",
-                            "sertira",
-                            "sertiras",
-                            "ses",
-                            "set",
-                            "sets",
-                            "seve",
-                            "seves",
-                            "star",
-                            "stase",
-                            "stera",
-                            "steras",
-                            "stras",
-                            "ta",
-                            "tabes",
-                            "tare",
-                            "taree",
-                            "tarees",
-                            "tares",
-                            "tari",
-                            "tarir",
-                            "tas",
-                            "te",
-                            "tee",
-                            "tees",
-                            "tel",
-                            "tels",
-                            "terra",
-                            "terras",
-                            "terre",
-                            "terres",
-                            "terri",
-                            "tes",
-                            "tir",
-                            "tira",
-                            "tiras",
-                            "tire",
-                            "tiree",
-                            "tirees",
-                            "tires",
-                            "tirs",
-                            "trabe",
-                            "trabee",
-                            "trabees",
-                            "trabes",
-                            "tres",
-                            "treve",
-                            "treves",
-                            "tri",
-                            "va",
-                            "ver",
-                            "veratre",
-                            "veratres",
-                            "verite",
-                            "verites",
-                            "verra",
                             "verras",
                             "verrat",
                             "verrats",

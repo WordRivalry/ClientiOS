@@ -25,7 +25,7 @@ final class SwiftDataSource {
      
         self.logger.info("Datasource for DEV")
         self.modelContainer = try! ModelContainer(
-            for: Profile.self, AchievementProgression.self, Friend.self,
+            for: Profile.self, Friend.self, GameHistory.self,
             configurations: ModelConfiguration(cloudKitDatabase: .private("iCloud.WordRivalryContainer"))
         )
         self.modelContext = modelContainer.mainContext
@@ -73,37 +73,6 @@ final class SwiftDataSource {
         Task { @MainActor in
             modelContext.delete(profile)
             logger.debug("Ctx Profile deleted ")
-        }
-    }
-    
-    // MARK: - Achiement progression
-    
-    func appendAchievementProgression(_ achievementProgression: AchievementProgression) {
-        Task { @MainActor in
-            modelContext.insert(achievementProgression)
-            do {
-                try modelContext.save()
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-            logger.debug("Ctx AchievementProgression inserted and saved")
-        }
-    }
-    
-    func fetchAchievementProgression() -> [AchievementProgression] {
-        do {
-            let ret = try modelContext.fetch(FetchDescriptor<AchievementProgression>())
-            logger.debug("Ctx AchievementProgression fetched ")
-            return ret;
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }
-
-    func removeAchievementProgression(_ achievementProgression: AchievementProgression) {
-        Task { @MainActor in
-            modelContext.delete(achievementProgression)
-            logger.debug("Ctx AchievementProgression deleted ")
         }
     }
     
