@@ -51,6 +51,8 @@ import Foundation
     @ObservationIgnored
     private var swiftData: SDSource
     
+    var data: [T] = []
+    
     /// Indicates whether the data manager is fully initialized and ready to be used. This flag helps
     /// ensure that operations on the data manager do not occur before it is fully set up.
     var isReady: Bool = false
@@ -62,6 +64,7 @@ import Foundation
     init() {
         self.swiftData = SDSource.sharedInstance
         self.isReady = true
+        self.data = self.fetchItems()
     }
     
     /// Saves changes in the current context. This method is a part of the
@@ -76,6 +79,7 @@ import Foundation
         self.precondition()
         self.swiftData.appendItem(item)
         self.swiftData.saveContext()
+        self.data = self.fetchItems()
     }
     
     /// Fetches all items of type `T` from the data source.
@@ -89,6 +93,7 @@ import Foundation
         self.precondition()
         self.swiftData.removeItem(item)
         self.swiftData.saveContext()
+        self.data = self.fetchItems()
     }
     
     func precondition() {

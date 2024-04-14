@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct LeaderboardView: View {
-    @Environment(LeaderboardService.self) private var leaderboard: LeaderboardService
+    @Environment(JITLeaderboard.self) private var leaderboard: JITLeaderboard
     @Environment(PublicProfile.self) var localProfile: PublicProfile
     @State private var showLocalProfileBottomRow = true
     
     var body: some View {
-        JITDataView(dataService: leaderboard) {
+        JITDataView(for: leaderboard) {
             LeaderboardLoadingView()
         } content: {
             content

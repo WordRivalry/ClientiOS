@@ -40,6 +40,38 @@ import OSLog
     private func fetchPlayer() async throws -> PublicProfile? {
         return try await PublicDatabase.shared.fetchOwnPublicProfileIfExist()
     }
+    
+    private func findOrCreateProfile() async throws {
+        Logger.dataServices.info("Creating profiles...")
+        
+        guard NetworkChecker.shared.isConnected else {
+            Logger.dataServices.debug("No Connection to internet found...")
+            return
+        }
+        Logger.dataServices.info("Connection to internet verified")
+        
+        // Check for recovery, else create all
+        
+        if let publicProfile = try await fetchPlayer() {
+            self.player = publicProfile
+            Logger.dataServices.debug("Public profile exist")
+        } else {
+            Logger.dataServices.debug("Public profile does not exist")
+            try await createProfile()
+        }
+    }
+    
+    private func createProfile() async throws {
+      
+        guard NetworkChecker.shared.isConnected else {
+            Logger.dataServices.debug("No Connection to internet found...")
+            return
+        }
+        
+        // Public profile
+        self.player = try await PublicDatabase.shared.addPublicProfileRecord(playerName: String(UUID().uuidString.prefix(10)))
+        Logger.dataServices.debug("Public profile created")
+    }
 
     // MARK: Preview
     
@@ -65,11 +97,17 @@ extension PPLocalService: AppService {
     }
     
     func start() async -> String {
-        await self.fetchData()
+        try? await self.findOrCreateProfile()
         return "Public profile loaded? [\(self.player != nil)]"
     }
     
-    func handleAppBecomingActive() {Task {await self.fetchData()}}
+    func handleAppBecomingActive() {
+        if !self.isHealthy {
+            Task {
+                await self.fetchData()
+            }
+        }
+    }
     func handleAppGoingInactive() {}
     func handleAppInBackground() {}
 }

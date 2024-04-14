@@ -84,6 +84,7 @@
 		567300D42B6DE07A005D79F2 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567300D32B6DE07A005D79F2 /* GameView.swift */; };
 		567F082C2BCC2A8200C9049F /* SDSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567F082B2BCC2A8200C9049F /* SDSource.swift */; };
 		567F082E2BCC2AE500C9049F /* DataPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567F082D2BCC2AE500C9049F /* DataPreview.swift */; };
+		567F08302BCC3E3900C9049F /* PersonalProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567F082F2BCC3E3900C9049F /* PersonalProfile.swift */; };
 		56A6DCEB2BBE0C6700E0A429 /* ProfileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A6DCEA2BBE0C6700E0A429 /* ProfileCardView.swift */; };
 		56A6DCED2BBE167E00E0A429 /* EditableProfileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A6DCEC2BBE167E00E0A429 /* EditableProfileCardView.swift */; };
 		56A6DCEF2BBE919D00E0A429 /* ProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A6DCEE2BBE919D00E0A429 /* ProfileImageView.swift */; };
@@ -115,7 +116,7 @@
 		56BCCCD32BC5BA4400A3C2F0 /* JITData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */; };
 		56BCCCD52BC5BA5F00A3C2F0 /* PausableTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */; };
 		56BCCCD92BC5BA9D00A3C2F0 /* log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCD82BC5BA9D00A3C2F0 /* log.swift */; };
-		56BCCCDB2BC5BCA200A3C2F0 /* LeaderboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */; };
+		56BCCCDB2BC5BCA200A3C2F0 /* JITLeaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDA2BC5BCA200A3C2F0 /* JITLeaderboard.swift */; };
 		56BCCCDD2BC5C82F00A3C2F0 /* PPLocalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */; };
 		56BCCCDF2BC5F8C000A3C2F0 /* LeaderboardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCDE2BC5F8C000A3C2F0 /* LeaderboardRow.swift */; };
 		56BCCCE12BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCCE02BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift */; };
@@ -132,8 +133,7 @@
 		56BCCD082BC84B0B00A3C2F0 /* AppServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD072BC84B0B00A3C2F0 /* AppServiceProtocol.swift */; };
 		56BCCD0A2BC84B2500A3C2F0 /* LifeCycleProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD092BC84B2500A3C2F0 /* LifeCycleProtocols.swift */; };
 		56BCCD0D2BC84F9D00A3C2F0 /* JITServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */; };
-		56BCCD0F2BC84FDA00A3C2F0 /* JITDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */; };
-		56BCCD132BC8ABBF00A3C2F0 /* GameHistoryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD122BC8ABBF00A3C2F0 /* GameHistoryRowView.swift */; };
+		56BCCD132BC8ABBF00A3C2F0 /* MatchDetailsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD122BC8ABBF00A3C2F0 /* MatchDetailsRowView.swift */; };
 		56BCCD152BC8AF7000A3C2F0 /* MatchHistoric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD142BC8AF7000A3C2F0 /* MatchHistoric.swift */; };
 		56BCCD172BC91B1200A3C2F0 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD162BC91B1200A3C2F0 /* Network.swift */; };
 		56BCCD192BC9216D00A3C2F0 /* ViewLifecycleLoggingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD182BC9216D00A3C2F0 /* ViewLifecycleLoggingModifier.swift */; };
@@ -143,7 +143,6 @@
 		56BCCD222BC98B9300A3C2F0 /* LoggerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD212BC98B9300A3C2F0 /* LoggerUtility.swift */; };
 		56BCCD242BC98BB400A3C2F0 /* ServiceSorter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD232BC98BB400A3C2F0 /* ServiceSorter.swift */; };
 		56BCCD262BC98BDF00A3C2F0 /* ProgressReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD252BC98BDE00A3C2F0 /* ProgressReporter.swift */; };
-		56BCCD282BCA4A1100A3C2F0 /* MatchHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD272BCA4A1100A3C2F0 /* MatchHistoryService.swift */; };
 		56BCCD2A2BCA50EE00A3C2F0 /* MatchesHistoricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD292BCA50EE00A3C2F0 /* MatchesHistoricView.swift */; };
 		56BCCD2D2BCABC7F00A3C2F0 /* PrivateDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD2C2BCABC7F00A3C2F0 /* PrivateDatabase.swift */; };
 		56BCCD312BCAE4E800A3C2F0 /* SYPData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BCCD302BCAE4E800A3C2F0 /* SYPData.swift */; };
@@ -255,6 +254,7 @@
 		567300D32B6DE07A005D79F2 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		567F082B2BCC2A8200C9049F /* SDSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSource.swift; sourceTree = "<group>"; };
 		567F082D2BCC2AE500C9049F /* DataPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPreview.swift; sourceTree = "<group>"; };
+		567F082F2BCC3E3900C9049F /* PersonalProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalProfile.swift; sourceTree = "<group>"; };
 		56A6DCEA2BBE0C6700E0A429 /* ProfileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCardView.swift; sourceTree = "<group>"; };
 		56A6DCEC2BBE167E00E0A429 /* EditableProfileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableProfileCardView.swift; sourceTree = "<group>"; };
 		56A6DCEE2BBE919D00E0A429 /* ProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageView.swift; sourceTree = "<group>"; };
@@ -286,7 +286,7 @@
 		56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITData.swift; sourceTree = "<group>"; };
 		56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausableTimer.swift; sourceTree = "<group>"; };
 		56BCCCD82BC5BA9D00A3C2F0 /* log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = log.swift; sourceTree = "<group>"; };
-		56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
+		56BCCCDA2BC5BCA200A3C2F0 /* JITLeaderboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITLeaderboard.swift; sourceTree = "<group>"; };
 		56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPLocalService.swift; sourceTree = "<group>"; };
 		56BCCCDE2BC5F8C000A3C2F0 /* LeaderboardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRow.swift; sourceTree = "<group>"; };
 		56BCCCE02BC5FAC600A3C2F0 /* LeaderboardRowLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRowLoading.swift; sourceTree = "<group>"; };
@@ -303,8 +303,7 @@
 		56BCCD072BC84B0B00A3C2F0 /* AppServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServiceProtocol.swift; sourceTree = "<group>"; };
 		56BCCD092BC84B2500A3C2F0 /* LifeCycleProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeCycleProtocols.swift; sourceTree = "<group>"; };
 		56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITServiceType.swift; sourceTree = "<group>"; };
-		56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JITDataService.swift; sourceTree = "<group>"; };
-		56BCCD122BC8ABBF00A3C2F0 /* GameHistoryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHistoryRowView.swift; sourceTree = "<group>"; };
+		56BCCD122BC8ABBF00A3C2F0 /* MatchDetailsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailsRowView.swift; sourceTree = "<group>"; };
 		56BCCD142BC8AF7000A3C2F0 /* MatchHistoric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchHistoric.swift; sourceTree = "<group>"; };
 		56BCCD162BC91B1200A3C2F0 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		56BCCD182BC9216D00A3C2F0 /* ViewLifecycleLoggingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewLifecycleLoggingModifier.swift; sourceTree = "<group>"; };
@@ -314,7 +313,6 @@
 		56BCCD212BC98B9300A3C2F0 /* LoggerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerUtility.swift; sourceTree = "<group>"; };
 		56BCCD232BC98BB400A3C2F0 /* ServiceSorter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSorter.swift; sourceTree = "<group>"; };
 		56BCCD252BC98BDE00A3C2F0 /* ProgressReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressReporter.swift; sourceTree = "<group>"; };
-		56BCCD272BCA4A1100A3C2F0 /* MatchHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchHistoryService.swift; sourceTree = "<group>"; };
 		56BCCD292BCA50EE00A3C2F0 /* MatchesHistoricView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesHistoricView.swift; sourceTree = "<group>"; };
 		56BCCD2C2BCABC7F00A3C2F0 /* PrivateDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateDatabase.swift; sourceTree = "<group>"; };
 		56BCCD302BCAE4E800A3C2F0 /* SYPData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SYPData.swift; sourceTree = "<group>"; };
@@ -825,7 +823,6 @@
 			children = (
 				56BCCD0C2BC84F9D00A3C2F0 /* JITServiceType.swift */,
 				56BCCCD42BC5BA5F00A3C2F0 /* PausableTimer.swift */,
-				56BCCD0E2BC84FDA00A3C2F0 /* JITDataService.swift */,
 				56BCCCD22BC5BA4400A3C2F0 /* JITData.swift */,
 				56BCCCF62BC7641600A3C2F0 /* JITDataView.swift */,
 			);
@@ -869,8 +866,8 @@
 				56BCCCDC2BC5C82F00A3C2F0 /* PPLocalService.swift */,
 				5615F79D2BB4F3C700177A44 /* PublicProfile.swift */,
 				56BCCCFE2BC82ADA00A3C2F0 /* ProfileDataService.swift */,
-				56BCCCDA2BC5BCA200A3C2F0 /* LeaderboardService.swift */,
-				56BCCD272BCA4A1100A3C2F0 /* MatchHistoryService.swift */,
+				56BCCCDA2BC5BCA200A3C2F0 /* JITLeaderboard.swift */,
+				567F082F2BCC3E3900C9049F /* PersonalProfile.swift */,
 			);
 			path = UserData;
 			sourceTree = "<group>";
@@ -890,7 +887,7 @@
 		56BCCD2B2BCA52EA00A3C2F0 /* historic */ = {
 			isa = PBXGroup;
 			children = (
-				56BCCD122BC8ABBF00A3C2F0 /* GameHistoryRowView.swift */,
+				56BCCD122BC8ABBF00A3C2F0 /* MatchDetailsRowView.swift */,
 				56BCCD292BCA50EE00A3C2F0 /* MatchesHistoricView.swift */,
 			);
 			path = historic;
@@ -1053,7 +1050,6 @@
 				56D5F7562BC2CD47005FBFCD /* MatchView.swift in Sources */,
 				56BCCC792BC3C2F100A3C2F0 /* PlayView.swift in Sources */,
 				566F14CB2B6CD6570069F06D /* LeaderboardView.swift in Sources */,
-				56BCCD0F2BC84FDA00A3C2F0 /* JITDataService.swift in Sources */,
 				564549552B92195C002A289C /* GameCardView.swift in Sources */,
 				567173052B70CBAE0009607D /* BattleServerService.swift in Sources */,
 				56BCCD082BC84B0B00A3C2F0 /* AppServiceProtocol.swift in Sources */,
@@ -1070,7 +1066,7 @@
 				56BCCD2D2BCABC7F00A3C2F0 /* PrivateDatabase.swift in Sources */,
 				567300C82B6D05A8005D79F2 /* GameModel.swift in Sources */,
 				56BCCC822BC42F7800A3C2F0 /* TaskQueueManager.swift in Sources */,
-				56BCCCDB2BC5BCA200A3C2F0 /* LeaderboardService.swift in Sources */,
+				56BCCCDB2BC5BCA200A3C2F0 /* JITLeaderboard.swift in Sources */,
 				56BCCD312BCAE4E800A3C2F0 /* SYPData.swift in Sources */,
 				56BCCCFF2BC82ADA00A3C2F0 /* ProfileDataService.swift in Sources */,
 				56A6DCFD2BBF8E2500E0A429 /* RotatingCircleGradientStroke.swift in Sources */,
@@ -1109,7 +1105,7 @@
 				56A6DD072BBFAA7C00E0A429 /* EloRatingView.swift in Sources */,
 				566F14C02B6C4AEA0069F06D /* AppScreen.swift in Sources */,
 				5652D50A2B6814EA0071AE08 /* Word_RivalryApp.swift in Sources */,
-				56BCCD132BC8ABBF00A3C2F0 /* GameHistoryRowView.swift in Sources */,
+				56BCCD132BC8ABBF00A3C2F0 /* MatchDetailsRowView.swift in Sources */,
 				56466F822BAC89480008C985 /* WebSocketManager.swift in Sources */,
 				56BCCCDF2BC5F8C000A3C2F0 /* LeaderboardRow.swift in Sources */,
 				56A6DCF32BBF44C600E0A429 /* BannerView.swift in Sources */,
@@ -1133,7 +1129,6 @@
 				56BCCC7B2BC3C48600A3C2F0 /* BattleOrchestratorView.swift in Sources */,
 				56A6DD142BC06F8200E0A429 /* BasicDismiss.swift in Sources */,
 				56BCCC762BC335ED00A3C2F0 /* BattleService.swift in Sources */,
-				56BCCD282BCA4A1100A3C2F0 /* MatchHistoryService.swift in Sources */,
 				566F14C52B6C4C610069F06D /* HomeNavigationStack.swift in Sources */,
 				566F149A2B6A21370069F06D /* AudioLoaderService.swift in Sources */,
 				567F082C2BCC2A8200C9049F /* SDSource.swift in Sources */,
@@ -1177,6 +1172,7 @@
 				56A6DCEB2BBE0C6700E0A429 /* ProfileCardView.swift in Sources */,
 				566F14C92B6C50890069F06D /* AppTabView.swift in Sources */,
 				56466F892BAEFAC10008C985 /* OutcomeView.swift in Sources */,
+				567F08302BCC3E3900C9049F /* PersonalProfile.swift in Sources */,
 				567300C12B6D01F3005D79F2 /* BoardView.swift in Sources */,
 				5645495E2B923955002A289C /* GameTournamentView.swift in Sources */,
 				56A6DCFF2BBFA1CB00E0A429 /* BannerEditingView.swift in Sources */,

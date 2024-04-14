@@ -6,19 +6,20 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MatchesHistoricView: View {
-    @Environment(SYPData<MatchHistoric>.self) private var sypData: SYPData<MatchHistoric>
+    @Query var matchHistoric: [MatchHistoric]
     
     var body: some View {
         VStack {
             header
-            listView(matchHistoric: sypData.fetchItems())
+            listView(matchHistoric: matchHistoric)
         }
         .logLifecycle(viewName: "MatchesHistoricView")
     }
     
-    @ViewBuilder  
+    @ViewBuilder
     private var header: some View {
         Text("Match historic")
             .font(.largeTitle)
@@ -29,7 +30,7 @@ struct MatchesHistoricView: View {
         ScrollView {
             LazyVStack {
                 ForEach(matchHistoric.indices, id: \.self) { index in
-                    GameHistoryRowView(gameHistory: matchHistoric[index])
+                    MatchDetailsRowView(matchDetails: matchHistoric[index])
                 }
             }
             .scrollTargetLayout()

@@ -62,10 +62,6 @@ extension iCloudService: AppService {
         .critical(1)
     }
     
-    var subserviceCount: Int {
-        0
-    }
-    
     func start() async -> String {
         
         self.iCloudStatus = try? await PublicDatabase.shared.iCloudAccountStatus()

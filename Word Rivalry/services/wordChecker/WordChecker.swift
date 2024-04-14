@@ -6,6 +6,16 @@
 //
 
 import Foundation
+import OSLog
+
+
+extension Logger {
+    /// Bundle identifier is a great way to ensure a unique identifier.
+    private static var subsystem = Bundle.main.bundleIdentifier!
+    
+    /// Logs the JIT Data events from the app
+    static let wordChecker = Logger(subsystem: subsystem, category: "WordChecker")
+}
 
 @Observable class WordChecker: ViewLifeCycle {
     private var root: TrieNode?
@@ -15,14 +25,14 @@ import Foundation
     func loadTrieFromFile(rss: String) {
         guard let url = Bundle.main.url(forResource: rss, withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
-            print("Erreur lors du chargement du fichier JSON")
+            Logger.wordChecker.error("Erreur lors du chargement du fichier JSON")
             return
         }
         
         do {
             root = try JSONDecoder().decode(TrieNode.self, from: data)
         } catch {
-            print("Erreur lors de la désérialisation : \(error)")
+            Logger.wordChecker.error("Erreur lors de la désérialisation : \(error)")
         }
     }
     
@@ -44,10 +54,12 @@ import Foundation
     private var isRequired: Bool = false
     
     func handleViewDidAppear() {
+        Logger.wordChecker.info("Dictionnary loading needed!")
         self.isRequired = true
         if !self.isHealthy {
             Task {
                 self.loadTrieFromFile(rss: "french_trie_serialized")
+                Logger.wordChecker.info("Dictionnary loaded!")
             }
         }
     }
@@ -82,7 +94,7 @@ extension WordChecker: AppService {
     }
     
     func handleAppBecomingActive() { 
-        if !self.isHealthy {
+        if !self.isHealthy && self.isRequired {
             Task {
                 await self.recover()
             }

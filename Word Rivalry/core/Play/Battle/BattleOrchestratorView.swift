@@ -14,7 +14,7 @@ struct BattleOrchestratorView: View {
     init(profile: PublicProfile, modeType: ModeType) {
         self.battleOrchestrator = BattleOrchestrator(profile: profile, modeType: modeType)
         
-        debugPrint("~~~ BattleOrchestratorView ~~~")
+        debugPrint("~~~ BattleOrchestratorView init ~~~")
     }
     
     var body: some View {

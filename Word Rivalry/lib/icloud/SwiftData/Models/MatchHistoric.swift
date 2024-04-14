@@ -34,11 +34,13 @@ import SwiftData
     init(
         gameID: String,
         ownScore: Int = 0,
+        thenOpponentName: String = "",
         opponentRecordID: String = "",
         opponentScore: Int = 0
     ) {
         self.gameID = gameID
         self.ownScore = ownScore
+        self.thenOpponentName = thenOpponentName
         self.opponentRecordID = opponentRecordID
         self.opponentScore = opponentScore
     }
@@ -49,66 +51,77 @@ import SwiftData
             MatchHistoric(
                 gameID: "2745656234235",
                 ownScore: 1223,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "123",
                 opponentScore: 1201
             ),
             MatchHistoric(
                 gameID: "98562435235",
                 ownScore: 976,
-                opponentRecordID: "Van Helsing", 
+                thenOpponentName: "Dark Vlad",
+                opponentRecordID: "Van Helsing",
                 opponentScore: 1245
             ),
             MatchHistoric(
                 gameID: "8956845634536",
                 ownScore: 374,
-                opponentRecordID: "Van Helsing", 
+                thenOpponentName: "Dark Vlad",
+                opponentRecordID: "Van Helsing",
                 opponentScore: 875
             ),
             MatchHistoric(
                 gameID: "86547356346",
                 ownScore: 476,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 569
             ),
             MatchHistoric(
                 gameID: "868756346",
                 ownScore: 780,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 873),
             MatchHistoric(
                 gameID: "345346873",
                 ownScore: 1345,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 1745
             ),
             MatchHistoric(
                 gameID: "327358823",
                 ownScore: 1663,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 2143
             ),
             MatchHistoric(
                 gameID: "998321134",
                 ownScore: 864,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 1532
             ),
             MatchHistoric(
                 gameID: "16549064252",
                 ownScore: 842,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 1234
             ),
             MatchHistoric(
                 gameID: "14368465231",
                 ownScore: 1496,
+                thenOpponentName: "Dark Vlad",
                 opponentRecordID: "Van Helsing",
                 opponentScore: 753
             ),
             MatchHistoric(
                 gameID: "12312357468",
                 ownScore: 946,
-                opponentRecordID: "Van Helsing", 
+                thenOpponentName: "Dark Vlad",
+                opponentRecordID: "Van Helsing",
                 opponentScore: 234
             )
         ]

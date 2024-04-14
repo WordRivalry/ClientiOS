@@ -33,24 +33,20 @@ enum Screen {
 
     let audioService: AudioSessionService
     let profileDataService: ProfileDataService
-    let jitData: JITDataService<JITDataType>
     
     init(
         audioService: AudioSessionService,
-        profileDataService: ProfileDataService,
-        jitData: JITDataService<JITDataType>
+        profileDataService: ProfileDataService
     ) {
         // init
         self.audioService = audioService
         self.profileDataService = profileDataService
-        self.jitData = jitData
         super.init()
         
         // Service registrar
         self.addService(NetworkChecker.shared)
         self.addService(iCloudService.shared)
         self.addService(WordChecker.shared)
-        self.addService(jitData)
         self.addService(audioService)
         self.addService(profileDataService)
         
@@ -73,7 +69,9 @@ enum Screen {
 
     override func handleAppBecomingActive() {
         super.handleAppBecomingActive()
-        monitoringTimer?.resume()
+        if ((monitoringTimer?.isPaused) != nil) {
+            monitoringTimer?.resume()
+        }
     }
     
     override func handleAppGoingInactive() {

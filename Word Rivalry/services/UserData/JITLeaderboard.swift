@@ -8,20 +8,17 @@
 import Foundation
 import OSLog
 
-@Observable final class LeaderboardService: JITData, AppService {
-    var isHealthy: Bool = true
-    var identifier: String = "LeaderboardService"
-    var startPriority: ServiceStartPriority = .nonCritical(Int.max)
-    func start() async throws -> String {
-        return "JIT Data do no require set up."
-    }
-    
+@Observable final class JITLeaderboard: JITData {
     var players: [PublicProfile] = []
       
-    @MainActor
     override func fetchData() async {
         do {
-            self.players = try await fetchPlayers()
+            let players = try await fetchPlayers()
+            
+            Task { @MainActor in // Update UI
+                self.players = players
+            }
+            
             Logger.dataServices.info("Leaderboard updated")
         } catch {
             Logger.dataServices.error("Failed to fetch top players: \(error.localizedDescription)")
@@ -40,8 +37,8 @@ import OSLog
         return try await PublicDatabase.shared.fetchLeaderboard(limit: 50)
     }
     
-    static var preview: LeaderboardService {
-        let leaderboardService = LeaderboardService()
+    static var preview: JITLeaderboard {
+        let leaderboardService = JITLeaderboard()
         leaderboardService.players = [
             PublicProfile(userRecordID: "", playerName: "Darkfeu", eloRating: 1892, title: "Word Conqueror",profileImage: "PI_15"),
             PublicProfile(userRecordID: "", playerName: "Feudala", eloRating: 1832, title: "Word Smith", profileImage: "PI_2"),

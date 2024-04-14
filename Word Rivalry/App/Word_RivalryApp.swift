@@ -21,16 +21,12 @@ struct Word_RivalryApp: App {
     @Environment(\.scenePhase) private var scenePhase
     
     let network = Network()
-    let services: AppServiceManager
+    let appServices: AppServiceManager
     
     init() {
-        let jitDataService = JITDataService<JITDataType>()
-        jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
-       // jitDataService.registerService(MatchHistoryService(), forType: .matchHistoric)
-        self.services = AppServiceManager(
+        self.appServices = AppServiceManager(
             audioService: AudioSessionService(),
-            profileDataService: ProfileDataService(),
-            jitData: jitDataService
+            profileDataService: ProfileDataService()
         )
         debugPrint("~~~ Word_RivalryApp init ~~~")
     }
@@ -38,12 +34,14 @@ struct Word_RivalryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(services)
+                .modelContainer(for: [Profile.self, MatchHistoric.self])
+                .environment(appServices)
                 .environment(network)
                 .environment(SYPData<MatchHistoric>())
+                .environment(JITLeaderboard())
                 .environment(InGameDisplaySettings())
-                .onAppear(perform: self.services.handleViewDidAppear)
-                .onDisappear(perform: self.services.handleViewDidDisappear)
+                .onAppear(perform: self.appServices.handleViewDidAppear)
+                .onDisappear(perform: self.appServices.handleViewDidDisappear)
                 .onChange(of: scenePhase) {
                     self.handleScheneChange()
                 }
@@ -55,13 +53,13 @@ struct Word_RivalryApp: App {
         switch scenePhase {
         case .active:
             Logger.sceneEvents.notice("!!! Scene is active !!!")
-            services.handleAppBecomingActive()
+            appServices.handleAppBecomingActive()
         case .inactive:
             Logger.sceneEvents.notice("!!! Scene is inactive !!!")
-            services.handleAppGoingInactive()
+            appServices.handleAppGoingInactive()
         case .background:
             Logger.sceneEvents.notice("!!! Scene on background !!!")
-            services.handleAppInBackground()
+            appServices.handleAppInBackground()
         default:
             break
         }

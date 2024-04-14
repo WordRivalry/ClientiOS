@@ -19,23 +19,29 @@ extension Logger {
 
 struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
     @Environment(Network.self) private var network: Network
-    let dataService: JITData
+    let jitData: JITData
     let loadingView: () -> LoadingView
     let content: () -> Content
+    
+    init(for jitData: JITData, loadingView: @escaping () -> LoadingView, content: @escaping () -> Content) {
+        self.jitData = jitData
+        self.loadingView = loadingView
+        self.content = content
+    }
     
     var body: some View {
         contentView
             .onAppear {
-                dataService.handleViewDidAppear()
+                jitData.handleViewDidAppear()
             }
             .onDisappear {
-                dataService.handleViewDidDisappear()
+                jitData.handleViewDidDisappear()
             }
             .onChange(of: network.isConnected) { oldValue, newValue in
                 if oldValue == false && newValue == true {
                     Task {
                         Logger.jitDataView.debug("Attempting to fetch data as the internet connection was detected.")
-                        await self.dataService.fetchData()
+                        await self.jitData.fetchData()
                         Logger.jitDataView.debug("Data fetched successfully.")
                     }
                 }
@@ -45,14 +51,14 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
     
     @ViewBuilder
     private var contentView: some View {
-        if dataService.isDataUnavailable() && network.isDisconnected {
+        if jitData.isDataUnavailable() && network.isDisconnected {
             VStack {
                 Spacer()
                 InternetStatusMessageView(message: "No available data")
                 Spacer()
                 BasicDismiss()
             }
-        } else if dataService.isDataUnavailable() {
+        } else if jitData.isDataUnavailable() {
             loadingView()
         } else {
             content()
@@ -67,7 +73,7 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
     @ViewBuilder
     private var lastUpdatedView: some View {
         Group {
-            if let lastUpdate = dataService.lastUpdateTime {
+            if let lastUpdate = jitData.lastUpdateTime {
                 Text("Last updated: \(lastUpdate.formatted())")
                     .font(.footnote)
                     .foregroundColor(.gray)
@@ -78,7 +84,7 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
 
 
 #Preview {
-    JITDataView(dataService: LeaderboardService.preview) {
+    JITDataView(for: JITLeaderboard.preview) {
         LeaderboardLoadingView()
           
     } content: {

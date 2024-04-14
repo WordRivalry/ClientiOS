@@ -33,7 +33,7 @@ import OSLog
     }
 
     /// Hook run for precondition check before service start
-    func precondition() async -> Bool { return true }
+    func warmUp() async -> Bool { return true }
     /// Hook runned after critical services are marked healty
     func onCriticalServicesHealthy() {}
     
@@ -46,7 +46,7 @@ import OSLog
     // MARK: Service life cycle
     
     func start() async -> String {
-        if await !precondition() {
+        if await !warmUp() {
             return "Early return: Precondition didn't check"
         }
         
@@ -117,7 +117,7 @@ import OSLog
                             StartUpViewModel.shared.screen = .error
                         }
                     }
-                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    try? await Task.sleep(nanoseconds: 200_000_000)
                 } else {
                     return errorMessage
                 }

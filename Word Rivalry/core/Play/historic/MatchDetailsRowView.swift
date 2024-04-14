@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct GameHistoryRowView: View {
-    let gameHistory: MatchHistoric
+struct MatchDetailsRowView: View {
+    let matchDetails: MatchHistoric
     
     var body: some View {
         content
@@ -19,10 +19,10 @@ struct GameHistoryRowView: View {
     private var content: some View {
         HStack {
             Group {
-                if gameHistory.ownScore > gameHistory.opponentScore {
+                if matchDetails.ownScore > matchDetails.opponentScore {
                     Text ("Won")
                         .foregroundStyle(.green)
-                } else if gameHistory.ownScore < gameHistory.opponentScore {
+                } else if matchDetails.ownScore < matchDetails.opponentScore {
                     Text ("Lost")
                         .foregroundStyle(.red)
                 } else {
@@ -36,7 +36,7 @@ struct GameHistoryRowView: View {
             
             VStack {
                 Text("Your score")
-                Text("\(gameHistory.ownScore)")
+                Text("\(matchDetails.ownScore)")
             }
             .padding(.horizontal)
             
@@ -44,8 +44,8 @@ struct GameHistoryRowView: View {
                 .frame(height: 30)
             
             VStack {
-                Text(gameHistory.opponentRecordID)
-                Text("\(gameHistory.opponentScore)")
+                Text(matchDetails.thenOpponentName)
+                Text("\(matchDetails.opponentScore)")
             }
             .padding(.horizontal)
         }
@@ -53,5 +53,5 @@ struct GameHistoryRowView: View {
 }
 
 #Preview {
-    GameHistoryRowView(gameHistory: MatchHistoric.preview)
+    MatchDetailsRowView(matchDetails: MatchHistoric.preview)
 }

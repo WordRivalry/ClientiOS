@@ -21,7 +21,7 @@ struct ContentView: View {
     init() {
         debugPrint("~~~ ContentView init ~~~")
     }
-
+    
     var body: some View {
         ZStack {
             Group {
@@ -35,8 +35,9 @@ struct ContentView: View {
                 case .main:
                     AppTabView(selection: $appScreen)
                         .environment(SYPData<MatchHistoric>())
-                        .environment(LeaderboardService())
+                        .environment(JITLeaderboard())
                         .environment(appService.profileDataService.ppLocal.player!)
+                        .environment(appService.profileDataService.personalProfile.profile!)
                         .environment(appService.audioService)
                 case .error:
                     Text("An error occured")
@@ -68,17 +69,12 @@ struct ContentView: View {
 }
 
 #Preview {
-    let jitDataService = JITDataService<JITDataType>()
-    jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
-   // jitDataService.registerService(MatchHistoryService(), forType: .matchHistoric)
-    
-    return ViewPreview {
+    ViewPreview {
         ContentView()
             .environment(
                 AppServiceManager(
                     audioService: AudioSessionService(),
-                    profileDataService: ProfileDataService(),
-                    jitData: jitDataService
+                    profileDataService: ProfileDataService()
                 )
             )
     }

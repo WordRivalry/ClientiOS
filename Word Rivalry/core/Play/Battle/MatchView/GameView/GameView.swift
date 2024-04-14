@@ -26,6 +26,7 @@ struct GameView: View {
         self.matchHistoric = MatchHistoric(
             gameID: "123123123",
             ownScore: 0,
+            opponentName: opponentProfile.playerName,
             opponentRecordID: opponentProfile.userRecordID,
             opponentScore: 0
         )
@@ -45,7 +46,8 @@ struct GameView: View {
                     .scaleEffect(0.4)
                     .frame(width: 60, height: 60)
                     .clipShape(Circle())
-                  //  PlayerNameView(playerName: profile.playerName)
+                    PlayerNameView(playerName: profile.playerName)
+                    TitleView(title: profile.title)
                     Text("Score: \(gameModel.currentScore)")
                     
                 }
@@ -57,7 +59,8 @@ struct GameView: View {
                         .frame(width: 60, height: 60)
                         .clipShape(Circle())
                     
-                    PlayerNameView(playerName: gameModel.opponentName)
+                    PlayerNameView(playerName: opponentProfile.playerName)
+                    TitleView(title: opponentProfile.title)
                     
                     if inGameDisplay.showOpponentScore {
                         Text("Score: \(gameModel.opponentScore)")
