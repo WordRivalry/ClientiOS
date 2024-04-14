@@ -61,8 +61,8 @@ extension BattleOrchestrator: MatcMatchmakingDelegate {
     }
     
     func didFoundMatch(gameSessionUUID: String, opponentUsername: String, opponentElo: Int) {
-        self.eloService.setPendingAmount(amount: 10)
-        self.eloService.deductPoint()
+//        self.eloService.setPendingAmount(amount: 10)
+//        self.eloService.deductPoint()
 
         // Connect to battle server
         BattleServerService.shared.connect(

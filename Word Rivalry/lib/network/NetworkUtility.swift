@@ -7,62 +7,126 @@
 
 import Foundation
 import Network
-import os.log
+import OSLog
 
 
 extension Notification.Name {
     static let didConnectToInternet = Notification.Name("didConnectToInternet")
-    static let didDisconnectToInternet = Notification.Name("didDisconnectToInternet")
+    static let didDisconnectFromInternet = Notification.Name("didDisconnectToInternet")
 }
 
 class NetworkChecker {
+    private var isMonitoring: Bool = false
     static let shared = NetworkChecker()
-    
     private let monitor: NWPathMonitor
     private let queue = DispatchQueue(label: "NetworkMonitor")
-    private let logger = Logger(subsystem: "Network", category: "NetworkChecker")
     
-    var isConnected: Bool = false {
-        didSet {
-            if isConnected {
-                Task { @MainActor in
-                    self.logger.info("Connection status: \(self.isConnected)")
-                    // Notify observers about the connectivity change.
-                    NotificationCenter.default.post(name: .didConnectToInternet, object: nil)
-                }
-            } else {
-                Task { @MainActor in
-                    self.logger.info("Connection status: \(self.isConnected)")
-                    // Notify observers about the connectivity change.
-                    NotificationCenter.default.post(name: .didDisconnectToInternet, object: nil)
-                }
-            }
-        }
-    }
+    var isConnected: Bool = false
     
     private init() {
         monitor = NWPathMonitor()
-        self.logger.info("*** NetworkChecker STARTED ***")
     }
     
     public func startMonitoring() {
+        guard !isMonitoring else {
+            Logger.network.info("Network monitoring is already active.")
+            return
+        }
+        
         monitor.pathUpdateHandler = { [weak self] path in
             guard let strongSelf = self else { return }
-            let isConnectedNow = path.status == .satisfied
-            
-            // Update isConnected only if there is a change in state to avoid redundant didSet calls
-            if isConnectedNow != strongSelf.isConnected {
-                strongSelf.isConnected = isConnectedNow
+            Task { @MainActor in
+                strongSelf.updateConnectionStatus(path.status == .satisfied)
             }
         }
         monitor.start(queue: queue)
-        
-        self.logger.debug("Network monitoring started")
+        isMonitoring = true
+        Logger.network.info("Network monitoring started.")
+    }
+    
+    private func updateConnectionStatus(_ isConnectedNow: Bool) {
+        self.isHealthy = true
+        if isConnectedNow != isConnected {
+            isConnected = isConnectedNow
+            Logger.network.notice("Network status updated: \(self.isConnected ? "Connected" : "Disconnected")")
+            NotificationCenter.default.post(
+                name: isConnected ? .didConnectToInternet : .didDisconnectFromInternet,
+                object: nil
+            )
+        }
     }
     
     public func stopMonitoring() {
+        guard isMonitoring else {
+            Logger.network.info("Network monitoring is not active.")
+            return
+        }
+        
         monitor.cancel()
-        self.logger.debug("Network monitoring paused")
+        isMonitoring = false
+        self.isHealthy = false
+        Logger.network.info("Network monitoring paused.")
+    }
+}
+
+
+extension NetworkChecker: AppService {
+    
+    var identifier: String {
+        "NetworkChecker"
+    }
+    
+    var startPriority: ServiceStartPriority {
+        .critical(0)
+    }
+    
+    var isHealthy: Bool {
+        get {
+            self.isConnected
+        }
+        set {
+            //
+        }
+    }
+    
+    func healthCheck() async -> Bool {
+        self.isHealthy
+    }
+    
+    func start() async -> String {
+        self.startMonitoring()
+        while self.isConnected == false {
+            if StartUpViewModel.shared.screen != .noInternet {
+                Task { @MainActor in
+                    StartUpViewModel.shared.screen = .noInternet
+                }
+            }
+            
+            // Sleep for 1 sec before checking again
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+        
+        if StartUpViewModel.shared.screen != .loading {
+            Task { @MainActor in
+                StartUpViewModel.shared.screen = .loading
+            }
+            try? await Task.sleep(nanoseconds: 500_000_000)
+        }
+        
+        // Should already be up and running
+        return "NetworkChecker has found a connection."
+    }
+    
+    func handleAppBecomingActive() {
+        self.startMonitoring()
+    }
+    
+    func handleAppGoingInactive() {
+        // Do nothing here
+    }
+    
+    func handleAppInBackground() {
+        self.stopMonitoring()
     }
 }
 

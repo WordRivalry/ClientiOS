@@ -88,6 +88,7 @@ class PublicDatabase {
         case forbiddenSubscription
         case invalidDataType
         case PublicProfileInitFailed
+        case GameHistoricInitFailed
     }
 }
 
@@ -234,12 +235,11 @@ extension PublicDatabase {
     
     func addPublicProfileRecord(for profile: PublicProfile) async throws -> PublicProfile {
         try await checkIfPlayerNameAlreadyInDatabase(profile.playerName)
-        let userRecordID = try await CKManager.userRecordID()
+        _ = try await CKManager.userRecordID()
         _ = try await CKManager.saveRecord(saving: profile.record)
         logger.debug("PublicProfile saved to public databse")
         return profile
     }
-    
     
     // MARK: - Update
     
@@ -320,7 +320,7 @@ extension PublicDatabase {
     func subscribeToChanges() async throws {
         // Only proceed if you need to create the subscription.
         guard !UserDefaults.standard.bool(forKey: "didCreatePublicProfileSubscription") else { return }
-        
+        Logger.dataServices.info("Registering subscribtion to changes in PublicProfile")
         let userRecordID = try await CKManager.userRecordID()
         
         let predicate = NSPredicate(format: "%K == %@", PublicProfile.forKey(.userRecordID), userRecordID.recordName)
@@ -340,24 +340,6 @@ extension PublicDatabase {
         _ = try await CKManager.saveSubscription(saving: subscription)
         
         // Set the flag to indicate that the subscription has been created.
-        UserDefaults.standard.set(true, forKey: "didCreateQuerySubscription")
+        UserDefaults.standard.set(true, forKey: "didCreatePublicProfileSubscription")
     }
 }
-
-// MARK: - Leaderboards
-
-extension PublicDatabase {
-//    func fetchLeaderboard(limit: Int = 50) async throws -> [CKRecord] {
-//        let predicate = NSPredicate(value: true)
-//        let query = CKQuery(recordType: PublicProfile.recordType, predicate: predicate)
-//        
-//        // Sort by eloRating in descending order
-//        let sortDescriptor = NSSortDescriptor(key: PublicProfile.forKey(.eloRating), ascending: false)
-//        query.sortDescriptors = [sortDescriptor]
-//        
-//        // Fetch records
-//        let (records, _) = try await CKManager.findRecords(matching: query, resultsLimit: limit)
-//        return records
-//    }
-}
-

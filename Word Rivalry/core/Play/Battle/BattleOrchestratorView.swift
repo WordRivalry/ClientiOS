@@ -13,6 +13,8 @@ struct BattleOrchestratorView: View {
     
     init(profile: PublicProfile, modeType: ModeType) {
         self.battleOrchestrator = BattleOrchestrator(profile: profile, modeType: modeType)
+        
+        debugPrint("~~~ BattleOrchestratorView ~~~")
     }
     
     var body: some View {
@@ -27,6 +29,12 @@ struct BattleOrchestratorView: View {
                     gameSessionUUID: gameUUID,
                     opponentUsername: opName
                 )
+                .onAppear {
+                    WordChecker.shared.handleViewDidAppear()
+                }
+                .onDisappear {
+                    WordChecker.shared.handleViewDidDisappear()
+                }
             }
         }
         .environment(self.battleOrchestrator)

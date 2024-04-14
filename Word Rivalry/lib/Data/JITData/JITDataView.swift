@@ -45,14 +45,14 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
     
     @ViewBuilder
     private var contentView: some View {
-        if !dataService.isDataAvailable() && !NetworkChecker.shared.isConnected {
+        if dataService.isDataUnavailable() && network.isDisconnected {
             VStack {
                 Spacer()
                 InternetStatusMessageView(message: "No available data")
                 Spacer()
-                BasicDissmiss()
+                BasicDismiss()
             }
-        } else if !dataService.isDataAvailable()  {
+        } else if dataService.isDataUnavailable() {
             loadingView()
         } else {
             content()

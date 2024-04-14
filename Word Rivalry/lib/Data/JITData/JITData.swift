@@ -133,4 +133,8 @@ import OSLog
     func isDataAvailable() -> Bool {
         fatalError("isDataAvailable() method must be overridden by subclasses.")
     }
+    
+    func isDataUnavailable() -> Bool {
+        !self.isDataAvailable()
+    }
 }

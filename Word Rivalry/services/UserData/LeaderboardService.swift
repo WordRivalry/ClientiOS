@@ -8,7 +8,14 @@
 import Foundation
 import OSLog
 
-@Observable final class LeaderboardService: JITData {
+@Observable final class LeaderboardService: JITData, AppService {
+    var isHealthy: Bool = true
+    var identifier: String = "LeaderboardService"
+    var startPriority: ServiceStartPriority = .nonCritical(Int.max)
+    func start() async throws -> String {
+        return "JIT Data do no require set up."
+    }
+    
     var players: [PublicProfile] = []
       
     @MainActor

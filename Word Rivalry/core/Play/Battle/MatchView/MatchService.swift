@@ -42,7 +42,7 @@ enum MatchOrchestrationState: Equatable {
         gameSessionUUID: String,
         opponentUsername: String
     ) {
-        self.logger.info("*** MatchOrchestrationService STARTED ***")
+        self.logger.info("*** MatchService STARTED ***")
         self.localProfile = localProfile
         self.state = .inGame
         

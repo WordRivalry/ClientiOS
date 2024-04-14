@@ -38,7 +38,7 @@ struct PlayerNameEditingView: View {
             }
             
             Spacer()
-            BasicDissmiss(text: "Cancel")
+            BasicDismiss(text: "Cancel")
         }
         .padding()
     }

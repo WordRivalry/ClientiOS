@@ -10,16 +10,21 @@ import OSLog
 
 @Observable
 class ProfileDataService: ServiceCoordinator {
-    let swiftData: SwiftDataService
+    var swiftData: SYPData<Profile>?
     let ppLocal: PPLocalService
     
     override init() {
-        self.swiftData = SwiftDataService()
-        self.ppLocal = PPLocalService.sharedInstace
         
+        self.ppLocal = PPLocalService.sharedInstace
         super.init()
-        self.isCritical = true
-        self.addService(swiftData)
+        
+        Task { @MainActor in
+            self.swiftData = SYPData<Profile>()
+        }
+        
+        self.startPriority = .critical(1)
+        self.identifier = "ProfileDataService"
+       // self.addService(swiftData)
         self.addService(ppLocal)
     }
     
@@ -39,7 +44,7 @@ class ProfileDataService: ServiceCoordinator {
         if profile == nil {
             // We need to check online
             await ppLocal.fetchData()
-            if !self.ppLocal.isReady {
+            if !self.ppLocal.isHealthy {
                 // We need to create the accounts
                 try await self.createProfiles()
             }
@@ -48,8 +53,16 @@ class ProfileDataService: ServiceCoordinator {
     
     private func findProfile() async throws -> Profile? {
         Logger.dataServices.info("Finding profile...")
-        await self.swiftData.fetchProfile()
-        if let profile = self.swiftData.profile {
+        
+        while swiftData == nil {
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+        
+        while !swiftData!.isReady {
+            try? await Task.sleep(nanoseconds: 300_000_000)
+        }
+        
+        if let profile = self.swiftData?.fetchItems().first {
             Logger.dataServices.info("Profile found!")
             return profile
         } else {
@@ -94,7 +107,7 @@ class ProfileDataService: ServiceCoordinator {
     private func createProfile() -> Void {
         // SwiftData profile
         let profile = Profile.new
-        self.swiftData.createProfile(profile: profile)
+        self.swiftData?.appendItem(profile)
         Logger.dataServices.debug("Swiftdata profile created")
     }
 }

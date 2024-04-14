@@ -22,7 +22,6 @@ class MusicManager {
         musicPlayer: MusicPlayer = MusicPlayer(),
         musicLibrary: MusicLibrary = MusicLibrary()
     ) {
-        Logger.audio.info("*** MusicManager init ***")
         self.musicPlayer =  musicPlayer
         self.musicLibrary =  musicLibrary
     }

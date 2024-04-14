@@ -21,17 +21,13 @@ final class SwiftDataSource {
 
     @MainActor
     init() {
-        self.logger.info("*** Datasource STARTED ***")
-     
-        self.logger.info("Datasource for DEV")
         self.modelContainer = try! ModelContainer(
-            for: Profile.self, Friend.self, GameHistory.self,
+            for: Profile.self, Friend.self, MatchHistoric.self,
             configurations: ModelConfiguration(cloudKitDatabase: .private("iCloud.WordRivalryContainer"))
         )
         self.modelContext = modelContainer.mainContext
         
         self.isReady = true
-        self.logger.info("*** DataSource START COMPLETED ***")
     }
     
     func save() {

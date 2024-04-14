@@ -9,13 +9,21 @@ import Foundation
 import OSLog
 
 @Observable class JITDataService<ServiceIdentifier: JITServiceType & Hashable> : AppService {
-    var isReady: Bool = false
-    var isCritical: Bool = false
+    
+    func healthCheck() async -> Bool {
+        self.isHealthy
+    }
+    
+    var identifier: String = "JITDataService"
+    var startPriority: ServiceStartPriority = .nonCritical(Int.max)
+    var subserviceCount: Int = 0
+    
+    var isHealthy: Bool = false
     
     private var servicesRegistry: [ServiceIdentifier: JITData] = [:]
-
+    
     func start() async -> String {
-        isReady = true
+        isHealthy = true
         return "Just-in-time data service(s) ready"
     }
 
@@ -39,4 +47,7 @@ import OSLog
     func handleAppInBackground() {
         servicesRegistry.values.forEach { $0.handleAppInBackground() }
     }
+    
+    func handleViewDidAppear() {}
+    func handleViewDidDisappear() {}
 }

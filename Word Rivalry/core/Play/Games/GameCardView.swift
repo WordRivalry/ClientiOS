@@ -13,6 +13,12 @@ struct GameCardView: View {
     @State private var showDetails = false
     @Namespace private var namespace
 
+    init(cardName: String, action: @escaping () -> Void) {
+        self.cardName = cardName
+        self.action = action
+        debugPrint("~~~ GameCardView init ~~~")
+    }
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             if !showDetails {

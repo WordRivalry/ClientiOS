@@ -21,15 +21,14 @@ struct MatchView: View {
          gameSessionUUID: String,
          opponentUsername: String
     ) {
-        
-        self.logger.debug("*** MatchOrchestrationView INITIATED ***")
-        
         self.service = MatchService(
             localProfile: profile,
             modeType: modeType,
             gameSessionUUID: gameSessionUUID,
             opponentUsername: opponentUsername
         )
+        
+        debugPrint("~~~ MatchView init ~~~")
     }
     
     var body: some View {

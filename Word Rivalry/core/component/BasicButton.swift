@@ -11,6 +11,13 @@ struct BasicButton: View {
     var text: String
     var action: () -> Void
     
+    init(text: String, action: @escaping () -> Void) {
+        self.text = text
+        self.action = action
+        
+        debugPrint("~~~ BasicButton init ~~~")
+    }
+    
     var body: some View {
         Button {
             action()

@@ -10,13 +10,17 @@ import GameKit
 
 struct HomeNavigationStack: View {
     @Environment(PublicProfile.self) private var profile: PublicProfile
-    @Namespace var namespace
+    @Namespace private var namespace
     
     @State private var showDetailedProfile = false
     @State private var showFriendsList = false
     @State private var showLeaderboard = false
     @State private var showAchievements = false
     @State private var showStatictics = false
+    
+    init() {
+        debugPrint("~~~ HomeNavigationStack init ~~~")
+    }
     
     var body: some View {
         NavigationStack {

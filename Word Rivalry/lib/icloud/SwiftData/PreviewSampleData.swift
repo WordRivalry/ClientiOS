@@ -14,7 +14,7 @@ import SwiftUI
 @MainActor
 let previewContainer: ModelContainer = {
     do {
-        let schema = Schema([Profile.self, Friend.self, GameHistory.self])
+        let schema = Schema([Profile.self, MatchHistoric.self])
         let container = try ModelContainer(
             for: schema,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
@@ -22,22 +22,15 @@ let previewContainer: ModelContainer = {
         let modelContext = container.mainContext
         
         let profile = Profile.preview
-        let gameHistories = GameHistory.previews
-        let friends = Friend.preview
+        let matches = MatchHistoric.previews
 
         if try modelContext.fetch(FetchDescriptor<Profile>()).isEmpty {
             container.mainContext.insert(profile)
         }
         
-        if try modelContext.fetch(FetchDescriptor<GameHistory>()).isEmpty {
-            gameHistories.forEach { gameHistoric in
-                container.mainContext.insert(gameHistoric)
-            }
-        }
-        
-        if try modelContext.fetch(FetchDescriptor<Friend>()).isEmpty {
-            friends.forEach { friend in
-                container.mainContext.insert(friend)
+        if try modelContext.fetch(FetchDescriptor<MatchHistoric>()).isEmpty {
+            matches.forEach { match in
+                container.mainContext.insert(match)
             }
         }
         

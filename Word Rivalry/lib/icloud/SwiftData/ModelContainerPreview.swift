@@ -74,11 +74,5 @@ struct ModelContainerPreview<Content: View>: View {
     var body: some View {
         content()
             .modelContainer(container)
-            .environment(PublicProfile.preview)
-            .environment(Friends.preview)
-            .environment(Network())
-            .environment(Profile.preview)
-            .environment(LeaderboardService.preview)
-            .navigationBarColor(.white)
     }
 }

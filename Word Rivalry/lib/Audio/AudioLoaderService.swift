@@ -44,7 +44,6 @@ class AudioLoaderService {
                 }
             }
             
-            logger.info("Songs loaded")
             return loadedSongs
         } catch {
             logger.error("Failed to load songs: \(error)")

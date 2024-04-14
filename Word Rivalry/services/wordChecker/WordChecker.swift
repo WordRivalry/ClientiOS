@@ -7,7 +7,7 @@
 
 import Foundation
 
-@Observable class WordChecker {
+@Observable class WordChecker: ViewLifeCycle {
     private var root: TrieNode?
     static let shared = WordChecker()
     private init() {}
@@ -40,24 +40,62 @@ import Foundation
         // Le mot existe si le dernier nœud visité marque la fin d'un mot
         return currentNode.isEndOfWord
     }
+    
+    private var isRequired: Bool = false
+    
+    func handleViewDidAppear() {
+        self.isRequired = true
+        if !self.isHealthy {
+            Task {
+                self.loadTrieFromFile(rss: "french_trie_serialized")
+            }
+        }
+    }
+    
+    func handleViewDidDisappear() {
+        self.isRequired = false
+        // Dont unload yet, since we might use rss again.
+    }
 }
 
 extension WordChecker: AppService {
-    var isReady: Bool {
-        root != nil
+
+    var isHealthy: Bool {
+        get {root != nil}
+        set {}
     }
     
-    var isCritical: Bool {
-        true
+    var identifier: String {
+        "WordChecker"
+    }
+    
+    var startPriority: ServiceStartPriority {
+        .nonCritical(.max)
     }
     
     func start() async -> String {
-        self.loadTrieFromFile(rss: "french_trie_serialized")
-        return "French Dictionnary Loaded"
+        if isRequired {
+            self.loadTrieFromFile(rss: "french_trie_serialized")
+        }
+        
+        return "Load take place on demande"
     }
     
-    func handleAppBecomingActive() { }
-    func handleAppGoingInactive() { }
-    func handleAppInBackground() { } // Should release
+    func handleAppBecomingActive() { 
+        if !self.isHealthy {
+            Task {
+                await self.recover()
+            }
+        }
+    }
+    
+    func handleAppGoingInactive() {}
+    
+    func handleAppInBackground() {
+        if !self.isRequired {
+            self.isHealthy = false
+            self.root = nil // Release
+        }
+    }
 }
 

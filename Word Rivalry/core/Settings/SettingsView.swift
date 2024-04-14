@@ -22,6 +22,9 @@ struct SettingsView: View {
     @State private var sfxVolume: Double = 0
     @Environment(InGameDisplaySettings.self) private var inGameDisplay
     
+    init() {
+        debugPrint("~~~ SettingsView init ~~~")
+    }
     
     // Simple feedback mechanism
     private func provideFeedback() {

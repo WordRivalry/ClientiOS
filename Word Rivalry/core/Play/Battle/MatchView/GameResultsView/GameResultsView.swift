@@ -56,7 +56,7 @@ struct GameResultsView: View {
                 }
                 .onAppearAnimate(delay: 1.1)
                 
-                BasicDissmiss(text: "Confirm") {
+                BasicDismiss(text: "Confirm") {
                    
                 }
                     .scaleEffect(0.8)
@@ -65,15 +65,15 @@ struct GameResultsView: View {
                 Spacer()
             }
         }
-        .onAppear {
-            if gameOutcome == .victory {
-                battleOrchestrator.eloService.attributePoint()
-            } else if gameOutcome == .draw {
-                battleOrchestrator.eloService.cancel()
-            } else {
-                // Lost, do nothing
-            }
-        }
+//        .onAppear {
+//            if gameOutcome == .victory {
+//                battleOrchestrator.eloService.attributePoint()
+//            } else if gameOutcome == .draw {
+//                battleOrchestrator.eloService.cancel()
+//            } else {
+//                // Lost, do nothing
+//            }
+//        }
         .cornerRadius(15)
         // for smooth entering and exiting
         .transition(.opacity.combined(with: .blurReplace))

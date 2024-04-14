@@ -12,6 +12,11 @@ struct PlayView: View {
     @Environment(PublicProfile.self) private var profile: PublicProfile
     @State private var showCover = false
     @State private var selectedType: ModeType = .NORMAL
+    
+    init() {
+        debugPrint("~~~ PlayView init ~~~")
+    }
+    
     var body: some View {
         
             VStack(spacing: 20) {
@@ -27,12 +32,8 @@ struct PlayView: View {
                     )
                 }
                 Spacer()
-                 
-                ScrollView {
-                    LazyVStack {
-                        Text("Past games")
-                    }
-                }
+                MatchesHistoricView()
+       
                 .frame(height: 500)
             }
             .fullScreenCover(isPresented: $showCover) {

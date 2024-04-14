@@ -19,6 +19,8 @@ import OSLog
     init(audioService: AudioService = AudioService()) {
         self.audioService = audioService
         super.init()
+        self.identifier = "AudioSessionService"
+        self.subserviceCount = 1
         
         // Need to await this service
         self.addService(audioService)
@@ -43,7 +45,6 @@ import OSLog
         } catch {
             Logger.audio.error("Failed to set audio session category: \(error)")
         }
-        Logger.audio.info("AudioSession configuration done")
     }
     
     deinit {

@@ -9,13 +9,9 @@ import Foundation
 import AVFoundation
 import OSLog
 
-private let logger = Logger(subsystem: "audio", category: "AudioService")
-
 /// AudioController is responsible for controlling the audio player and sound effects manager.
 @Observable class AudioService {
   
-    // MARK: - Published
-    
     /// An error object that can be observed.
     var error: Error?
     
@@ -29,14 +25,11 @@ private let logger = Logger(subsystem: "audio", category: "AudioService")
     // MARK: - Initialisation
 
     /// Initializes an instance of AudioController with a music manager and sound effects manager.
-    init() {
-        logger.info("*** AudioService init ***")
-    }
+    init() { }
     
     // MARK: - Music Playback
     
     func playSong() {
-        logger.debug("PlaySong")
         musicManager.playSong()
     }
     
@@ -82,21 +75,32 @@ private let logger = Logger(subsystem: "audio", category: "AudioService")
 }
 
 extension AudioService: AppService {
+    var isHealthy: Bool {
+        get {
+            self.musicManager.currentPlaylist != nil
+        }
+        set {
+            //
+        }
+    }
+    
+    func healthCheck() async -> Bool {
+        self.musicManager.currentPlaylist != nil
+    }
+    
+    var identifier: String {
+        "AudioService"
+    }
+    
+    var startPriority: ServiceStartPriority {
+        .nonCritical(Int.max)
+    }
     
     func start() async -> String {
         let loader = AudioLoaderService()
         let songs = await loader.loadSongs()
         musicManager.setSongs(songs: songs)
-        logger.info("*** AudioService STARTED ***")
         return "Audio Service loaded"
-    }
-    
-    var isReady: Bool {
-        self.musicManager.currentPlaylist != nil
-    }
-    
-    var isCritical: Bool {
-        true
     }
     
     func handleAppBecomingActive() {

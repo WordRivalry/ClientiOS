@@ -64,6 +64,10 @@ struct IcloudStatusMessageView: View {
 struct NoInternetConnectionView: View {
     @Environment(\.openURL) var openURL
     
+    init() {
+        debugPrint("~~~ NoInternetConnectionView init ~~~")
+    }
+    
     var body: some View {
         VStack {
             Image(systemName: "wifi.slash")

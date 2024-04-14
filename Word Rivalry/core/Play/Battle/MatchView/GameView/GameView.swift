@@ -9,19 +9,27 @@ import SwiftUI
 import os.log
 
 struct GameView: View {
-    @State var opponentProfile: PublicProfile
+    @State private var opponentProfile: PublicProfile
     private var gameModel: GameModel
     @State private var showingQuitAlert = false
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @Environment(PublicProfile.self) private var profile: PublicProfile
     @Environment(InGameDisplaySettings.self) private var inGameDisplay
+    @Environment(SYPData<MatchHistoric>.self) private var sypData: SYPData<MatchHistoric>
     
+    @State var matchHistoric: MatchHistoric
     private let logger = Logger(subsystem: "com.WordRivalry", category: "GameView")
     
     init(gameModel: GameModel, opponentProfile: PublicProfile) {
         self.gameModel = gameModel
         self.opponentProfile = opponentProfile
-        self.logger.debug("*** GameView INITIATED ***")
+        self.matchHistoric = MatchHistoric(
+            gameID: "123123123",
+            ownScore: 0,
+            opponentRecordID: opponentProfile.userRecordID,
+            opponentScore: 0
+        )
+        debugPrint("~~~ GameView init ~~~")
     }
 
     var body: some View {
@@ -60,7 +68,6 @@ struct GameView: View {
                 Spacer()
             }
             Spacer()
-            // Displaying dynamic content
             VStack(alignment: .center, spacing: 10) {
                 Text("\(gameModel.timeLeft)")
                     .font(.title)
@@ -106,25 +113,31 @@ struct GameView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: self.gameModel.currentScore) {
+            self.matchHistoric.ownScore = self.gameModel.currentScore
+        }
+        .onChange(of: self.gameModel.opponentScore) {
+            self.matchHistoric.opponentScore = self.gameModel.opponentScore
+        }
         .onAppear {
+            self.sypData.appendItem(self.matchHistoric)
+            
             self.logger.debug("* GameView Appeared *")
             gameModel.startGame()
             
             self.logger.debug("Deducted 10 Elo Points *")
             Task {
                 let val = profile.eloRating - 10
-                try await PublicDatabase.shared.updatePlayerEloRating(saving: val)
+                _ = try await PublicDatabase.shared.updatePlayerEloRating(saving: val)
             }
-        //    profile.eloRating -= 10
         }.onDisappear {
             self.logger.debug("* GameView Disappeared *")
             
             if gameModel.gameResults.winner == profile.playerName {
                 self.logger.debug("Reawrded 10 Elo Points *")
-          //      profile.eloRating += 20
                 Task {
                     let val = profile.eloRating + 10
-                    try await  PublicDatabase.shared.updatePlayerEloRating(saving: val)
+                    _ = try await  PublicDatabase.shared.updatePlayerEloRating(saving: val)
                 }
             }
         }

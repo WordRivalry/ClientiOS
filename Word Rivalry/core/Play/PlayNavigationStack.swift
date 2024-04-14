@@ -13,6 +13,11 @@ enum PlayTab {
 }
 
 struct PlayNavigationStack: View {
+    
+    init() {
+        debugPrint("~~~ PlayNavigationStack init ~~~")
+    }
+ 
     var body: some View {
         NavigationStack {
             PlayView()

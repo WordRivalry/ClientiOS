@@ -32,7 +32,23 @@ extension Logger {
     init() {
         subscribeToInternetConnectionEvents()
         subscribeToInternetDeconnectionEvents()
-        let isConnected = NetworkChecker.shared.isConnected
+//        
+//        Task {
+//                   await self.simulateNetworkChangeAfterDelay()
+//               }
+    }
+    
+    private func simulateNetworkChangeAfterDelay() async {
+        do {
+            try await Task.sleep(nanoseconds: 15 * 1_000_000_000) // Sleep for 15 seconds
+            await MainActor.run {
+                self.isConnected = false
+                self.isDisconnected = true
+            }
+            print("Network status changed after 15 seconds")
+        } catch {
+            print("Failed to delay task: \(error)")
+        }
     }
     
     deinit {
@@ -46,7 +62,6 @@ extension Logger {
             .receive(on: DispatchQueue.main)  // Ensure UI updates are on the main thread
             .sink { _ in
                 Task { @MainActor in
-                    Logger.network.debug("Network found.")
                     withAnimation(.easeInOut) {
                         self.isConnected = true
                         self.isDisconnected = !self.isConnected
@@ -57,12 +72,10 @@ extension Logger {
     
     private func subscribeToInternetDeconnectionEvents() {
         disconnectCancellable?.cancel() // Cancel for safety
-        disconnectCancellable = NotificationCenter.default.publisher(for: .didDisconnectToInternet)
+        disconnectCancellable = NotificationCenter.default.publisher(for: .didDisconnectFromInternet)
             .receive(on: DispatchQueue.main)  // Ensure UI updates are on the main thread
             .sink { _ in
                 Task { @MainActor in
-                    // Log that we are attempting to fetch data
-                    Logger.network.debug("Network lost.")
                     withAnimation(.easeInOut) {
                         self.isConnected = false
                         self.isDisconnected = !self.isConnected

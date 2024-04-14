@@ -18,18 +18,13 @@ class SwiftDataService {
     var friends: [Friend] = []
 
     init() {
-        self.logger.info("*** DataService STARTED ***")
         Task { @MainActor in
             self.dataSource = SwiftDataSource.shared
         }
     }
     
     func fetchProfile() async {
-        // Wait until the DataSource is ready
-        while !(await SwiftDataSource.shared.isReady) {
-            try? await Task.sleep(nanoseconds: 100_000_000)
-            Logger.dataServices.info("Awaiting DataSource... 100ms")
-        }
+     
         
         guard let dataSource = self.dataSource else {  logger.error("\(self.NO_DATA_SOURCE)"); return }
         let profiles = dataSource.fetchProfiles()
@@ -68,15 +63,34 @@ class SwiftDataService {
 // MARK: AppService conformance
 
 extension SwiftDataService: AppService {
-    var isReady: Bool {
-        profile != nil
+    var isHealthy: Bool {
+        get {
+            profile != nil
+        }
+        set {
+            //
+        }
     }
     
-    var isCritical: Bool {
-        true
+    func healthCheck() async -> Bool {
+        self.isHealthy
+    }
+    
+    var identifier: String {
+        "SwiftDataService"
+    }
+    
+    var startPriority: ServiceStartPriority {
+        .critical(1)
     }
     
     func start() async -> String {
+        // Wait until the DataSource is ready
+        while !(await SwiftDataSource.shared.isReady) {
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            Logger.dataServices.info("Awaiting DataSource... 100ms")
+        }
+        
         guard let dataSource = self.dataSource else { return "\(self.NO_DATA_SOURCE)" }
         
         let profiles = dataSource.fetchProfiles()
@@ -88,11 +102,6 @@ extension SwiftDataService: AppService {
             logger.debug("Profile not found")
             self.profile = nil
         }
-        
-        //  self.friends = dataSource.fetchFriends()
-        //  logger.debug("[\(self.friends.count)] Friends found")
-        
-        self.logger.info("*** DataService START COMPLETED ***")
         
         return "Profile is loaded? [\(self.profile != nil)]"
     }

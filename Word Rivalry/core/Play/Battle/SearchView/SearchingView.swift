@@ -20,6 +20,10 @@ struct SearchingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(BattleOrchestrator.self) private var battleOrchestrator: BattleOrchestrator
     
+    init() {
+        debugPrint("~~~ SearchingView init ~~~")
+    }
+    
     var body: some View {
         ZStack {
             AnimatedCirclesView()
@@ -42,7 +46,7 @@ struct SearchingView: View {
                 
                 Spacer()
                 
-                BasicDissmiss(text: "Cancel") {
+                BasicDismiss(text: "Cancel") {
                     do {
                         try SearchService.shared.cancelSearch()
                         Logger.searchView.debug("SearchView Dismissed")

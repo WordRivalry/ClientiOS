@@ -18,68 +18,59 @@ struct ContentView: View {
     
     @State private var appScreen: AppScreen? = .home
     
+    init() {
+        debugPrint("~~~ ContentView init ~~~")
+    }
+
     var body: some View {
         ZStack {
-            if appService.isReady {
-                Group {
-                    switch appService.screenToDisplay {
-                    case .noIcloud:
-                        IcloudStatusMessageView()
-                    case .noInternet:
-                        InternetStatusMessageView(message: "For profile creation")
-                    case .main:
-                        AppTabView(selection: $appScreen)
-                            .environment(appService.profileDataService.ppLocal.player!)
-                            .environment(appService.profileDataService.swiftData.profile!)
-                            .environment(appService.audioService)
-                            .environment((appService.jitData.getService(for: .leaderboard) as LeaderboardService))
-                            .environment((appService.jitData.getService(for: .achievements) as AchievementsService))
-                    case .error:
-                        Text("An error occured")
-                    }
+            Group {
+                switch StartUpViewModel.shared.screen {
+                case .noIcloud:
+                    IcloudStatusMessageView()
+                case .noInternet:
+                    InternetStatusMessageView(message: "This is required to create your profile or fetch it on this device")
+                case .loading:
+                    loadingView
+                case .main:
+                    AppTabView(selection: $appScreen)
+                        .environment(SYPData<MatchHistoric>())
+                        .environment(LeaderboardService())
+                        .environment(appService.profileDataService.ppLocal.player!)
+                        .environment(appService.audioService)
+                case .error:
+                    Text("An error occured")
                 }
-            } else {
-                Group {
-                    switch appService.screenToDisplay {
-                    case .noIcloud:
-                        IcloudStatusMessageView()
-                    case .noInternet:
-                        InternetStatusMessageView(message: "This is required to create your profile or fetch it on this device")
-                    case .main:
-                        VStack {
-                            Spacer()
-                            ProgressView(value: appService.progress)
-                            Text(appService.messages.last ?? "Nothing to worry!")
-                            Spacer()
-                                .onAppear {
-                                    Task {
-                                        Logger.serviceManager.debug("Attempting to start app services.")
-                                        _ = await self.appService.start()
-                                    }
-                                }
-                        }
-                        .frame(width: 350)
-                        .transition(.opacity)
-                        .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
-                    case .error:
-                        Text("An error occured")
-                    }
-                }
-                .handleNetworkChanges(onConnect:  {
-                    Task {
-                        Logger.serviceManager.debug("Attempting to start app services.")
-                        _ = await self.appService.start()
-                    }
-                })
             }
-        }.logLifecycle(viewName: "ContentView")
+            .onAppear {
+                Task {
+                    Logger.serviceManager.debug("Attempting to start app services.")
+                    _ = await self.appService.start()
+                }
+            }
+        }
+        .logLifecycle(viewName: "ContentView")
+        .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
+    }
+    
+    
+    @ViewBuilder
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            ProgressView(value: appService.progressReporter.progress, total: 100)
+            Text(appService.messages.last ?? "Nothing to worry!")
+            Spacer()
+        }
+        .frame(width: 350)
+        .transition(.opacity)
     }
 }
 
 #Preview {
     let jitDataService = JITDataService<JITDataType>()
     jitDataService.registerService(LeaderboardService(), forType: .leaderboard)
-    jitDataService.registerService(AchievementsService(), forType: .achievements)
+   // jitDataService.registerService(MatchHistoryService(), forType: .matchHistoric)
     
     return ViewPreview {
         ContentView()

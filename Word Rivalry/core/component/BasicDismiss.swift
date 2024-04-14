@@ -9,7 +9,7 @@ import SwiftUI
 import os.log
 
 /// One size fits all kinda dismiss
-struct BasicDissmiss: View {
+struct BasicDismiss: View {
     private let logger = Logger(subsystem: "com.WordRivalry", category: "BasicDissmiss")
     var text: String = "Dismiss"
     var action: (() -> Void)?
@@ -27,5 +27,5 @@ struct BasicDissmiss: View {
 }
 
 #Preview {
-    BasicDissmiss()
+    BasicDismiss()
 }

@@ -7,18 +7,30 @@
 import Foundation
 import OSLog
 
+
+@Observable class StartUpViewModel {
+    var messageToDisplay = ""
+    var screen: Screen = .loading
+    static var shared = StartUpViewModel()
+    
+    private init() { }
+}
+
 enum Screen {
     case noIcloud
     case noInternet
+    case loading
     case main
     case error
 }
 
-@Observable class AppServiceManager: ServiceCoordinator {
+@Observable class AppServiceManager: ServiceCoordinator, ViewLifeCycle {
 
     var messageDisplay: String = ""
-    var screenToDisplay: Screen = .main
     
+    @ObservationIgnored
+    var monitoringTimer: PausableTimer?
+
     let audioService: AudioSessionService
     let profileDataService: ProfileDataService
     let jitData: JITDataService<JITDataType>
@@ -28,55 +40,68 @@ enum Screen {
         profileDataService: ProfileDataService,
         jitData: JITDataService<JITDataType>
     ) {
+        // init
         self.audioService = audioService
         self.profileDataService = profileDataService
         self.jitData = jitData
         super.init()
         
+        // Service registrar
+        self.addService(NetworkChecker.shared)
+        self.addService(iCloudService.shared)
+        self.addService(WordChecker.shared)
         self.addService(jitData)
         self.addService(audioService)
         self.addService(profileDataService)
-        self.addService(WordChecker.shared)
         
-        Logger.serviceManager.info("*** AppServiceManager init ***")
+        // Self property
+        self.startPriority = .critical(0)
+        self.identifier = "AppServiceManager"
     }
     
-    override func precondition() async -> Bool {
-        
-        let check = NetworkChecker.shared
-        iCloudService.shared.checkICloudStatus()
-        
-        self.messages.append("Getting ready!")
-        
-        // Sleep for 500 ms before check internet
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        
-        // Loop until the internet connection is available
-        while !check.isConnected {
-            self.messages.append("No internet connection found. Retrying...")
-            
-            if self.screenToDisplay != .noInternet {
-                Task { @MainActor in
-                    self.screenToDisplay = .noInternet
-                }
-            }
-
-            // Sleep for 1 sec before checking again
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-        }
-        
-        if iCloudService.shared.iCloudStatus != .available {
-            self.messages.append(iCloudService.shared.statusMessage())
-            Task { @MainActor in
-                self.screenToDisplay = .noIcloud
-            }
-            return false
-        }
-        
+    // MARK: Hook
+    
+    override func onCriticalServicesHealthy() {
         Task { @MainActor in
-            self.screenToDisplay = .main
+            StartUpViewModel.shared.screen = .main
         }
         
-        return true
+        self.logger.logServiceTree(service: self)
+    }
+   
+    // MARK: Scene life cycle
+
+    override func handleAppBecomingActive() {
+        super.handleAppBecomingActive()
+        monitoringTimer?.resume()
+    }
+    
+    override func handleAppGoingInactive() {
+        super.handleAppGoingInactive()
+        monitoringTimer?.pause()
+    }
+    
+    override func handleAppInBackground() {
+        super.handleAppInBackground()
+        monitoringTimer?.pause()
+    }
+    
+    // MARK: View life cycle
+    
+    func handleViewDidAppear() {
+        setupFetchTimer()
+    }
+    
+    func handleViewDidDisappear() {
+        self.monitoringTimer?.stop()
+    }
+    
+    // MARK: - Timer Setup
+    
+    private func setupFetchTimer() {
+        monitoringTimer = PausableTimer(interval: 60, repeats: true) { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.logger.logServiceTree(service: strongSelf)
+        }
     }
 }

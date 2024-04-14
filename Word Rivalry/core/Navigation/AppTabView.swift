@@ -11,7 +11,12 @@ import os.log
 
 struct AppTabView: View {
     @Binding var selection: AppScreen?
-    @State var isOverlayOpen: Bool = false
+    @State private var isOverlayOpen: Bool = false
+    
+    init(selection: Binding<AppScreen?>) {
+        _selection = selection
+        debugPrint("~~~ AppTabView init ~~~")
+    }
     
     var body: some View {
         TabView(selection: $selection) {

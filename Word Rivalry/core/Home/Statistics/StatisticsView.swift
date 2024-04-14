@@ -11,7 +11,7 @@ struct StatisticsView: View {
     var body: some View {
         VStack {
             Text("Stats!")
-            BasicDissmiss()
+            BasicDismiss()
         }
        
     }

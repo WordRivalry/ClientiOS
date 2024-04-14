@@ -52,12 +52,16 @@ import OSLog
 
 // MARK: AppService conformance
 extension PPLocalService: AppService {
-    var isReady: Bool {
-        self.player != nil
+
+    var isHealthy: Bool {
+        get { self.player != nil }
+        set {}
     }
+
+    var identifier: String { "PPLocalService" }
     
-    var isCritical: Bool {
-        true
+    var startPriority: ServiceStartPriority {
+        .critical(1)
     }
     
     func start() async -> String {
