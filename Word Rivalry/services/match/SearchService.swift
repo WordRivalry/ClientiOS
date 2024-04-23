@@ -35,7 +35,7 @@ class SearchService {
         }
     }
     
-    func cancelSearch() throws {
-        try MatchmakingService.shared.stopFindMatch()
+    func cancelSearch() {
+        MatchmakingService.shared.stopFindMatch()
     }
 }
