@@ -10,35 +10,28 @@ import SwiftUI
 struct ViewPreview<Content: View>: View {
     var content: () -> Content
     
-    @State private var ownProfile = PublicProfile.preview
-    @State private var opProfile = PublicProfile.previewOther
+    @State private var ownProfile = User.preview
+    @State private var opProfile = User.previewOther
     
     init(@ViewBuilder content: @escaping () -> Content) {
         self.content = content
     }
     
     var body: some View {
-        
-        
-        
         ModelContainerPreview {
             previewContainer
         } content: {
             content()
-                .environment(AppServiceManager())
                 .environment(Network())
                 .environment(GlobalOverlay.shared)
-                .environment(MyPublicProfile.preview)
-                .environment(MyPersonalProfile.preview)
-                .environment(JITLeaderboard.preview)
+                .environment(UserViewModel.preview)
+                .environment(LeaderboardViewModel.preview)
                 .environment(PurchaseManager())
-                .environment(MatchHistoric.preview)
+                .environment(MatchRecord.preview)
                 .environment(InGameDisplaySettings())
-                .environment(GameViewModel())
+                .environment(GameViewModel.preview)
                 .environment(MainRouter())
                 .environment(ownProfile)
-                .environment(MatchService(ownProfile: ownProfile))
-            
                 .navigationBarColor(.white)
         }
     }

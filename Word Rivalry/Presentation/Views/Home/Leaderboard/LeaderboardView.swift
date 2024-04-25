@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct LeaderboardView: View {
-    @Environment(JITLeaderboard.self) private var leaderboard
-    @Environment(MyPublicProfile.self) var publicService
+    @Environment(LeaderboardViewModel.self) private var leaderboard
+    @Environment(UserViewModel.self) var userVM
     @State private var showMyProfileBottomRow = true
     
     var body: some View {
@@ -25,13 +25,14 @@ struct LeaderboardView: View {
     private var content: some View {
         VStack {
             header
-            listView(players: leaderboard.players)
-            Spacer()
-            if showMyProfileBottomRow {
-                currentPlayerRow(players: leaderboard.players)
+            if let topPlayers = leaderboard.topPlayers {
+                listView(players: topPlayers)
+                Spacer()
+                if showMyProfileBottomRow {
+                    currentPlayerRow(players: topPlayers)
+                }
+                lastUpdatedView
             }
-            lastUpdatedView
-         
             BasicDismiss()
         }
     }
@@ -43,38 +44,45 @@ struct LeaderboardView: View {
     }
     
     @ViewBuilder
-    private func listView(players: [PublicProfile]) -> some View {
-        VisibilityTrackingScrollView(action: handleVisibilityChanged) {
-            LazyVStack {
-                ForEach(players.indices, id: \.self) { index in
-                    LeaderboardRow(rank: index + 1, player: players[index])
-                        .padding(.horizontal)
-                        .trackVisibility(id: "\(players[index].playerName)")
-                        .border(players[index].playerName == publicService.publicProfile.playerName ? Color.accentColor : Color.clear, width: 4)
+    private func listView(players: [User]) -> some View {
+        if let user = userVM.user {
+            
+            VisibilityTrackingScrollView(action: handleVisibilityChanged) {
+                LazyVStack {
+                    ForEach(players.indices, id: \.self) { index in
+                        LeaderboardRow(rank: index + 1, player: players[index])
+                            .padding(.horizontal)
+                            .trackVisibility(id: "\(players[index].playerName)")
+                            .border(players[index].playerName == user.playerName ? Color.accentColor : Color.clear, width: 4)
+                    }
                 }
+                .scrollTargetLayout()
             }
-            .scrollTargetLayout()
+            .scrollTargetBehavior(.viewAligned)
+            .coordinateSpace(.named("LeaderboardScroll"))
         }
-        .scrollTargetBehavior(.viewAligned)
-        .coordinateSpace(.named("LeaderboardScroll"))
+  
     }
     
     func handleVisibilityChanged(_ id: String, change: VisibilityChange, tracker: VisibilityTracker<String>) {
-        switch change {
-        case .shown:
-            if id == publicService.publicProfile.playerName {
-                DispatchQueue.main.async {
-                    self.showMyProfileBottomRow = false
-                }
-            }
-
-        case .hidden:
-            if id == publicService.publicProfile.playerName {
-                DispatchQueue.main.async {
-                    withAnimation(.easeInOut) {
-                        self.showMyProfileBottomRow = true
+        
+        if let user = userVM.user {
+            switch change {
+            case .shown:
+                if id == user.playerName {
+                    DispatchQueue.main.async {
+                        self.showMyProfileBottomRow = false
                     }
-                 
+                }
+
+            case .hidden:
+                if id == user.playerName {
+                    DispatchQueue.main.async {
+                        withAnimation(.easeInOut) {
+                            self.showMyProfileBottomRow = true
+                        }
+                     
+                    }
                 }
             }
         }
@@ -87,15 +95,22 @@ struct LeaderboardView: View {
     }
     
     @ViewBuilder
-    private func currentPlayerRow(players: [PublicProfile]) -> some View {
+    private func currentPlayerRow(players: [User]) -> some View {
         
-        if let rank = players.firstIndex(where: { $0.playerName == publicService.publicProfile.playerName }) {
-            LeaderboardRow(rank: rank + 1, player: publicService.publicProfile)
-                .padding(.horizontal)
-                .border(Color.accentColor, width: 4)
-                .cornerRadius(8)
+        if let user = userVM.user {
+            if let rank = players.firstIndex(where: { $0.playerName == user.playerName }) {
+                LeaderboardRow(
+                    rank: rank + 1,
+                    player: user
+                )
+                    .padding(.horizontal)
+                    .border(Color.accentColor, width: 4)
+                    .cornerRadius(8)
+            } else {
+                Text("You are not ranked")
+            }
         } else {
-            Text("You are not ranked")
+            Text("Information not available at this moment.")
         }
     }
     

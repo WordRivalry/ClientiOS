@@ -23,7 +23,7 @@ enum BoardError: Error {
         self.cols = cols
         self.grid = Array(repeating: Array(repeating: initialValue, count: cols), count: rows)
     }
-
+    
     init(dimension: Int, initialValue: T) {
         self.rows = dimension
         self.cols = dimension
@@ -31,21 +31,21 @@ enum BoardError: Error {
     }
     
     init(grid: [[T]]) {
-           // Ensure the grid is not empty and all rows have the same number of columns
-           guard !grid.isEmpty, let firstRowCols = grid.first?.count else {
-               fatalError("Grid cannot be empty and must have at least one row with a defined number of columns")
-           }
-           
-           // Verify that all rows in the grid have the same number of columns
-           let allRowsEqualLength = grid.allSatisfy { $0.count == firstRowCols }
-           if !allRowsEqualLength {
-               fatalError("All rows in the grid must have the same number of columns")
-           }
-           
-           self.rows = grid.count
-           self.cols = firstRowCols
-           self.grid = grid
-       }
+        // Ensure the grid is not empty and all rows have the same number of columns
+        guard !grid.isEmpty, let firstRowCols = grid.first?.count else {
+            fatalError("Grid cannot be empty and must have at least one row with a defined number of columns")
+        }
+        
+        // Verify that all rows in the grid have the same number of columns
+        let allRowsEqualLength = grid.allSatisfy { $0.count == firstRowCols }
+        if !allRowsEqualLength {
+            fatalError("All rows in the grid must have the same number of columns")
+        }
+        
+        self.rows = grid.count
+        self.cols = firstRowCols
+        self.grid = grid
+    }
     
     func getCell(_ row: Int, _ col: Int) -> T {
         guard isWithinBound(row, col) else { fatalError("Board getCell OutOfBound") }
@@ -81,7 +81,7 @@ enum BoardError: Error {
     func getRow(at index: Int) -> [T?] {
         return grid[index]
     }
-
+    
     func getColumn(at index: Int) -> [T?] {
         return grid.map { $0[index] }
     }
@@ -117,17 +117,17 @@ enum BoardError: Error {
             }
         }
     }
-
+    
     /// This function counts the number of cells satisfying a certain condition.
     func count(where predicate: (T?) -> Bool) -> Int {
         return grid.joined().filter(predicate).count
     }
-
+    
     /// This function returns a Boolean value indicating whether every cell of the board satisfies the given predicate.
     func allSatisfy(_ predicate: (T?) -> Bool) -> Bool {
         return grid.joined().allSatisfy(predicate)
     }
-
+    
     /// This function returns a Boolean value indicating whether the board contains an element that satisfies the given predicate.
     func contains(where predicate: (T?) -> Bool) -> Bool {
         return grid.joined().contains(where: predicate)

@@ -16,7 +16,7 @@ struct CellIndex: Equatable, Hashable {
 import SwiftUI
 
 struct BoardView<T>: View where T: Hashable {
-    var viewModel: BoardViewModel<T>
+    var viewModel: BoardInteractor<T>
     var cellContent: (T, Int, Int) -> AnyView
     
     var body: some View {

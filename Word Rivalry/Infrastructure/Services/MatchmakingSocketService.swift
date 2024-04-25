@@ -9,10 +9,13 @@ import Foundation
 import OSLog
 import SocketIO
 
-protocol MatchmakingDelegate: AnyObject {
+protocol MatchmakingSocketService_Search_Delegate: AnyObject {
     func didNotConnect()
     func didJoinedQueue()
     func didNotJoinedQueue()
+}
+
+protocol MatchmakingSocketService_MatchFound_Delegate: AnyObject {
     func didFoundMatch(gameSessionUUID: String, opponentUsername: String, opponentElo: Int)
 }
 
@@ -93,7 +96,8 @@ extension Logger {
 
 class MatchmakingSocketService {
     private let socketService: SocketIOService<MatchmakingEvent>
-    var matchmakingDelegate: MatchmakingDelegate?
+    var searchDelegate: MatchmakingSocketService_Search_Delegate?
+    var matchFoundDelegate: MatchmakingSocketService_MatchFound_Delegate?
  
     let apiKey: String = "4a7524be-0020-42c3-a259-cdc7208c5c7d"
     
@@ -162,8 +166,12 @@ class MatchmakingSocketService {
         }
     }
     
-    func setMatchmakingDelegate(_ delegate :MatchmakingDelegate) {
-        self.matchmakingDelegate = delegate
+    func setSearchDelegate(_ delegate :MatchmakingSocketService_Search_Delegate) {
+        self.searchDelegate = delegate
+    }
+    
+    func setMatchFoundDelegate(_ delegate :MatchmakingSocketService_MatchFound_Delegate) {
+        self.matchFoundDelegate = delegate
     }
 }
 
@@ -171,13 +179,13 @@ class MatchmakingSocketService {
 extension MatchmakingSocketService {
     func handleJoinQueueSuccess(_ message: JoinQueueSuccessMessage, _ ack: SocketAckEmitter) {
         Logger.matchmakingSocketService.info("Joined matchmaking queue!")
-        self.matchmakingDelegate?.didJoinedQueue()
+        self.searchDelegate?.didJoinedQueue()
     }
     
     func handleJoinQueueFailure(_ message: JoinQueueFailureMessage, _ ack: SocketAckEmitter) {
         let errorCode = message.payload.errorCode
         Logger.matchmakingSocketService.error("Failed to joined queue. Error Code: \(errorCode)")
-        self.matchmakingDelegate?.didNotJoinedQueue()
+        self.searchDelegate?.didNotJoinedQueue()
     }
     
     func handleMatchFound(_ message: MatchFoundMessage, _ ack: SocketAckEmitter) {
@@ -187,7 +195,7 @@ extension MatchmakingSocketService {
         let gameSessionUUID = message.payload.gameSessionId
         let opponentUsername = message.payload.opponent.opponentUsername
         let opponentElo = message.payload.opponent.opponentElo
-        self.matchmakingDelegate?.didFoundMatch(
+        self.matchFoundDelegate?.didFoundMatch(
             gameSessionUUID: gameSessionUUID,
             opponentUsername: opponentUsername,
             opponentElo: opponentElo

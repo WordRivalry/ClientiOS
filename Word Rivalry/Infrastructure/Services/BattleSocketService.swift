@@ -11,7 +11,7 @@ import SocketIO
 
 typealias WordPath = [[Int]]
 
-protocol WebSocket_GameDelegate: AnyObject {
+protocol BattleSocketService_InGame_Delegate: AnyObject {
     func didReceiveGameInformation(
         startTime: Date,
         endTime: Date,
@@ -20,6 +20,9 @@ protocol WebSocket_GameDelegate: AnyObject {
         stats: GridStats
     )
     func didReceiveOpponentScore(_ score: Int)
+}
+
+protocol BattleSocketService_GameEnded_Delegate: AnyObject {
     func didReceiveGameResult(winner: String, playerResults: [PlayerResult])
 }
 
@@ -140,7 +143,8 @@ extension Logger {
 
 class BattleSocketService {
     private let socketService: SocketIOService<BattleEvent>
-    var gameDelegate: WebSocket_GameDelegate?
+    var inGameDelegate: BattleSocketService_InGame_Delegate?
+    var gameEndedDelegate: BattleSocketService_GameEnded_Delegate?
     
     let apiKey: String = "4a7524be-0020-42c3-a259-cdc7208c5c7d"
 
@@ -182,8 +186,12 @@ class BattleSocketService {
         return false
     }
     
-    func setGameDelegate(_ delegate :WebSocket_GameDelegate) {
-        self.gameDelegate = delegate
+    func setInGameDelegate(_ delegate :BattleSocketService_InGame_Delegate) {
+        self.inGameDelegate = delegate
+    }
+    
+    func setGameEndedDelegate(_ delegate :BattleSocketService_GameEnded_Delegate) {
+        self.gameEndedDelegate = delegate
     }
     
     func setupEventListeners() {
@@ -239,7 +247,7 @@ extension BattleSocketService {
         let grid = message.payload.gridInformation.grid
         let valid_words = message.payload.gridInformation.valid_words
         let stats = message.payload.gridInformation.stats
-        gameDelegate?.didReceiveGameInformation(
+        inGameDelegate?.didReceiveGameInformation(
             startTime: startTime,
             endTime: endTime,
             grid: grid,
@@ -251,14 +259,14 @@ extension BattleSocketService {
     private func handleOpponentScoreUpdate(_ message: OpponentScoreUpdateMessage, _ ack: SocketAckEmitter) {
         Logger.battleSocketService.info("Received Opponent Score")
         let score = message.payload.score
-        gameDelegate?.didReceiveOpponentScore(score)
+        inGameDelegate?.didReceiveOpponentScore(score)
     }
     
     private func handleGameResult(_ message: GameResultMessage, _ ack: SocketAckEmitter) {
         Logger.battleSocketService.info("Received Game Result")
         let winner = message.payload.winner
         let playerResults = message.payload.playerResults
-        gameDelegate?.didReceiveGameResult(winner: winner, playerResults: playerResults)
+        gameEndedDelegate?.didReceiveGameResult(winner: winner, playerResults: playerResults)
     }
     
     private func handleOpponentLeft() {

@@ -16,11 +16,11 @@ struct Word_RivalryApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @State private var showLaunchView = false
-    
     @State private var purchaseManager = PurchaseManager()
+    @State private var userViewModel = UserViewModel()
     
-    let network = Network()
-    let appServices = AppServiceManager()
+//    let network = Network()
+ //   let appServices = AppServiceManager()
     
     init() {
         Logger.appEvents.notice("~~~ Word_RivalryApp init ~~~")
@@ -29,7 +29,7 @@ struct Word_RivalryApp: App {
     var body: some Scene {
         WindowGroup {
             
-            ZStack {
+//            ZStack {
                 ContentView()
             
 //                ZStack {
@@ -39,21 +39,20 @@ struct Word_RivalryApp: App {
 //                    }
 //                }
 //                .zIndex(2.0)
-            }
-            .onAppear(perform: self.appServices.handleViewDidAppear)
-            .onDisappear(perform: self.appServices.handleViewDidDisappear)
+//            }
+      //      .onAppear(perform: self.appServices.handleViewDidAppear)
+    //        .onDisappear(perform: self.appServices.handleViewDidDisappear)
             .onChange(of: scenePhase) {
                 self.handleScheneChange()
             }
             .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
             .modelContainer(for: [MatchRecord.self])
-            .environment(appServices)
+       //     .environment(appServices)
             .environment(purchaseManager)
+            .environment(userViewModel)
             .environment(GlobalOverlay.shared)
-            .environment(network)
+     //       .environment(network)
             .logLifecycle(viewName: "Word_RivalryApp")
-            
-
         }
     }
     
@@ -61,13 +60,13 @@ struct Word_RivalryApp: App {
         switch scenePhase {
         case .active:
             Logger.appEvents.notice("!!! Scene is active !!!")
-            appServices.handleAppBecomingActive()
+   //         appServices.handleAppBecomingActive()
         case .inactive:
             Logger.appEvents.notice("!!! Scene is inactive !!!")
-            appServices.handleAppGoingInactive()
+    //        appServices.handleAppGoingInactive()
         case .background:
             Logger.appEvents.notice("!!! Scene on background !!!")
-            appServices.handleAppInBackground()
+   //         appServices.handleAppInBackground()
         default:
             break
         }

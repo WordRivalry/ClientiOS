@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LeaderboardRow: View {
     let rank: Int
-    let player: PublicProfile
+    let player: User
     
     var body: some View {
         ZStack {
@@ -71,6 +71,6 @@ struct LeaderboardRow: View {
 
 #Preview {
     ViewPreview {
-        LeaderboardRow(rank: 23, player: PublicProfile.preview)
+        LeaderboardRow(rank: 23, player: User.preview)
     }
 }

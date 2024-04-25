@@ -9,8 +9,7 @@ import SwiftUI
 import OSLog
 
 struct HomeNavigationStack: View {
-    @Environment(MyPublicProfile.self) private var publicService
-    @Environment(MyPersonalProfile.self) private var personalService
+    @Environment(UserViewModel.self) private var userViewModel
     
     @Namespace private var namespace
     
@@ -18,7 +17,6 @@ struct HomeNavigationStack: View {
     @State private var showFriendsList = false
     @State private var showLeaderboard = false
     @State private var showAchievements = false
-    @State private var showStatictics = false
     
     init() {
         Logger.viewCycle.debug("~~~ HomeNavigationStack init ~~~")
@@ -41,14 +39,9 @@ struct HomeNavigationStack: View {
                         showLeaderboard = true
                     }
                     .matchedGeometryEffect(id: "button0", in: namespace)
-                    
-                    BasicButton(text: "Statistics") {
-                        showStatictics = true
-                    }
-                    .matchedGeometryEffect(id: "button1", in: namespace)
                 }
             }
-            .navigationTitle(publicService.publicProfile.playerName)
+            .navigationTitle(userViewModel.user?.playerName ?? "")
             .navigationBarTitleDisplayMode(.automatic)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear {
@@ -68,11 +61,6 @@ struct HomeNavigationStack: View {
             }
             .fullScreenCover(isPresented: $showLeaderboard) {
                 LeaderboardView()
-                    .presentationBackground(.bar)
-                    .fadeIn()
-            }
-            .fullScreenCover(isPresented: $showStatictics) {
-                StatisticsView()
                     .presentationBackground(.bar)
                     .fadeIn()
             }
@@ -104,7 +92,7 @@ struct HomeNavigationStack: View {
                                 .frame(width: 30, height: 30)
                             
                             // Text positioned above the capsule
-                            Text("\(personalService.personalProfile.currency)")
+                            Text("\(userViewModel.user?.eloRating ?? 0)")
                                 .foregroundColor(.white)
                                 .font(.title3)
                         }
@@ -112,12 +100,6 @@ struct HomeNavigationStack: View {
                 }
             }
         }
-        .onAppear(perform: publicService.handleViewDidAppear)
-        .onDisappear(perform: publicService.handleViewDidDisappear)
-        
-        .onAppear(perform: personalService.handleViewDidAppear)
-        .onDisappear(perform: personalService.handleViewDidDisappear)
-        
         .logLifecycle(viewName: "HomeNavigationStack")
     }
 }

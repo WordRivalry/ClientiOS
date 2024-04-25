@@ -7,7 +7,15 @@
 
 import Foundation
 
-@Observable final class UserViewModel {
+@Observable final class UserViewModel: DataPreview {
+    
+    static var preview: UserViewModel = {
+        let user = User.preview
+        let viewModel = UserViewModel()
+        viewModel.user = user
+        return viewModel
+    }()
+    
     var user: User?
     var error: Error?
     var isLoading: Bool = false

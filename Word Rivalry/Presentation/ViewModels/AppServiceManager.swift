@@ -26,26 +26,18 @@ enum Screen {
     var messageDisplay: String = ""
 
     let audioService: AudioSessionService
-    let myPublicProfile: MyPublicProfile
-    let myPersonalProfile: MyPersonalProfile
     
     init(
-        audioService: AudioSessionService =  AudioSessionService(),
-        myPublicProfile: MyPublicProfile = MyPublicProfile(),
-        myPersonalProfile: MyPersonalProfile = MyPersonalProfile()
+        audioService: AudioSessionService =  AudioSessionService()
     ) {
         // init
         self.audioService = audioService
-        self.myPublicProfile = myPublicProfile
-        self.myPersonalProfile = myPersonalProfile
         super.init()
         
         // Service registrar
         self.addService(NetworkChecker.shared)
         self.addService(iCloudService.shared)
         self.addService(EfficientWordChecker.shared)
-        self.addService(myPublicProfile)
-        self.addService(myPersonalProfile)
         self.addService(audioService)
         
         // Self property

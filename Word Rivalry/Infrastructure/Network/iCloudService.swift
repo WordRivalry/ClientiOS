@@ -8,13 +8,33 @@
 import Foundation
 import CloudKit
 
-@Observable final class iCloudService {
+final class iCloudService {
     static let shared = iCloudService()
     var iCloudStatus: CKAccountStatus?
     
-    let db = PublicDatabase.shared.db
+    private let db = PublicDatabase.shared.db
     
-    private init() {}
+    private init() {
+        registerForAccountChangeNotifications()
+        Task {
+            self.iCloudStatus = try? await db.getICloudAccountStatus()
+        }
+    }
+    
+    // Register to receive iCloud account change notifications
+    private func registerForAccountChangeNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(accountDidChange),
+            name: Notification.Name.CKAccountChanged,
+            object: nil
+        )
+    }
+    
+    @objc private func accountDidChange() {
+        // When the account changes, recheck the iCloud status
+        checkICloudStatus()
+    }
     
     func checkICloudStatus() {
         Task {
@@ -52,10 +72,6 @@ extension iCloudService: AppService {
         }
     }
     
-    func healthCheck() async -> Bool {
-        self.isHealthy
-    }
-    
     var identifier: String {
         "iCloudService"
     }
@@ -74,13 +90,13 @@ extension iCloudService: AppService {
                     GlobalOverlay.shared.overlay = .noIcloudAccount
                 }
             }
-
+            
             // Sleep for 1 sec before checking again
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             
             self.iCloudStatus = try? await db.getICloudAccountStatus()
         }
-
+        
         if GlobalOverlay.shared.overlay != .closed {
             Task { @MainActor in
                 GlobalOverlay.shared.overlay = .closed

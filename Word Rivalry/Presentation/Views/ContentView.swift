@@ -8,8 +8,15 @@
 import SwiftUI
 import OSLog
 
+@Observable class MainRouter {
+    var showTabScreen: Bool = true
+}
+
 struct ContentView: View {
-    @Environment(AppServiceManager.self) private var appService
+    @Environment(UserViewModel.self) private var userViewModel
+    @State private var appScreen: AppScreen? = .home
+    @State private var router = MainRouter()
+    @State private var displaySettings = InGameDisplaySettings()
     
     init() {
         Logger.viewCycle.debug("~~~ ContentView init ~~~")
@@ -17,47 +24,38 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            switch StartUpViewModel.shared.screen {
-            case .loading:
-                loadingView
-            case .mainContent:
-                MainContentView()
+            if userViewModel.user != nil {
+                mainScreen
+            } else {
+                Text("Awaiting user data...")
             }
         }
-        .onAppear {
-            Task {
-                Logger.serviceManager.debug("Attempting to start app services.")
-                _ = await self.appService.start()
-            }
-        }
+        .onAppear(perform: userViewModel.fetchUser)
         .overlay {
             GlobalOverlayView()
         }
-     
         .logLifecycle(viewName: "ContentView")
     }
     
-    
     @ViewBuilder
-    private var loadingView: some View {
-        VStack {
-            Spacer()
-            ProgressView(value: appService.progressReporter.progress, total: 100)
-            Text(appService.messages.last ?? "Nothing to worry!")
-            Spacer()
+    private var mainScreen: some View {
+        Group {
+            switch router.showTabScreen {
+            case true:
+                AppTabView(selection: $appScreen)
+                
+            case false:
+                MatchView(profile: userViewModel.user)
+            }
         }
-        .frame(width: 350)
-        .transition(.opacity)
+        .environment(LeaderboardViewModel())
+        .environment(router)
+        .environment(displaySettings)
     }
 }
 
 #Preview {
     ViewPreview {
         ContentView()
-            .environment(
-                AppServiceManager(
-                    audioService: AudioSessionService()
-                )
-            )
     }
 }

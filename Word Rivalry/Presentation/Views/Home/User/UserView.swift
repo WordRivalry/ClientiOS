@@ -16,10 +16,7 @@ struct UserView: View {
                 ProgressView()
             } else if let user = viewModel.user {
                 Text("Welcome, \(user.playerName)")
-            } else if let errorMessage = viewModel.errorMessage {
-                Text("Error: \(errorMessage)")
-                    .foregroundColor(.red)
-            }
+            } 
         }
         .onAppear {
             viewModel.fetchUser()
