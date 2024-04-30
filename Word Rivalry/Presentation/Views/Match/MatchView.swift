@@ -10,13 +10,11 @@ import os.log
 
 struct MatchView: View {
     @Environment(MainRouter.self) private var mainRouter
-    @State private var matchViewModel = MatchViewModel()
+    @Environment(LocalUser.self) private var localUser
+    @State private var matchViewModel = SoloMatchViewModel()
   
     
-    @State private var local: User
-    
-    init(local: User) {
-        self.local = local
+    init() {
         Logger.viewCycle.debug("~~~ MatchView init ~~~")
     }
     
@@ -33,7 +31,7 @@ struct MatchView: View {
             case .matchFound(let gameID, let adversary):
                 GameView(
                     adversary: adversary,
-                    local: local,
+                    localUser: localUser.user,
                     gameID: gameID,
                     socket: matchViewModel.battleSocket
                 )
@@ -56,8 +54,6 @@ struct MatchView: View {
 
 #Preview {
     ViewPreview {
-        MatchView(
-            local: User.preview
-        )
+        MatchView()
     }
 }

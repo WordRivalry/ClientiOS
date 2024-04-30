@@ -157,12 +157,12 @@ class BattleSocketService {
         setupEventListeners()
     }
     
-    func connect(gameID: String, playerID: String, playerName: String) {
+    func connect(gameID: String, userID: String, username: String) {
         self.socketService.connect(payload: [
             "apiKey" : apiKey,
             "gameID": gameID,
-            "playerID" : playerID,
-            "playerName" : playerName
+            "userID" : userID,
+            "username" : username
         ])
     }
     

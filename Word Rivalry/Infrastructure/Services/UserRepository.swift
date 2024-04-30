@@ -18,12 +18,9 @@ final class UserRepository: UserRepositoryProtocol {
     }
     
     func fetchUser(by username: String) async throws -> User {
-        return try await database.queryModel(by: .playerName, value: username)
+        return try await database.queryModel(by: .username, value: username)
     }
     
-    /// Fetches the user's data primarily from the database, with fallback to local storage on failure.
-    /// - Returns: The `User` object corresponding to the current user's record.
-    /// - Throws: Propagates errors if both the database and local storage fetching fail.
     func fetchUser() async throws -> User {
         // Retrieve user record name from cache, or fetch from the database if not available in cache.
         let userRecordName = try await fetchUserRecordName()
@@ -50,22 +47,19 @@ final class UserRepository: UserRepositoryProtocol {
         return updatedUser
     }
     
-    /// Checks if a player name is unique within the database.
-    /// - Parameter playerName: The player name to check.
-    /// - Returns: `false` if the player name already exists; otherwise, `true`.
-    /// - Throws: An error if the database query fails.
-    func isUsernameUnique(_ playerName: String) async throws -> Bool {
-        return try await database.isUnique(type: User.self, by: .playerName, value: playerName)
+ 
+    func isUsernameUnique(_ username: String) async throws -> Bool {
+        return try await database.isUnique(type: User.self, by: .username, value: username)
     }
     
     /// Reference to the shared database instance used for accessing user data.
-    let database = PublicDatabase.shared.db
+    private let database = PublicDatabase.shared.db
     
     /// Local cache for storing user record names to avoid repeated database fetches.
-    var userDefaults: UserDefaultsCache<String> = UserDefaultsCache<String>()
+    private let userDefaults: UserDefaultsCache<String> = UserDefaultsCache<String>()
     
     /// Local file storage for backing up or retrieving the user data when the database is unavailable.
-    var userStorage: FileStorage<User> = FileStorage<User>(fileName: "user.data")
+    private let userStorage: FileStorage<User> = FileStorage<User>(fileName: "user.data")
     
     /// The key used to store the user record name in UserDefaults.
     let userRecordKey = "userRecordName"

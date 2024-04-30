@@ -89,7 +89,7 @@ import OSLog
             return false
         }
         
-        guard NetworkChecker.shared.isConnected else {
+        guard NetworkMonitoring.shared.isConnected else {
             Logger.dataServices.debug("Fetch precondition not met: no internet connection.")
             return false
         }

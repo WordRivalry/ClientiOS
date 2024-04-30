@@ -17,12 +17,14 @@ extension Logger {
 }
 
 struct MatchmakingView: View {
-    @Environment(UserViewModel.self) private var userViewModel
+    @Environment(LocalUser.self) private var localUser
     @Environment(MainRouter.self) private var mainRouter
-    @State private var matchmakingViewModel: MatchmakingViewModel
+    @State private var matchmakingViewModel: SoloMatchmakingViewModel
     
     init(socket: MatchmakingSocketService) {
-        self.matchmakingViewModel = MatchmakingViewModel(matchmakingSocket: socket)
+        self.matchmakingViewModel = SoloMatchmakingViewModel(
+            matchmakingSocket: socket
+        )
         Logger.viewCycle.debug("~~~ SearchingView init ~~~")
     }
     
@@ -57,7 +59,7 @@ struct MatchmakingView: View {
         }
         .onAppear {
             
-            if userViewModel.user == nil {
+            if localUser.isUserSet == false {
                 Logger.matchmaking.fault("No user set for matchmaking")
                 mainRouter.showTabScreen = true
             }

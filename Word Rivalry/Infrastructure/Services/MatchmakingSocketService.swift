@@ -67,6 +67,9 @@ struct MatchFoundMessage: Codable {
 enum ModeType: String, CaseIterable, Codable {
     case NORMAL = "NORMAL"
     case BLITZ = "BLITZ"
+    case SOLO = "SOLO"
+    case DUO = "DUO"
+ 
 }
 
 enum GameMode: String, CaseIterable, Codable {
@@ -109,11 +112,11 @@ class MatchmakingSocketService {
         setupEventListeners()
     }
     
-    func connect(playerID: String, playerName: String) {
+    func connect(userID: String, username: String) {
         self.socketService.connect(payload: [
             "apiKey" : apiKey,
-            "playerID" : playerID,
-            "playerName" : playerName
+            "userID" : userID,
+            "username" : username
         ])
     }
     
@@ -210,12 +213,11 @@ extension MatchmakingSocketService {
 
     struct JoinQueuePayload: Codable {
         let gameMode: GameMode
-        let modeType: ModeType
         let elo: Int
     }
     
-    func findMatch(gameMode: GameMode, modeType: ModeType, eloRating: Int) throws {
-        let payload = JoinQueuePayload(gameMode: gameMode, modeType: modeType, elo: eloRating)
+    func findMatch(stake: Int) throws {
+        let payload = JoinQueuePayload(gameMode: .RANK, elo: stake)
         
         self.socketService.send(
             event:.joinQueue,

@@ -13,7 +13,7 @@ import OSLog
 }
 
 struct ContentView: View {
-    @Environment(UserViewModel.self) private var userViewModel
+    @Environment(LocalUser.self) private var localUser
     @State private var appScreen: AppScreen? = .home
     @State private var router = MainRouter()
     @State private var displaySettings = InGameDisplaySettings()
@@ -24,13 +24,15 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if userViewModel.user != nil {
+            if localUser.isUserSet == true {
                 mainScreen
             } else {
                 Text("Awaiting user data...")
             }
         }
-        .onAppear(perform: userViewModel.fetchUser)
+        .onAppear { Task {
+            try await localUser.fetchUser()
+        }}
         .overlay {
             GlobalOverlayView()
         }
@@ -45,10 +47,10 @@ struct ContentView: View {
                 AppTabView(selection: $appScreen)
                 
             case false:
-                MatchView(profile: userViewModel.user)
+                MatchView()
             }
         }
-        .environment(LeaderboardViewModel())
+       
         .environment(router)
         .environment(displaySettings)
     }

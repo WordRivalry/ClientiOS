@@ -17,7 +17,7 @@ struct Word_RivalryApp: App {
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @State private var showLaunchView = false
     @State private var purchaseManager = PurchaseManager()
-    @State private var userViewModel = UserViewModel()
+    @State private var localUser = LocalUser.shared
     
 //    let network = Network()
  //   let appServices = AppServiceManager()
@@ -40,18 +40,14 @@ struct Word_RivalryApp: App {
 //                }
 //                .zIndex(2.0)
 //            }
-      //      .onAppear(perform: self.appServices.handleViewDidAppear)
-    //        .onDisappear(perform: self.appServices.handleViewDidDisappear)
             .onChange(of: scenePhase) {
                 self.handleScheneChange()
             }
             .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
-            .modelContainer(for: [MatchRecord.self])
-       //     .environment(appServices)
+            .environment(LeaderboardViewModel())
             .environment(purchaseManager)
-            .environment(userViewModel)
+            .environment(localUser)
             .environment(GlobalOverlay.shared)
-     //       .environment(network)
             .logLifecycle(viewName: "Word_RivalryApp")
         }
     }

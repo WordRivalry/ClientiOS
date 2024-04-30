@@ -10,9 +10,9 @@ import Foundation
 final class LeaderboardRepository: LeaderboardRepositoryProtocol {
     func fetchTopPlayers(limit: Int) async throws -> [User] {
         do {
-            // Call the database to fetch sorted models based on the `eloRating` field.
+            // Call the database to fetch sorted models based on the `allTimePoints` field.
             // The list is sorted in descending order to get the top players first, and the result is limited by the `request` value.
-            let users: [User] = try await db.fetchSortedModels(for: .eloRating, ascending: false, limit: limit)
+            let users: [User] = try await db.fetchSortedModels(for: .allTimePoints, ascending: false, limit: limit)
             // If fetch is successful, update local file storage with the fresh data.
             await cacheLeaderboard(users)
             return users

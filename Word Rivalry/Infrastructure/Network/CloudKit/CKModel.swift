@@ -15,10 +15,10 @@ protocol CKModel: Codable {
     var zoneName: String { get }
     init?(from ckRecord: CKRecord)
     
-    // Define key handling
+    /// Define public fields
     associatedtype Key: CaseIterable, RawRepresentable where Key.RawValue == String
     
-    // Function to get the string value for a given key (already defined via RawRepresentable conformance)
+    /// Function to get the string value for a given key (already defined via RawRepresentable conformance)
     static func forKey(_ key: Key) -> String
 }
 

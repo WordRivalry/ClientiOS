@@ -63,13 +63,9 @@ class ContentRepository {
 // MARK: - CONTENT DATA
 
 // Asset name
-enum Title: String, CaseIterable {
-    case newLeaf = "New leaf"
-    case wordConqueror = "Word Conqueror"
-    case wordSmith = "Word Smith"
-}
 
-enum Banner: String, CaseIterable {
+
+enum Banner: String, CaseIterable, Codable {
     case PB_0
     case PB_1
     case PB_3
@@ -87,7 +83,7 @@ enum Banner: String, CaseIterable {
     case PB_15
 }
 
-enum ProfileImage: String, CaseIterable {
+enum ProfileImage: String, CaseIterable, Codable {
     case PI_0
     case PI_1
     case PI_2
@@ -125,6 +121,14 @@ extension ContentRepository {
                 display: key.rawValue,
                 description: "Title For a word smith"
             )
+        case .explorer:
+            TitleItem(display:key.rawValue, description: "")
+        case .guardian:
+            TitleItem(display: key.rawValue, description: "")
+        case .pioneer:
+            TitleItem(display: key.rawValue, description: "")
+        case .veteran:
+            TitleItem(display: key.rawValue, description: "")
         }
     }
     
