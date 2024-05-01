@@ -19,6 +19,7 @@ extension Logger {
 struct MatchmakingView: View {
     @Environment(LocalUser.self) private var localUser
     @Environment(MainRouter.self) private var mainRouter
+    @Environment(\.dismiss) private var dismiss
     @State private var matchmakingViewModel: SoloMatchmakingViewModel
     
     init(socket: MatchmakingSocketService) {
@@ -45,9 +46,7 @@ struct MatchmakingView: View {
                     .blinkingEffect()
                 Spacer()
                 Button {
-                    
-                    // try matchmakingViewModel.leaveQueue() // Switching to tab should dc
-                    mainRouter.showTabScreen = true
+                    dismiss()
                     Logger.matchmaking.debug("SearchView Dismissed")
                 } label: {
                     Text("Cancel")
@@ -61,7 +60,7 @@ struct MatchmakingView: View {
             
             if localUser.isUserSet == false {
                 Logger.matchmaking.fault("No user set for matchmaking")
-                mainRouter.showTabScreen = true
+                dismiss()
             }
             
             Task {
@@ -72,8 +71,7 @@ struct MatchmakingView: View {
         .edgesIgnoringSafeArea(.all)
         .handleNetworkChanges(onDisconnect: {
             Logger.matchmaking.debug("SearchView Dismissed")
-            //matchmakingViewModel.leaveQueue()
-            mainRouter.showTabScreen = true
+            dismiss()
         })
         .logLifecycle(viewName: "MatchmakingView")
     }

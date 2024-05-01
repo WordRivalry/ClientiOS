@@ -8,9 +8,11 @@
 import SwiftUI
 
 enum AppScreen: Codable, Hashable, Identifiable, CaseIterable {
-    case 
-    case home
-    case settings
+    case career
+    case leaderboard
+    case play
+    case achievement
+    case collection
     
     var id: AppScreen { self }
 }
@@ -20,15 +22,15 @@ extension AppScreen {
     var label: some View {
         switch self {
         case .career:
-            Image(systemName: "heart.fill")
+            Label("Personal", systemImage: "person.crop.circle.fill")
         case .leaderboard:
-            Image(systemName: "heart.fill")
+            Label("Leaderboard", systemImage: "square.3.layers.3d.down.left")
         case .play:
-            Image(systemName: "heart.fill")
+            Label("Battle", systemImage: "square.grid.3x3")
         case .achievement:
-            Image(systemName: "flag.filled.and.flag.crossed") // "flag.checkered")
+            Label("Achievement", systemImage: "scroll")
         case .collection:
-            Image(systemName: "gear")
+            Label("Settings", systemImage: "gearshape")
         }
     }
     
@@ -38,11 +40,11 @@ extension AppScreen {
         case .career:
             HomeNavigationStack()
         case .leaderboard:
-            BattleNavigationStack()
+            LeaderboardNavigationStack()
         case .play:
-            SettingsView()
+            BattleNavigationStack()
         case .achievement:
-            SettingsView()
+            AchievementNavigationStack()
         case .collection:
             SettingsView()
         }

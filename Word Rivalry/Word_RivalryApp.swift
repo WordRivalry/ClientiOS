@@ -18,6 +18,7 @@ struct Word_RivalryApp: App {
     @State private var showLaunchView = false
     @State private var purchaseManager = PurchaseManager()
     @State private var localUser = LocalUser.shared
+    @State private var network = NetworkMonitoring.shared
     
 //    let network = Network()
  //   let appServices = AppServiceManager()

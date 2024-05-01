@@ -13,6 +13,7 @@ struct GameResultsView: View {
     var gameResults: GameResults
     @Environment(LocalUser.self) private var localUser
     @Environment(MainRouter.self) private var mainRouter
+    @Environment(\.dismiss) private var dismiss
   
     private let logger = Logger(subsystem: "com.WordRivalry", category: "GameResultsView")
     
@@ -45,7 +46,7 @@ struct GameResultsView: View {
                 Spacer()
                 
                 BasicButton(text: "Confirm") {
-                    mainRouter.showTabScreen = true
+                    dismiss()
                 }
                     .scaleEffect(0.8)
                     .padding()

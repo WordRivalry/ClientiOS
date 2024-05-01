@@ -11,6 +11,7 @@ struct ForfeitButtonView: View {
     @State var showingQuitAlert = false
     @Environment(SoloGameViewModel.self) private var gameViewModel
     @Environment(MainRouter.self) private var mainRouter
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         Button {
@@ -25,7 +26,7 @@ struct ForfeitButtonView: View {
                     do {
                         try await gameViewModel.forfeit()
                     } catch {
-                        mainRouter.showTabScreen = true // Overkill
+                        dismiss()
                     }
                  
                 }

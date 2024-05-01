@@ -1,13 +1,13 @@
 //
-//  LeaderboardView.swift
+//  NormalAchivement.swift
 //  Word Rivalry
 //
-//  Created by benoit barbier on 2024-02-02.
+//  Created by benoit barbier on 2024-04-30.
 //
 
 import SwiftUI
 
-struct LeaderboardView: View {
+struct AchievementsLeaderboardView: View {
     @Environment(LeaderboardViewModel.self) private var leaderboard
     @Environment(LocalUser.self) var localUser
     @State private var showMyProfileBottomRow = true
@@ -24,7 +24,6 @@ struct LeaderboardView: View {
     @ViewBuilder
     private var content: some View {
         VStack {
-            header
             if let topPlayers = leaderboard.topPlayers {
                 listView(players: topPlayers)
                 Spacer()
@@ -33,16 +32,9 @@ struct LeaderboardView: View {
                 }
                 lastUpdatedView
             }
-            BasicDismiss()
         }
     }
-    
-    @ViewBuilder
-    private var header: some View {
-        Text("Leaderboard")
-            .font(.largeTitle)
-    }
-    
+
     @ViewBuilder
     private func listView(players: [User]) -> some View {
         
@@ -116,8 +108,9 @@ struct LeaderboardView: View {
     }
 }
 
+
 #Preview {
     ViewPreview {
-        LeaderboardView()
+        AchievementsLeaderboardView()
     }
 }

@@ -28,7 +28,6 @@ struct AppTabView: View {
                         .tabItem { screen.label }
                 }
             }
-        //    .border(.debug)
         }
         .ignoresSafeArea()
         .persistentSystemOverlays(.hidden)
@@ -39,6 +38,6 @@ struct AppTabView: View {
 
 #Preview {
     ViewPreview {
-        AppTabView(selection: .constant(.home))
+        AppTabView(selection: .constant(.achievement))
     }
 }

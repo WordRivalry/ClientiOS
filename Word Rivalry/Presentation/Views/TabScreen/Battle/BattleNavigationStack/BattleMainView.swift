@@ -26,21 +26,28 @@ struct BattleMainView: View {
     }
   
     var body: some View {
+        @Bindable var router = mainRouter
+        
         VStack(spacing: 20) {
             Divider()
             
             GameCardView(cardName: ModeType.SOLO) {
                 withAnimation {
-                    mainRouter.showTabScreen = false
+                    mainRouter.showMatchScreen = true
                 }
             }
             
             GameCardView(cardName: ModeType.DUO) {
                 withAnimation {
-                    mainRouter.showTabScreen = false
+                    mainRouter.showMatchScreen = true
                 }
             }
         }
+        .fullScreenCover(isPresented: $router.showMatchScreen, content: {
+            MatchView()
+                .presentationBackground(.bar)
+                .fadeIn()
+        })
     }
 }
 

@@ -9,12 +9,12 @@ import SwiftUI
 import OSLog
 
 @Observable class MainRouter {
-    var showTabScreen: Bool = true
+    var showMatchScreen: Bool = false
 }
 
 struct ContentView: View {
     @Environment(LocalUser.self) private var localUser
-    @State private var appScreen: AppScreen? = .home
+    @State private var appScreen: AppScreen? = .play
     @State private var router = MainRouter()
     @State private var displaySettings = InGameDisplaySettings()
     
@@ -25,7 +25,9 @@ struct ContentView: View {
     var body: some View {
         Group {
             if localUser.isUserSet == true {
-                mainScreen
+                AppTabView(selection: $appScreen)
+                    .environment(router)
+                    .environment(displaySettings)
             } else {
                 Text("Awaiting user data...")
             }
@@ -37,22 +39,6 @@ struct ContentView: View {
             GlobalOverlayView()
         }
         .logLifecycle(viewName: "ContentView")
-    }
-    
-    @ViewBuilder
-    private var mainScreen: some View {
-        Group {
-            switch router.showTabScreen {
-            case true:
-                AppTabView(selection: $appScreen)
-                
-            case false:
-                MatchView()
-            }
-        }
-       
-        .environment(router)
-        .environment(displaySettings)
     }
 }
 

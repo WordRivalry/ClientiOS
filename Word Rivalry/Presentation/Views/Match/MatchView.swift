@@ -11,6 +11,7 @@ import os.log
 struct MatchView: View {
     @Environment(MainRouter.self) private var mainRouter
     @Environment(LocalUser.self) private var localUser
+    @Environment(\.dismiss) private var dismiss
     @State private var matchViewModel = SoloMatchViewModel()
   
     
@@ -40,14 +41,13 @@ struct MatchView: View {
             }
             if matchViewModel.error != nil {
                 BasicButton(text: "Exit", action: {
-                    mainRouter.showTabScreen = true
+                    dismiss()
                 })
             }
         }
         .onAppear {
             matchViewModel.currentState = .searching
         }
-        .background(.ultraThinMaterial)
         .logLifecycle(viewName: "MatchView")
     }
 }
