@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LetterCellView: View {
-    let letter: String
+    let letter: Letter
     let row: Int
     let col: Int
     let isHighlighted: Bool
@@ -18,7 +18,7 @@ struct LetterCellView: View {
             .fill(isHighlighted ? Color.blue : Color.gray)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(
-                Text(letter)
+                Text(letter.letter)
                     .font(.title)
                     .foregroundColor(isHighlighted ? .white : .black)
             )
@@ -29,7 +29,12 @@ struct LetterCellView: View {
 
 #Preview {
     LetterCellView(
-        letter: "A",
+        letter: Letter(
+            letter: "A",
+            value: 3,
+            letterMultiplier: 1,
+            wordMultiplier: 2
+        ),
         row: 0,
         col: 0,
         isHighlighted: true

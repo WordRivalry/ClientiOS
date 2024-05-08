@@ -12,7 +12,7 @@ typealias Score = Int
 
 struct EvaluateWordRequest {
     let wordPath: EvalWordPath
-    let board: Board<LetterTile>
+    let board: Board<Letter>
 }
 
 final class EvaluateWord: UseCaseProtocol {
@@ -23,7 +23,7 @@ final class EvaluateWord: UseCaseProtocol {
         return evaluate(request.wordPath, board: request.board)
     }
     
-    private func evaluate(_ path: EvalWordPath, board: Board<LetterTile>) -> Int {
+    private func evaluate(_ path: EvalWordPath, board: Board<Letter>) -> Int {
         
         let word = path.compactMap { position -> String? in
             let cell = board.getCell(position.0, position.1)
@@ -37,13 +37,13 @@ final class EvaluateWord: UseCaseProtocol {
         return calculateScore(for: path, within: board)
     }
         
-    private func calculateScore(for path: EvalWordPath, within board: Board<LetterTile>) -> Int {
+    private func calculateScore(for path: EvalWordPath, within board: Board<Letter>) -> Int {
         var score = 0
         var wordMultipliers: [Int] = []
         
         for position in path {
             let cell = board.getCell(position.0, position.1)
-            score += cell.value * cell.letterMultiplier
+            score += cell.getValue()
             if cell.wordMultiplier > 1 {
                 wordMultipliers.append(cell.wordMultiplier)
             }

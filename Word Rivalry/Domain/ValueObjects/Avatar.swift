@@ -8,7 +8,7 @@
 import Foundation
 
 
-enum Avatar: String, Codable, CaseIterable {
+enum Avatar: String, Codable, RandomCaseProvidable {
     case newLeaf
     case veteran
     case pioneer

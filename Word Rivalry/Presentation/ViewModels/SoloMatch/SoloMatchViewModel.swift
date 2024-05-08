@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import OSLog
+import GameKit
 
 typealias Adversary = User
 typealias GameID = String
@@ -17,6 +18,14 @@ enum MatchState {
     case matchFound(GameID, Adversary)
     case ended(GameResults)
 }
+
+enum GameError: Error {
+    case notOngoing
+    case invalidMove
+    case invalidWord
+    case gameFinished
+}
+
 
 @Observable final class SoloMatchViewModel {
     private(set) var matchmakingSocket: MatchmakingSocketService
@@ -42,7 +51,7 @@ extension SoloMatchViewModel: MatchmakingSocketService_MatchFound_Delegate {
             do {
                 // Work
                 let adversary = try await FetchSomeUser.execute(with: opponentUsername)
-                try await LocalUser.shared.decreaseCurrentPoints(by: 20)
+                await LocalUser.shared.decreaseStars(by: 20)
                 
                 //UI
                 await MainActor.run {
@@ -69,8 +78,8 @@ extension SoloMatchViewModel: BattleSocketService_GameEnded_Delegate {
             // Work
             let gameResults = GameResults(winner: winner, playerResults: playerResults)
             
-            if true {
-                try await LocalUser.shared.increaseCurrentPoints(by: 20)
+            if GKLocalPlayer.local.displayName == winner {
+                await LocalUser.shared.increaseCurrentPoints(by: 20)
             }
             
             // UI

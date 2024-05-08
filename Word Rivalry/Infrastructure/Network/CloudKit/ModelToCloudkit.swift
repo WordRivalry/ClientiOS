@@ -9,15 +9,96 @@ import Foundation
 import CloudKit
 import OSLog
 
-enum DatabaseError: Error {
+enum ModelError: Error {
     case invalidDataType
     case ckRecordConversionFailed
     case modelNotFound
     case multipleModelFoundWhenItShouldBeOne
-    case tooManyKeysRequested
 }
 
-class ModelToCloudkit {
+enum isModelErrorStatus: Error {
+    case yes(ModelError)
+    case no
+}
+
+extension Error {
+    func isModelError() -> isModelErrorStatus {
+        guard let modelError = self as? ModelError else { return .no }
+        return .yes(modelError)
+    }
+}
+
+enum isCKErrorStatus {
+    case yes(CKError)
+    case no
+}
+
+extension Error {
+    func isCKError() -> isCKErrorStatus {
+        guard let ckError = self as? CKError else { return .no }
+        return .yes(ckError)
+    }
+}
+
+protocol CloudKitManageable {
+    
+    func isUnique<T: CKModel>(
+        type: T.Type,
+        by key: T.Key,
+        value: String
+    ) async throws -> Bool
+    
+    func getICloudAccountStatus() async throws -> CKAccountStatus
+    func userRecord<T: CKModel>() async throws -> T
+    func userRecordID() async throws -> CKRecord.ID
+    
+    func fetchModelsByRecordName<T: CKModel>(
+        for recordNames: [String]
+    ) async throws -> [T]
+    
+    func fetchSortedModels<T: CKModel>(
+        for key: T.Key,
+        ascending: Bool,
+        limit: Int
+    ) async throws -> [T]
+    
+    func queryModel<T: CKModel>(
+        by key: T.Key,
+        value: String
+    ) async throws -> T
+    
+    func queryModels<T: CKModel>(
+        for key: T.Key,
+        value: String,
+        resultsLimit: Int
+    ) async throws -> [T]
+    
+    func saveModel<T: CKModel>(
+        saving model: T
+    ) async throws -> T
+    
+    func deleteModel<T: CKModel>(
+        deleting model: T
+    ) async throws -> CKRecord.ID
+    
+    func subscribeToModelUpdates<T: CKModel>(
+        model: T,
+        desiredKeys: [T.Key]
+    ) async throws -> Void
+    
+//    func fetchSubscriptions(
+//        for ids: [CKSubscription.ID]
+//    ) async throws -> [CKSubscription]
+//    
+//    func fetchSubscription(
+//        for subscriptionID: CKSubscription.ID
+//    ) async throws -> CKSubscription
+//    
+//    func allSubscriptions() async throws -> [CKSubscription]
+}
+
+class ModelToCloudkit: CloudKitManageable {
+    
     private let container: CKContainer
     private var database: CKDatabase
     
@@ -35,47 +116,11 @@ class ModelToCloudkit {
         }
     }
     
-    // MARK: - Update
-
-    func update<T: CKModel>(for model: T, field: T.Key, with newValue: [String]) async throws -> T {
-        return try await updateModel(for: model, field: field, with: newValue as CKRecordValue)
-    }
-    
-    func update<T: CKModel>(for model: T, field: T.Key, with newValue: String) async throws -> T {
-        return try await updateModel(for: model, field: field, with: newValue as CKRecordValue)
-    }
-    
-    func update<T: CKModel>(for model: T, field: T.Key, with newValue: [Int]) async throws -> T {
-        return try await updateModel(for: model, field: field, with: newValue as CKRecordValue)
-    }
-    
-    func update<T: CKModel>(for model: T, field: T.Key, with newValue: Int) async throws -> T {
-        return try await updateModel(for: model, field: field, with: newValue as CKRecordValue)
-    }
-    
-    /// Updates a specific field of a CKModel with a new value and saves it to CloudKit.
-    /// - Parameters:
-    ///   - model: The model to update, conforming to CKModel.
-    ///   - field: The specific field of the model to update, using the model's associated Key type.
-    ///   - newValue: The new value to set for the field, which must conform to CKRecordValue.
-    /// - Returns: The updated model of type T.
-    /// - Throws: An error if any step of the process fails.
-    func updateModel<T: CKModel>(for model: T, field: T.Key, with newValue: CKRecordValue) async throws -> T {
-        // Fetch the existing record from CloudKit
-        let record = model.record
-        
-        // Update the record with the new value
-        record.setValue(newValue as CKRecordValue, forKey: T.forKey(field))
-        
-        // Save the updated record
-        return try await saveModel(saving: T(from: record)!)
-    }
-    
     // MARK: Metal
     
     func validateUnicity<T: CKModel>(for models: [T]) throws -> T {
-        guard let model = models.first else { throw DatabaseError.modelNotFound }
-        guard models.count == 1 else { throw DatabaseError.multipleModelFoundWhenItShouldBeOne }
+        guard let model = models.first else { throw ModelError.modelNotFound }
+        guard models.count == 1 else { throw ModelError.multipleModelFoundWhenItShouldBeOne }
         return model
     }
     
@@ -123,12 +168,12 @@ class ModelToCloudkit {
         
         let creationDate = ckRecord.creationDate
         let modificationDate = ckRecord.modificationDate
-
+        
         // Check if the record has been modified by comparing the creation and modification dates
         if creationDate == modificationDate {
             return true
         } else {
-           return false
+            return false
         }
     }
     
@@ -202,7 +247,7 @@ class ModelToCloudkit {
         if let singleModel = ret.first {
             return singleModel
         } else {
-            throw DatabaseError.modelNotFound
+            throw ModelError.modelNotFound
         }
     }
     
@@ -220,7 +265,7 @@ class ModelToCloudkit {
         if let singleModel = ret.first {
             return singleModel
         } else {
-            throw DatabaseError.modelNotFound
+            throw ModelError.modelNotFound
         }
     }
     
@@ -235,7 +280,7 @@ class ModelToCloudkit {
         if let singleModel = ret.first {
             return singleModel
         } else {
-            throw DatabaseError.modelNotFound
+            throw ModelError.modelNotFound
         }
     }
     
@@ -336,7 +381,7 @@ class ModelToCloudkit {
     private func convert<T: CKModel>(record: CKRecord, to type: T.Type) throws -> T {
         guard let model = T(from: record) else {
             Logger.cloudKit.error("Failed to initialize \(T.self) from CKRecord.")
-            throw DatabaseError.ckRecordConversionFailed
+            throw ModelError.ckRecordConversionFailed
         }
         return model
     }
@@ -389,8 +434,13 @@ class ModelToCloudkit {
     /// - Throws: An error if the subscription fails.
     func subscribeToModelUpdates<T: CKModel>(model: T, desiredKeys: [T.Key] = []) async throws {
         
+        // Validate the number of desired keys.
         guard desiredKeys.count <= 3 else {
-            throw DatabaseError.tooManyKeysRequested
+            throw NSError(
+                domain: "DatabaseError",
+                code: 1001,
+                userInfo: [NSLocalizedDescriptionKey: "Too many keys requested"]
+            )
         }
         
         let subscriptionID = "\(T.recordType)-onUpdateOf-\(model.recordName)"
@@ -399,7 +449,7 @@ class ModelToCloudkit {
         guard !UserDefaults.standard.bool(forKey: subscriptionID) else { return }
         
         Logger.dataServices.info("Registering subscription to changes in \(model.recordName)")
-    
+        
         let recordID = self.buildRecordID(model: model)
         let predicate = NSPredicate(format: "%K == %@", "recordID", recordID)
         Logger.dataServices.debug("Creating subscription with recordName: \(model.recordName)")
@@ -481,4 +531,3 @@ class ModelToCloudkit {
         return error
     }
 }
-

@@ -78,6 +78,13 @@ enum BoardError: Error {
         return neighbors
     }
     
+    func isNeighbor(cell1: CellIndex, cell2: CellIndex) -> Bool {
+        let deltas =  [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]// Up, down, left, right
+        return deltas.contains { (dx, dy) -> Bool in
+            return (cell1.i + dx == cell2.i) && (cell1.j + dy == cell2.j)
+        }
+    }
+    
     func getRow(at index: Int) -> [T?] {
         return grid[index]
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Title: String, CaseIterable, Codable {
+enum Title: String, Codable, RandomCaseProvidable {
     case newLeaf = "New leaf"
     case wordConqueror = "Word Conqueror"
     case wordSmith = "Word Smith"

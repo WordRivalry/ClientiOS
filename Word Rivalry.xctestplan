@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "8859B3C7-3BCC-4896-89B8-94A228EAC39F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Word Rivalry.xcodeproj",
+        "identifier" : "5652D5192B6814EC0071AE08",
+        "name" : "Word RivalryTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Word Rivalry.xcodeproj",
+        "identifier" : "5652D5232B6814EC0071AE08",
+        "name" : "Word RivalryUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

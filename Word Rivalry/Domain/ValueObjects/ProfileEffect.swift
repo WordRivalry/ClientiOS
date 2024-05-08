@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ProfileEffect: String, Codable {
+enum ProfileEffect: String, Codable, RandomCaseProvidable {
     case none
     case glitter
     case shine

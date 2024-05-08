@@ -7,17 +7,74 @@
 
 import SwiftUI
 
-enum LeaderboardEnum: String, CaseIterable, Identifiable {
+enum ArenaMode: String, CaseIterable, Identifiable {
+    var id: String { rawValue }
+    
+    case solo = "Solo"
+    case team = "Team"
+    
+    var header: String {
+        switch self {
+        case .solo:
+            return "Solo leaderboard"
+        case .team:
+            return "Team leaderboard"
+        }
+    }
+    
+    // Image name for each section
+    var imageName: String {
+        switch self {
+        case .solo:
+            return "Leaderboard/ArenaSolo"
+        case .team:
+            return "Leaderboard/ArenaTeam"
+        }
+    }
+}
+
+enum LeaderboardType: String, TabViewEnum {
     var id: String { rawValue }
     case overall = "Overall"
     case arena = "Arena"
     case achievements = "Achievements"
     
+    // Custom header for each leaderboard section
+    var header: String {
+        switch self {
+        case .overall:
+            return "Overall Leaderboard"
+        case .arena:
+            return "Arena Competitions"
+        case .achievements:
+            return "Achievements Leaderbord"
+        }
+    }
+    
+    // Image name for each section
     var imageName: String {
-         "OverallLeaderboard" // Assuming the same image for simplicity; adjust if needed
+        switch self {
+        case .overall:
+            return "Leaderboard/Overall"
+        case .arena:
+            return "Leaderboard/Arena"
+        case .achievements:
+            return "Leaderboard/Achievement"
+        }
+    }
+    
+    // Menu options if needed
+    var menuOptions: [String] {
+        switch self {
+        case .overall:
+            return ["Global Rank", "Local Rank", "Friends Rank"]
+        case .arena:
+            return ["1v1", "2v2", "3v3"]
+        case .achievements:
+            return ["Unlocked", "Locked", "Progress"]
+        }
     }
 }
-
 
 extension Color {
     static let lightGreen = Color(
@@ -38,85 +95,32 @@ extension Color {
 }
 
 struct LeaderboardNavigationStack: View {
-    @State private var selectedLeaderboard: LeaderboardEnum = .overall
-    @State private var arenaMode: String = "1v1" // Default mode
-
+    @Environment(LeaderboardViewModel.self) private var ldb
+    @State private var selectedLeaderboard: LeaderboardType = .overall
+    @State private var arenaMode: ArenaMode = .solo
     
     var body: some View {
-        VStack(spacing: 0) { // Zero to remove any automatic spacing
-            headerView
-            tabBar
-            Spacer()
-            contentView
-        }
-        .infinityFrame()
-        .background(
-            Image("bg")
-                .resizable()
-                .ignoresSafeArea()
-                .scaledToFill()
-        )
-    }
-    
-    private var headerView: some View {
-        HStack {
-            Image(selectedLeaderboard.imageName)
-                .resizable()
-                .frame(width: 100, height: 100)
-            Text(selectedLeaderboard.rawValue)
-                .bold()
-                .font(.largeTitle)
+        VStack(spacing: 0) {
+            LeaderboardHeaderView(
+                selectedLeaderboard: $selectedLeaderboard,
+                arenaMode: $arenaMode
+            )
+            
+            HeaderTabView(selectedTab: $selectedLeaderboard)
+            
+            LeaderboardContentView(
+                selectedLeaderboard: $selectedLeaderboard, arenaMode: $arenaMode
+            )
             Spacer()
         }
-        .padding(.horizontal)
-        .background(Color.lightGreen)
-    }
-    
-    private var tabBar: some View {
-        HStack {
-            ForEach(LeaderboardEnum.allCases, id: \.self) { tab in
-                Spacer()
-                Text(tab.rawValue)
-                    .bold()
-                    .foregroundColor(selectedLeaderboard == tab ? .lightGreen : .fontColor)
-                    .padding(.vertical, 10)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 5)
-                            .foregroundColor(selectedLeaderboard == tab ? .lightGreen : .lightTint),
-                        alignment: .bottom
-                    )
-                    .onTapGesture {
-                        selectedLeaderboard = tab
-                    }
-                Spacer()
+        .onAppear {
+            Task {
+                try await ldb.fetchData()
             }
+           
         }
-        .background(.white)
+        .defaultBackgroundIgnoreSafeBottomArea()
     }
-    
-    private var contentView: some View {
-            Group {
-                switch selectedLeaderboard {
-                case .overall:
-                   OverallLeaderboardView()
-                case .arena:
-                    VStack {
-                        Picker("Mode", selection: $arenaMode) {
-                            Text("1v1").tag("1v1")
-                            Text("2v2").tag("2v2")
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding()
-
-                        ArenaLeaderboardView(mode: arenaMode)
-                    }
-                case .achievements:
-                    AchievementsLeaderboardView()
-                }
-            }
-            .padding(.top)
-        }
 }
 
 #Preview {

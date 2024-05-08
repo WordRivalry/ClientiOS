@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import OSLog
 
 class FileStorage<T: Codable> {
     private let fileName: String
@@ -31,6 +32,7 @@ class FileStorage<T: Codable> {
     func save(data: T) async throws {
         let data = try JSONEncoder().encode(data)
         let url = try fileURL()
+        Logger.cloudKit.fault("About to write file.")
         try data.write(to: url, options: .atomicWrite)
     }
     

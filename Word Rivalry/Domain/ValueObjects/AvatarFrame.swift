@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AvatarFrame: String, Codable {
+enum AvatarFrame: String, Codable, RandomCaseProvidable {
     case none
     case silver
     case bronze

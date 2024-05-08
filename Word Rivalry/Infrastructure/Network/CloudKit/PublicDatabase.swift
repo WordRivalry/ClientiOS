@@ -10,17 +10,12 @@ import CloudKit
 import os.log
 
 class PublicDatabase {
-    let db: ModelToCloudkit
+    var db: CloudKitManageable
     static let shared: PublicDatabase = PublicDatabase()
     
     private init() {
-        guard let containerIdentifier = ProcessInfo.processInfo.environment["CONTAINER_IDENTIFIER"] else {
-            fatalError("Container Identifier not set in environment")
-        }
-        
         self.db = ModelToCloudkit(
-            containerIdentifier: containerIdentifier,
-            databaseScope: .public
-        )
+            containerIdentifier: "iCloud.WordRivalryContainer",
+            databaseScope: .public)
     }
 }

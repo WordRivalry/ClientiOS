@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import GameKit
 
 struct PlayerView: View {
     var profile: User
@@ -19,7 +20,7 @@ struct PlayerView: View {
                 .frame(width: 60, height: 60)
                 .clipShape(Circle())
             
-            UsernameView(username: profile.username)
+            UsernameView(username: GKLocalPlayer.local.displayName)
             TitleView(title: profile.title)
        
             Text("Score: \(score)")

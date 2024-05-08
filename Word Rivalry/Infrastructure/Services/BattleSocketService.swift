@@ -9,13 +9,30 @@ import Foundation
 import os.log
 import SocketIO
 
-typealias WordPath = [[Int]]
+typealias WordPath = [(Int, Int)]
+typealias CodableWordPath = [[Int]]
+
+
+class WordPathConverter {
+    static func toCodable(wordPath: WordPath) -> CodableWordPath {
+        return wordPath.map { [$0.0, $0.1] }
+    }
+    
+    static func fromCodable(codableWordPath: CodableWordPath) -> WordPath {
+        return codableWordPath.map { array -> (Int, Int) in
+            guard array.count == 2 else {
+                fatalError("Array must contain exactly two elements.")
+            }
+            return (array[0], array[1])
+        }
+    }
+}
 
 protocol BattleSocketService_InGame_Delegate: AnyObject {
     func didReceiveGameInformation(
         startTime: Date,
         endTime: Date,
-        grid: [[LetterTile]],
+        grid: [[Letter]],
         valid_words: [String],
         stats: GridStats
     )
@@ -50,7 +67,7 @@ struct GridStats: Codable {
 }
 
 struct GridInformation: Codable {
-    let grid: [[LetterTile]]
+    let grid: [[Letter]]
     let valid_words: [String]
     let stats: GridStats
 }
@@ -88,20 +105,7 @@ struct OpponentScoreUpdateMessage: GameMessage {
 
 // Define the Path as an array of tuples, each containing a Row and Col.
 
-struct WordHistory: Codable {
-    let word: String
-    let path: WordPath
-    let time: Float
-    let score: Int
-}
 
-struct PlayerResult: Codable, Identifiable {
-    let playerName: String
-    let playerEloRating: Int
-    let score: Int
-    let historic: [WordHistory]
-    var id: String { playerName }
-}
 
 struct GameResultPayload: Codable {
     let winner: String
@@ -231,7 +235,15 @@ extension BattleSocketService {
     }
     
     func sendScoreUpdate(wordPath: WordPath) {
-        self.socketService.send(event: .publishWord, codableObject: wordPath)
+        
+        let codableWordPath = WordPathConverter.toCodable(
+            wordPath: wordPath
+        )
+        
+        self.socketService.send(
+            event: .publishWord,
+            codableObject: codableWordPath
+        )
     }
 }
 

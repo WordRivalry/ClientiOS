@@ -9,30 +9,48 @@ import SwiftUI
 
 struct LetterBoardView: View {
     
-    var viewModel: BoardInteractor<LetterTile>
+    var viewModel: BoardInteractor<Letter>
     
     var body: some View {
         BoardView(viewModel: viewModel) { value, row, col in
-            AnyView(
-                LetterCellView(
-                    letter: value.letter,
-                    row: row,
-                    col: col,
-                    isHighlighted: viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col))
-                )
+            LetterCellView(
+                letter: value,
+                row: row,
+                col: col,
+                isHighlighted: viewModel.cellsInDragPath.contains(CellIndex(i: row, j: col))
             )
         }
     }
 }
 
 #Preview {
-    LetterBoardView(viewModel: BoardInteractor(board: Board(
-        dimension: 4,
-        initialValue: LetterTile(
-            letter: "",
-            value: 0,
-            letterMultiplier: 0,
-            wordMultiplier: 0
-        )
-    )))
+    
+    let viewModel = BoardInteractor(board: Board(grid: [
+        [
+            Letter(letter: "n", value: 1),
+            Letter(letter: "s", value: 2, letterMultiplier: 2),
+            Letter(letter: "m", value: 3),
+            Letter(letter: "u", value: 1)
+        ],
+        [
+            Letter(letter: "e", value: 1),
+            Letter(letter: "l", value: 1),
+            Letter(letter: "m", value: 3),
+            Letter(letter: "s", value: 2, letterMultiplier: 2)
+        ],
+        [
+            Letter(letter: "o", value: 1),
+            Letter(letter: "c", value: 1, wordMultiplier: 2),
+            Letter(letter: "a", value: 1, wordMultiplier: 3),
+            Letter(letter: "i", value: 1)
+        ],
+        [
+            Letter(letter: "t", value: 1, wordMultiplier: 3),
+            Letter(letter: "u", value: 2, letterMultiplier: 2),
+            Letter(letter: "r", value: 1),
+            Letter(letter: "l", value: 1)
+        ]
+    ]))
+    
+    return LetterBoardView(viewModel: viewModel)
 }

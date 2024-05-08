@@ -68,14 +68,19 @@ struct GameView: View {
     
     private var header: some View {
         HStack {
-            PlayerView(
-                profile: localUser,
-                showScore: true,
-                score: gameViewModel.localScore
-            )
-            .padding(.horizontal)
+            
+            if let game = gameViewModel.game {
+                PlayerView(
+                    profile: localUser,
+                    showScore: true,
+                    score: game.localScore
+                )
+                .padding(.horizontal)
+            }
+            
+           
             Spacer()
-            ClockView(timeleft: "\(gameViewModel.timer)")
+            ClockView(timeleft: "\(gameViewModel.timeRemaining)")
             Spacer()
             PlayerView( 
                 profile: adversary,
@@ -89,7 +94,9 @@ struct GameView: View {
     @ViewBuilder
     private var Upper: some View {
         HStack {
-            LastFiveWordsView(alreadyDoneWords: gameViewModel.wordFound)
+            if let game = gameViewModel.game {
+                LastFiveWordsView(alreadyDoneWords: Array(game.wordsFound))
+            }
         }
         .opacity(inGameDisplay.showScorePath ? 1 : 0)
     }

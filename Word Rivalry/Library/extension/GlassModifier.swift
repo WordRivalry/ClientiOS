@@ -25,15 +25,6 @@ struct Glassed: ViewModifier {
                     .fill(.ultraThinMaterial)
                     .shadow(color: .black.opacity(0.1), radius: 5, x: 5, y: 5)
             )
-//            .overlay {
-//                
-//                RoundedRectangle(cornerRadius: 25.0)
-//                    .fill(LinearGradient(
-//                        colors: gradientColors,
-//                        startPoint: .topLeading,
-//                        endPoint: .bottomTrailing
-//                    ))
-//            }
     }
 }
 

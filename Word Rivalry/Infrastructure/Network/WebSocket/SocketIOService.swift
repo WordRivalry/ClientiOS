@@ -27,7 +27,21 @@ extension EventProtocol {
     }
 }
 
-class SocketIOService<Event: EventProtocol> {
+protocol SocketIOServiceProtocol {
+    associatedtype Event: EventProtocol
+    
+    func status() -> SocketIOStatus?
+    func connect(payload: [String: Any]?)
+    func disconnect()
+    func send(event: Event)
+    func send(event: Event, text: String)
+    func send<T: Codable>(event: Event, codableObject: T)
+    func onEvent(_ event: Event, callback: @escaping ([Any], SocketAckEmitter) -> Void)
+    func onEvent<T: Codable>(_ event: Event, decodeAs type: T.Type, eventHandler handler: @escaping (T, SocketAckEmitter) -> Void)
+}
+
+
+class SocketIOService<Event: EventProtocol>: SocketIOServiceProtocol {
     private var manager: SocketManager?
     private var socket: SocketIOClient?
     

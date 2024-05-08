@@ -10,7 +10,7 @@ import SwiftUI
 struct CardBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(.vertical)
+            .padding(.vertical, 5)
             .background(.bar) // Assuming .bar is a defined color
             .cornerRadius(10)
             .shadow(radius: 2)

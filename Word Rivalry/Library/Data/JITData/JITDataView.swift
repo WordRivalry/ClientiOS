@@ -18,7 +18,6 @@ extension Logger {
 }
 
 struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
-    @Environment(Network.self) private var network: Network
     let jitData: JITData
     let loadingView: () -> LoadingView
     let content: () -> Content
@@ -42,15 +41,17 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
             .onDisappear {
                 jitData.handleViewDidDisappear()
             }
-            .onChange(of: network.isConnected) { oldValue, newValue in
-                if oldValue == false && newValue == true {
-                    Task {
-                        Logger.jitDataView.debug("Attempting to fetch data as the internet connection was detected.")
-                        await self.jitData.fetchAndUpdateDataIfNeeded()
-                        Logger.jitDataView.debug("Data fetched successfully.")
-                    }
-                }
-            }
+             .handleNetworkChanges(
+                onDisconnect: {
+                 print("Disconnected from network.")
+             }, onConnect: {
+                 print("Connected to network.")
+                 Task {
+                     Logger.jitDataView.debug("Attempting to fetch data as the internet connection was detected.")
+                     await self.jitData.fetchAndUpdateDataIfNeeded()
+                     Logger.jitDataView.debug("Data fetched successfully.")
+                 }
+             })
             .logLifecycle(viewName: "JITDataView")
     }
     
@@ -58,7 +59,7 @@ struct JITDataView<Service: JITData, LoadingView: View, Content: View>: View {
     private var contentView: some View {
         if jitData.error != nil {
             Text("An error occured, please try later.")
-        } else if jitData.isDataUnavailable() && network.isDisconnected {
+        } else if jitData.isDataUnavailable() && !NetworkMonitoring.shared.isConnected {
             VStack {
                 Spacer()
                 InternetStatusMessageView(message: "No available data")

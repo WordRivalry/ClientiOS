@@ -7,38 +7,9 @@
 
 import Foundation
 import OSLog
+import GameKit
 
-struct LetterTile: Equatable, Hashable, Codable {
-    let letter: String
-    let value: Int
-    var letterMultiplier: Int
-    var wordMultiplier: Int
-    
-    init(letter: String, value: Int, letterMultiplier: Int = 1, wordMultiplier: Int = 1) {
-        self.letter = letter
-        self.value = value
-        self.letterMultiplier = letterMultiplier
-        self.wordMultiplier = wordMultiplier
-    }
-}
 
-enum GameError: Error {
-    case notOngoing
-    case invalidMove
-    case invalidWord
-    case gameFinished
-}
-
-struct GameResults {
-    var winner: String
-    var playerResults: [PlayerResult]
-    
-    // Follow null pattern
-    init(winner: String, playerResults: [PlayerResult]) {
-        self.winner = winner
-        self.playerResults = playerResults
-    }
-}
 
 enum GameViewModelError: Error {
     case gameModelNotSet
@@ -54,40 +25,27 @@ enum GameViewModelError: Error {
             adversary: .previewOther,
             battleSocket: BattleSocketService()
         )
-        vm.board =  Board(
-            rows: 4,
-            cols: 4,
-            initialValue: LetterTile(
-                letter: "A",
-                value: 1,
-                letterMultiplier: 1,
-                wordMultiplier: 1)
-        )
+        vm.game = .preview
         return vm
     }()
     
     // Network layer
     private let battleSocket: BattleSocketService
     
+    // Game
+    private(set) var game: Game?
+    
     // Interactors
-
     private let forfeit = Forfeit()
-    private let wordEvaluator = EvaluateWord()
     private let submitWord = SubmitWord()
     
     // Observabled states
-    private(set) var boardInteractor: BoardInteractor<LetterTile>?
-    private(set) var timer: Double = 0.0
-    private(set) var localScore: Int = 0
+    private(set) var boardInteractor: BoardInteractor<Letter>?
+    private(set) var timeRemaining: Double = 0.0
     private(set) var adversaryScore: Int = 0
-    private(set) var wordFound: [String] = []
-    private(set) var board: Board<LetterTile>?
     private(set) var gameResults: GameResults?
     
     // Private states
-    private var startTime: Date?
-    private var endTime: Date?
-    private var valid_words: [String]?
     private var stats: GridStats?
     private let iCloudStatus = iCloudService.shared.iCloudStatus
     
@@ -103,7 +61,7 @@ enum GameViewModelError: Error {
         self.battleSocket.connect(
             gameID: gameID,
             userID: localUser.userID,
-            username: localUser.username
+            username: GKLocalPlayer.local.displayName
         )
     }
 
@@ -119,14 +77,11 @@ enum GameViewModelError: Error {
 //MARK: SWIPE DELAGATE
 extension SoloGameViewModel: Board_OnSwipe_Delegate {
     
-    func onCellHoverEntered(_ cellIndex: CellIndex) {
-    }
+    func onCellHoverEntered(_ cellIndex: CellIndex) {}
     
-    func onCellHoverStayed(_ cellIndex: CellIndex) {
-    }
+    func onCellHoverStayed(_ cellIndex: CellIndex) {}
     
-    func onCellHoverBacktracked(_ cellIndex: CellIndex) {
-    }
+    func onCellHoverBacktracked(_ cellIndex: CellIndex) {}
     
     // MARK: evaluate and submit word
     
@@ -137,39 +92,29 @@ extension SoloGameViewModel: Board_OnSwipe_Delegate {
                     throw GameViewModelError.boardInteractorNotSet
                 }
                 
+                guard let game = self.game else {
+                    throw GameViewModelError.gameModelNotSet
+                }
+                
                 let path = interactor.getIndexesForCurrentSwipe()
+                let result = game.addWord(path)
                 
-                let wordEvalRequest = EvaluateWordRequest(
-                    wordPath: path,
-                    board: interactor.board
-                )
-                
-                let score = wordEvaluator.execute(request: wordEvalRequest)
-                
-                // SEND TO ADVERSARY
-                let wordPath: WordPath = path.map { element in
-                    return [element.0, element.1]
+                switch result {
+                case .failed(let wordSubmitError): break
+                    // DO NOTHING
+                case .success(let int):
+                    // SEND TO ADVERSARY
+                    let request = SubmitWordRequest(
+                        wordPath: path,
+                        battleSocket: self.battleSocket
+                    )
+                    try await self.submitWord.execute(request: request)
                 }
-                let request = SubmitWordRequest(
-                    wordPath: wordPath,
-                    battleSocket: self.battleSocket
-                )
-                try await self.submitWord.execute(request: request)
-                
-                // UI
-                await MainActor.run {
-                    self.localScore += score
-                }
+             
             } catch {
                 Logger.match.fault("onSwipeProcessed error: \(error.localizedDescription)")
             }
         }
-    }
-    
-    private func scoreForTile(at cellIndex: CellIndex) -> Int {
-        //        let tile = board.getCell(cellIndex.i, cellIndex.j)
-        //        return tile.value * tile.letterMultiplier // You might also consider word multipliers here
-        return 0
     }
 }
 
@@ -188,7 +133,7 @@ extension SoloGameViewModel: BattleSocketService_InGame_Delegate {
     func didReceiveGameInformation(
         startTime: Date,
         endTime: Date,
-        grid: [[LetterTile]],
+        grid: [[Letter]],
         valid_words: [String],
         stats: GridStats
     ) {
@@ -196,13 +141,12 @@ extension SoloGameViewModel: BattleSocketService_InGame_Delegate {
             // Work
             let duration = endTime.timeIntervalSince(startTime).rounded(.toNearestOrAwayFromZero)
             let board = Board(grid: grid)
-            
-            self.startTime = startTime
-            self.endTime = endTime
-            self.valid_words = valid_words
+            let validWordsSet = Set(valid_words)
+        
             self.stats = stats
-            
+        
             self.boardInteractor = BoardInteractor(board: board)
+            
             guard let boardInteractor = boardInteractor else {
                 Logger.match.fault("BoardViewModel is not initiated when it should have been!")
                 return
@@ -214,8 +158,13 @@ extension SoloGameViewModel: BattleSocketService_InGame_Delegate {
             
             // UI
             await MainActor.run {
-                self.board = board
-                self.timer = duration
+                self.game = .init(
+                    startTime: startTime,
+                    endTime: endTime,
+                    validWords: validWordsSet,
+                    board: board
+                )
+                self.timeRemaining = duration
             }
         }
     }

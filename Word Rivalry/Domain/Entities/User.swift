@@ -7,18 +7,18 @@
 
 import Foundation
 
+import GameKit
 import CloudKit
 import OSLog
 
 @Observable final class User: CKModel, DataPreview {
     
     // MARK: Profile
-    
-    // User Stable (not exposing UserRecordID for outside communication)
+
+    // User Stable
     var userID:             String
     
     // Profile
-    var username:           String
     var country:            Country
     var title:              Title
     var avatar:             Avatar
@@ -30,7 +30,7 @@ import OSLog
     var accent:             String
     
     // Stats
-    var allTimePoints:      Int             = 0
+    var allTimeStars:      Int             = 0
     var experience:         Int             = 0 // Translate to a level
     var currentPoints:      Int             = 0
     
@@ -44,7 +44,6 @@ import OSLog
         userID:             String,
         
         // Profile
-        username:           String,
         country:            Country         = .global,
         title:              Title           = .newLeaf,
         avatar:             Avatar          = .newLeaf,
@@ -70,7 +69,6 @@ import OSLog
         recordID:           CKRecord.ID     = CKRecord.ID(recordName: "ND")
     ) {
         self.userID = userID
-        self.username = username
         self.country = country
         self.title = title
         self.avatar = avatar
@@ -80,7 +78,7 @@ import OSLog
         self.profileEffect = profileEffect
         self.accent = accent
         
-        self.allTimePoints = allTimePoints
+        self.allTimeStars = allTimePoints
         self.experience = experience
         self.currentPoints = currentPoints
         self.soloMatch = soloMatch
@@ -92,19 +90,19 @@ import OSLog
         self.recordName = recordID.recordName
         self.zoneName = recordID.zoneID.zoneName
         
-        Logger.publicProfile.debug("Public Profile instanciated for: \(username)")
+        Logger.publicProfile.debug("Public Profile instanciated for: \(self.recordName)")
     }
     
     // MARK: CKModel
     
-    static var recordType: String = "Users"
+    static var recordType: String = "User"
     var recordName: String
     var zoneName: String
     
 
     enum Key: String, CaseIterable {
         case userID // Stable
-        case username, country, title, avatar, primaryColor // Profile
+        case country, title, avatar, primaryColor // Profile
         case avatarFrame, profileEffect, accent // Premium
         case allTimePoints, experience, currentPoints, soloMatch, soloWin, teamMatch, teamWin // Stats
     }
@@ -116,7 +114,6 @@ import OSLog
     
     convenience init?(from ckRecord: CKRecord) {
         let userID = ckRecord[User.forKey(.userID)] as? String ?? ""
-        let username = ckRecord[User.forKey(.username)] as? String ?? ""
         let country = Country(rawValue: ckRecord[User.forKey(.country)] as? String ?? "") ?? .global
         let title = Title(rawValue: ckRecord[User.forKey(.title)] as? String ?? "") ?? .newLeaf
         let avatar = Avatar(rawValue: ckRecord[User.forKey(.avatar)] as? String ?? "") ?? .newLeaf
@@ -134,7 +131,6 @@ import OSLog
         
         self.init(
             userID: userID,
-            username: username,
             country: country,
             title: title,
             avatar: avatar,
@@ -156,7 +152,6 @@ import OSLog
     var record: CKRecord {
         let record = CKRecord(recordType: User.recordType)
         record[User.forKey(.userID)] = userID
-        record[User.forKey(.username)] = username
         record[User.forKey(.country)] = country.rawValue
         record[User.forKey(.title)] = title.rawValue
         record[User.forKey(.avatar)] = avatar.rawValue
@@ -164,7 +159,7 @@ import OSLog
         record[User.forKey(.avatarFrame)] = avatarFrame.rawValue
         record[User.forKey(.profileEffect)] = profileEffect.rawValue
         record[User.forKey(.accent)] = accent
-        record[User.forKey(.allTimePoints)] = allTimePoints
+        record[User.forKey(.allTimePoints)] = allTimeStars
         record[User.forKey(.experience)] = experience
         record[User.forKey(.currentPoints)] = currentPoints
         record[User.forKey(.soloMatch)] = soloMatch
@@ -176,7 +171,20 @@ import OSLog
     
     // MARK: PrewiewData
     
-    static var preview: User =  User(userID: "", username: "Lighthouse")
-    static var previewOther: User =  User(userID: "", username: "Goultard")
-    static var nullUser = User(userID: "", username: "")
+    static var preview: User =  User(
+        userID: UUID().uuidString,
+        country: .random(),
+        title: .random(),
+        avatar: .random(),
+        primaryColor: "red",
+        avatarFrame: .random(),
+        profileEffect: .random(),
+        accent: "red"
+    )
+    
+    
+    static var previewOther: User =  User(userID: "")
+    
+    
+    static var nullUser = User(userID: "")
 }

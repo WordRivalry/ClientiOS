@@ -7,7 +7,8 @@
 
 import Foundation
 
-enum Country: String, CaseIterable, Codable {
+enum Country: String, Codable, RandomCaseProvidable {
+    
     case global = "GO"
     case europeAfrica = "EAF"
     case america = "AMC"

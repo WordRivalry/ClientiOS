@@ -8,5 +8,20 @@
 import Foundation
 
 protocol LeaderboardRepositoryProtocol {
-    func fetchTopPlayers(limit: Int) async throws -> [User]
+    func fetchLeaderboard(
+        leaderboardID: LeaderboardID
+    ) async throws -> Leaderboard
+   
+    func submitScore(
+        score: Int,
+        context: Int,
+        leaderboardID: LeaderboardID
+    ) async throws -> Leaderboard
+    
+    // Submit to multiple leaderboards, return ldID who failed local data update.
+    func submitScore(
+        score: Int,
+        context: Int,
+        leaderboardIDs: [LeaderboardID]
+    ) async throws -> ([Leaderboard], [LeaderboardID])
 }

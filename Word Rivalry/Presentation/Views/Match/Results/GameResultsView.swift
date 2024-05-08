@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import os.log
+import GameKit
 
 struct GameResultsView: View {
     var gameResults: GameResults
@@ -18,7 +19,7 @@ struct GameResultsView: View {
     private let logger = Logger(subsystem: "com.WordRivalry", category: "GameResultsView")
     
     private var gameOutcome: GameOutcome {
-        if gameResults.winner == localUser.user.username {
+        if gameResults.winner ==  GKLocalPlayer.local.displayName {
             GameOutcome.victory
         } else if gameResults.winner.isEmpty {
             GameOutcome.draw

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GameKit
 
 struct JoinQueueRequest {
     let network: MatchmakingSocketService
@@ -27,10 +28,10 @@ final class JoinQueue: UseCaseProtocol {
         }
         
         // Fetch user to ensure freshness
-        let user: User = try await userRepository.fetchUser()
+        let user: User = try await userRepository.fetchLocalUser()
         
         if status == .disconnected || status == .notConnected {
-            network.connect(userID: user.userID, username: user.username)
+            network.connect(userID: user.userID, username: GKLocalPlayer.local.displayName)
         }
         
         if status == .connecting || status == .connected {

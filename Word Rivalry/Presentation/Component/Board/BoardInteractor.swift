@@ -19,8 +19,15 @@ protocol Board_OnTap_Delegate: AnyObject {
     func onTapGesture(_ cellIndex: CellIndex)
 }
 
+struct GestureConfig {
+    var swipeSensitivity: CGFloat = 1.0
+    var tapMaximumDuration: TimeInterval = 0.3
+    var longPressMinimumDuration: TimeInterval = 0.5
+}
+
 @Observable class BoardInteractor<T> where T: Equatable {
     var board: Board<T>
+    var gestureConfig = GestureConfig()
     
     weak var swipeDelegate: Board_OnSwipe_Delegate?
     weak var tapDelegate: Board_OnTap_Delegate?
@@ -62,6 +69,8 @@ protocol Board_OnTap_Delegate: AnyObject {
     // Updated method to handle cell hover with hooks
     func handleCellHover(_ row: Int, _ col: Int) {
         let cellIndex = CellIndex(i: row, j: col)
+        
+     
         
         if cellIndex == currentCell {
             swipeDelegate?.onCellHoverStayed(cellIndex) // Call hook for staying in the same cell

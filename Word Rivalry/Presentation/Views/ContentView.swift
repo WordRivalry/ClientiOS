@@ -33,6 +33,9 @@ struct ContentView: View {
             }
         }
         .onAppear { Task {
+            
+            debugPrint(iCloudService.shared.statusMessage())
+            
             try await localUser.fetchUser()
         }}
         .overlay {

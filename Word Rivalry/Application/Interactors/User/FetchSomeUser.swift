@@ -16,7 +16,7 @@ final class FetchSomeUser {
     /// - Returns: The `User` object corresponding to the current user's record.
     /// - Throws: Propagates errors if both the database and local storage fetching fail.
     static func execute(with username: String) async throws -> User {
-        return try await userRepository.fetchUser(by: username)
+        return try await userRepository.fetchAnyUser(by: username)
     }
 }
 

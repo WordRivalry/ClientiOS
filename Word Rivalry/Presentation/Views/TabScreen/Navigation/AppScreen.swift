@@ -38,7 +38,7 @@ extension AppScreen {
     var destination: some View {
         switch self {
         case .career:
-            HomeNavigationStack()
+            CareerNavigationStack()
         case .leaderboard:
             LeaderboardNavigationStack()
         case .play:

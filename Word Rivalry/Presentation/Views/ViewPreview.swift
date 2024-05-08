@@ -16,7 +16,6 @@ struct ViewPreview<Content: View>: View {
     
     var body: some View {
         content()
-            .environment(Network())
             .environment(GlobalOverlay.shared)
             .environment(LocalUser.preview)
             .environment(LeaderboardViewModel.preview)

@@ -16,7 +16,8 @@ struct Word_RivalryApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var colorSchemeManager = ColorSchemeManager.shared
     @State private var showLaunchView = false
-    @State private var purchaseManager = PurchaseManager()
+   // @State private var purchaseManager = PurchaseManager()
+    @State private var gameCenter = GameCenter()
     @State private var localUser = LocalUser.shared
     @State private var network = NetworkMonitoring.shared
     
@@ -46,7 +47,7 @@ struct Word_RivalryApp: App {
             }
             .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
             .environment(LeaderboardViewModel())
-            .environment(purchaseManager)
+     //       .environment(purchaseManager)
             .environment(localUser)
             .environment(GlobalOverlay.shared)
             .logLifecycle(viewName: "Word_RivalryApp")
@@ -57,9 +58,12 @@ struct Word_RivalryApp: App {
         switch scenePhase {
         case .active:
             Logger.appEvents.notice("!!! Scene is active !!!")
+            gameCenter.authenticatePlayer()
+            network.startMonitoring()
    //         appServices.handleAppBecomingActive()
         case .inactive:
             Logger.appEvents.notice("!!! Scene is inactive !!!")
+            network.stopMonitoring()
     //        appServices.handleAppGoingInactive()
         case .background:
             Logger.appEvents.notice("!!! Scene on background !!!")
