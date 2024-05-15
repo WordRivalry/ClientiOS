@@ -10,6 +10,7 @@ import CloudKit
 @testable import Word_Rivalry
 
 class MockCloudKitManager: CloudKitManageable {
+
     
     // Storage for models, using type name as key and array of models as value
     var storage: [String: [any CKModel]] = [:]
@@ -80,6 +81,23 @@ class MockCloudKitManager: CloudKitManageable {
         }
         return model
     }
+    
+    func queryModels<T: CKModel>(by key: T.Key, values: [String]) async throws -> [T] {
+        if shouldReturnFailure {
+            throw failureError
+        }
+
+        // Use a flatMap to iterate over all values and concatenate results of each value query up to the results limit.
+        let models = values.flatMap { value -> [T] in
+            let filteredModels = (storage[String(describing: T.self)] as? [T] ?? [])
+                .filter { $0.record[key.rawValue] as? String == value }
+            return Array(filteredModels)
+        }
+
+        // You can apply another limit here if the total results should be limited
+        return Array(models)
+    }
+
 
     func queryModels<T: CKModel>(for key: T.Key, value: String, resultsLimit: Int) async throws -> [T] {
         if shouldReturnFailure {

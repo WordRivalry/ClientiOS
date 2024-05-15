@@ -9,7 +9,9 @@ import Foundation
 import OSLog
 
 // MARK: JITLeaderboard
-@Observable class LeaderboardViewModel: JITData {
+@Observable final class LeaderboardViewModel: JITData, DataPreview {
+
+
     var leaderboard: Leaderboard?
     private let leaderboardID: LeaderboardID
     
@@ -22,13 +24,22 @@ import OSLog
     
     override func fetchData() async throws {
     
-        // Work
-        let leaderboard = try await fetchLeaderboard.fetchLeaderboard(with: self.leaderboardID)
-        
-        // UI
-        await MainActor.run {
-            self.leaderboard = leaderboard
-            Logger.dataServices.info("Leaderboard \(self.leaderboardID.rawValue) updated")
+        do {
+            // Work
+//            let leaderboard = try await fetchLeaderboard.fetchLeaderboard(
+//                with: self.leaderboardID
+//            )
+            
+            let leaderboard = LeaderboardViewModel.preview.leaderboard
+            
+            // UI
+            await MainActor.run {
+                self.leaderboard = leaderboard
+                Logger.dataServices.info("Leaderboard \(self.leaderboardID.rawValue) updated")
+            }
+        } catch {
+            Logger.dataServices.fault("Error occured fetching leaderboard. Error: \(error)")
+            throw error
         }
     }
     
@@ -38,17 +49,33 @@ import OSLog
         }
         return true
     }
-
-    static func previewLeaderboard(id: LeaderboardID) -> Leaderboard {
-        let leaderboard = Leaderboard(leaderboardID: id)
-        leaderboard.top50 = (1...50).map { rank in
-            LeaderboardEntry.mockEntry(rank: rank, leaderboardID: id)
+    
+    static var preview: LeaderboardViewModel = {
+        let leaderboard = Leaderboard(leaderboardID: .experience)
+        leaderboard.topPlayers = (1...50).map { rank in
+            LeaderboardEntry.mockEntry(rank: rank, leaderboardID: .experience)
         }
-        leaderboard.top50 = leaderboard.top50.sorted { entry1, entry2 in
+        leaderboard.topPlayers = leaderboard.topPlayers.sorted { entry1, entry2 in
             entry1.rank < entry2.rank
         }
-        return leaderboard
-    }
+        
+        let viewModel = LeaderboardViewModel(leaderboardID: .experience)
+        viewModel.leaderboard = leaderboard
+        
+        return viewModel
+    }()
+    
+//
+//    static var preview: SoloGameViewModel = {
+//         let vm = SoloGameViewModel(
+//            gameID: "",
+//            localUser: .preview,
+//            adversary: .previewOther,
+//            battleSocket: BattleSocketService()
+//        )
+//        vm.game = .preview
+//        return vm
+//    }()
 }
 
 extension LeaderboardEntry {
@@ -70,16 +97,16 @@ extension User {
     static func mockUser(rank: Int) -> User {
         return User(
             userID: "U00\(rank)",
-            country: .america,
-            title: .newLeaf,
-            avatar: .newLeaf,
+            country: .random(),
+            title: .random(),
+            avatar: .random(),
             primaryColor: "#\(rank * 100000)",
-            avatarFrame: .none,
-            profileEffect: .none,
+            avatarFrame: .random(),
+            profileEffect: .random(),
             accent: "#\(rank * 100000)",
             allTimePoints: rank * 1000,
             experience: rank * 100,
-            currentPoints: rank * 500,
+            currentStars: rank * 500,
             soloMatch: rank * 10,
             soloWin: rank * 5,
             teamMatch: rank * 3,

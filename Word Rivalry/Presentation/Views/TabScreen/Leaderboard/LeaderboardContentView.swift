@@ -14,23 +14,12 @@ struct LeaderboardContentView: View {
     var body: some View {
         ZStack {
             switch selectedLeaderboard {
-            case .overall:
+            case .level:
                 OverallLeaderboardView()
-            case .arena:
-                VStack {
-                    Picker("Mode", selection: $arenaMode) {
-                        ForEach(ArenaMode.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding(.horizontal)
-                    
-                    
-                    ArenaLeaderboardView(arenaMode: $arenaMode)
-                }
-            case .achievements:
-                AchievementsLeaderboardView()
+            case .allTimeStars:
+                AllTimeStarsLeaderboardView()
+            case .CurrentStars:
+                CurrentStarsLeaderboardView()
             }
         }
         .padding(.top)
@@ -41,7 +30,7 @@ struct LeaderboardContentView: View {
 #Preview {
     ViewPreview {
         LeaderboardContentView(
-            selectedLeaderboard: .constant(.arena),
+            selectedLeaderboard: .constant(.allTimeStars),
             arenaMode: .constant(.solo)
         )
     }

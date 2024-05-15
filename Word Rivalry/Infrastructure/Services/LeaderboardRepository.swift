@@ -37,10 +37,11 @@ final class LeaderboardRepository: LeaderboardRepositoryProtocol {
     }
     
     func fetchLeaderboard(leaderboardID: LeaderboardID) async throws -> Leaderboard {
-        if let cachedLeaderboard = try? await cacheManager.load(leaderboardID: leaderboardID), isCacheValid(for: cachedLeaderboard) {
-            return cachedLeaderboard
-        }
-        
+//        if let cachedLeaderboard = try? await cacheManager.load(leaderboardID: leaderboardID), isCacheValid(for: cachedLeaderboard) {
+//            return cachedLeaderboard
+//        }
+//        
+//        
         return try await fetchAndCacheLeaderboard(leaderboardID: leaderboardID)
     }
     
@@ -48,101 +49,85 @@ final class LeaderboardRepository: LeaderboardRepositoryProtocol {
         return Date.now.timeIntervalSince(leaderboard.updateDate) <= 300
     }
     
-    private func fetchAndCacheLeaderboard(
-        leaderboardID: LeaderboardID
-    ) async throws -> Leaderboard {
-        
-        let set = try await loadSet(.normal)
-        
-        var gkLeaderboard: GKLeaderboard? = nil
-        var error: Error? = nil
-        
-        set.loadLeaderboards { leaderboards, err in
-            error = err
-            gkLeaderboard = leaderboards?.first(where: {
-                $0.baseLeaderboardID == leaderboardID.rawValue
-            })
-        }
-        
-        guard error == nil else {
-            throw error!
-        }
-        
-        guard let gkLeaderboard = gkLeaderboard else {
-            throw LeaderboardRepositoryError.fetchLeaderboardFailure
-        }
-        
-        let (localEntry, top50, count) = try await self.service.loadEntries(
-            from: gkLeaderboard,
-            for: .global,
-            timeScope: .allTime,
-            startRank: 1,
-            length: 50
-        )
-        
-        let leaderboard = Leaderboard(leaderboardID: leaderboardID)
-        
-        leaderboard.top50 = try await getUsers(from: top50)
-            .map({ (entry, user) in
-                LeaderboardEntry(from: entry, user: user)
-            })
-        
-        if let localEntry = localEntry {
-            
-            let user = try await getUser(from: localEntry)
-            
-            leaderboard.localEntry = LeaderboardEntry(from: localEntry, user: user)
-            var surrounding = try await service.loadScoresAroundEntry(
-                from: gkLeaderboard,
-                centeredOn: localEntry,
-                range: 10
-            )
-            
-            let surroundingUsers = try await getUsers(from: surrounding)
-            
-            leaderboard.entriesBeforeLocal = surroundingUsers
-                .prefix(5)
-                .map({ entry, user in
-                    LeaderboardEntry(from: entry, user: user)
-                })
-            
-            if surrounding.count > 5 {
-                leaderboard.entriesAfterLocal = surroundingUsers
-                    .suffix(from: 5)
-                    .map({ entry, user in
-                        LeaderboardEntry(from: entry, user: user)
-                    })
-            }
-        }
-        
-        try await cacheManager.save(leaderboard: leaderboard)
-        return leaderboard
-    }
+    private func fetchAndCacheLeaderboard(leaderboardID: LeaderboardID) async throws -> Leaderboard {
+           let set = try await loadSet(.normal)
+
+        let gkLeaderboard: GKLeaderboard = try await withCheckedThrowingContinuation { continuation in
+              set.loadLeaderboards { leaderboards, error in
+                  if let error = error {
+                      continuation.resume(throwing: error)
+                  } else if let leaderboard = leaderboards?.first(where: { $0.baseLeaderboardID == leaderboardID.rawValue }) {
+                      continuation.resume(returning: leaderboard)
+                  } else {
+                      continuation.resume(throwing: LeaderboardRepositoryError.fetchLeaderboardFailure)
+                  }
+              }
+          }
+
+           let (localEntry, top50Entries, count) = try await self.service.loadEntries(
+               from: gkLeaderboard,
+               for: .global,
+               timeScope: .allTime,
+               startRank: 1,
+               length: 50
+           )
+
+           let leaderboard = Leaderboard(leaderboardID: leaderboardID)
+           leaderboard.topPlayers = try await getUsers(from: top50Entries)
+               .map { (entry, user) in
+                   LeaderboardEntry(from: entry, user: user)
+               }
+
+           try await cacheManager.save(leaderboard: leaderboard)
+           return leaderboard
+       }
     
     private func processLocalPlayerEntry(
         _ entry: GKLeaderboard.Entry,
         gkLeaderboard: GKLeaderboard
     ) async throws -> LeaderboardEntry {
         
-        let user = try await userRepo.fetchAnyUser(by: entry.player.gamePlayerID)
+        let user = try await userRepo.fetchAnyUser(by: entry.player.teamPlayerID)
         return LeaderboardEntry(from: entry, user: user)
-    }
-    
-    
-    private func getUser(from entry: GKLeaderboard.Entry) async throws -> User {
-        return try await userRepo.fetchAnyUser(by: entry.player.gamePlayerID)
     }
     
     private func getUsers(from entries: [GKLeaderboard.Entry]) async throws -> [(GKLeaderboard.Entry, User)] {
         return try await withThrowingTaskGroup(of: (GKLeaderboard.Entry, User).self) { group in
+            // Extracting player IDs after checking for persistence
+            let playerIDs: [String] = entries.map { entry in
+                return "\(entry.context)"
+            }
+            
+            // Fetch users from the repository using player IDs
+            let users = try await userRepo.fetchManyUser(by: playerIDs)
+            
+            // Dictionary to map gamePlayerIDs to fetched Users for quick lookup
+            let usersDictionary = Dictionary(uniqueKeysWithValues: zip(playerIDs, users))
+            
+            // Loop through entries and add corresponding user to the task group
             for entry in entries {
+                guard let user = usersDictionary["\(entry.context)"] else {
+                    throw NSError(domain: "UserFetchError", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found for ID: \(entry.player.gamePlayerID)"])
+                }
+                
+                // Add a task for each user-entry pair
                 group.addTask {
-                    let user = try await self.getUser(from: entry)
                     return (entry, user)
                 }
             }
-            return try await group.reduce(into: []) { $0.append($1) }
+
+            // Collect all results from the group
+            var results: [(GKLeaderboard.Entry, User)] = []
+            for try await result in group {
+                results.append(result)
+            }
+            
+            return results
         }
+    }
+    
+    private func getUser(from entry: GKLeaderboard.Entry) async throws -> User {
+        return try await userRepo.fetchAnyUser(by: entry.player.gamePlayerID)
     }
     
     private func loadSet(_ setID: LeaderboardSetID) async throws -> GKLeaderboardSet {
@@ -201,6 +186,7 @@ class LeaderboardCacheManager {
     
     init() {
         self.storages = [
+            .experience: FileStorage(fileName: "experience.data"),
             .allTimeStars: FileStorage(fileName: "allTimeStars.data"),
             .currentStars: FileStorage(fileName: "allTimeAchievements.data")
         ]

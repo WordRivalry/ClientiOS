@@ -26,6 +26,13 @@ final class UserAndLeaderboardCoordinator {
     
     func decreaseStars(_ stars: Int) async throws {
         let result = await localUser.decreaseStars(by: stars)
+        
+        switch result {
+        case .success(let successType):
+            debugPrint("Decrease successfull")
+        case .failure(let userModificationError):
+            throw userModificationError
+        }
     }
     
     func updateSoloGame(won didWin: Bool, stars: Int) async throws {
@@ -38,8 +45,8 @@ final class UserAndLeaderboardCoordinator {
             // no correction possible on failure
             
             _ = try await leaderboardRepo.submitScore(
-                score: user.currentPoints,
-                context: 0,
+                score: user.currentStars,
+                context: Int(user.userID)!,
                 leaderboardID: .currentStars
             )
             
@@ -47,13 +54,13 @@ final class UserAndLeaderboardCoordinator {
             
             _ = try await leaderboardRepo.submitScore(
                 score: user.experience,
-                context: 0,
+                context: Int(user.userID)!,
                 leaderboardID: .experience
             )
             
             _ = try await leaderboardRepo.submitScore(
                 score: user.allTimeStars,
-                context: 0,
+                context: Int(user.userID)!,
                 leaderboardID: .allTimeStars
             )
             
@@ -72,8 +79,8 @@ final class UserAndLeaderboardCoordinator {
             // no correction possible on failure
             
             _ = try await leaderboardRepo.submitScore(
-                score: user.currentPoints,
-                context: 0,
+                score: user.currentStars,
+                context: Int(user.userID)!,
                 leaderboardID: .currentStars
             )
             
@@ -81,13 +88,13 @@ final class UserAndLeaderboardCoordinator {
             
             _ = try await leaderboardRepo.submitScore(
                 score: user.experience,
-                context: 0,
+                context: Int(user.userID)!,
                 leaderboardID: .experience
             )
             
             _ = try await leaderboardRepo.submitScore(
                 score: user.allTimeStars,
-                context: 0,
+                context: Int(user.userID)!,
                 leaderboardID: .allTimeStars
             )
             

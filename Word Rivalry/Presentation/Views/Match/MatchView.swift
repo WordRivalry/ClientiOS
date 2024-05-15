@@ -12,9 +12,8 @@ struct MatchView: View {
     @Environment(MainRouter.self) private var mainRouter
     @Environment(LocalUser.self) private var localUser
     @Environment(\.dismiss) private var dismiss
-    @State private var matchViewModel = SoloMatchViewModel()
+    @State private var matchViewModel = SoloMatchViewModel(stars: 50)
   
-    
     init() {
         Logger.viewCycle.debug("~~~ MatchView init ~~~")
     }

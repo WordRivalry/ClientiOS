@@ -30,9 +30,10 @@ import OSLog
     var accent:             String
     
     // Stats
-    var allTimeStars:      Int             = 0
+    var allTimeStars:      Int              = 0
     var experience:         Int             = 0 // Translate to a level
-    var currentPoints:      Int             = 0
+    
+    var currentStars:      Int              = 0
     
     var soloMatch:          Int             = 0
     var soloWin:            Int             = 0
@@ -57,7 +58,7 @@ import OSLog
         // Stats
         allTimePoints:      Int             = 0,
         experience:         Int             = 0,
-        currentPoints:      Int             = 0,
+        currentStars:      Int              = 0,
         
         soloMatch:          Int             = 0,
         soloWin:            Int             = 0,
@@ -80,7 +81,7 @@ import OSLog
         
         self.allTimeStars = allTimePoints
         self.experience = experience
-        self.currentPoints = currentPoints
+        self.currentStars = currentStars
         self.soloMatch = soloMatch
         self.soloWin = soloWin
         self.teamMatch = teamMatch
@@ -104,7 +105,7 @@ import OSLog
         case userID // Stable
         case country, title, avatar, primaryColor // Profile
         case avatarFrame, profileEffect, accent // Premium
-        case allTimePoints, experience, currentPoints, soloMatch, soloWin, teamMatch, teamWin // Stats
+        case allTimePoints, experience, currentStars, soloMatch, soloWin, teamMatch, teamWin // Stats
     }
     
     /// Function to get the string value for a given key
@@ -123,7 +124,7 @@ import OSLog
         let accent = ckRecord[User.forKey(.accent)] as? String ?? "#fff"
         let allTimePoints = ckRecord[User.forKey(.allTimePoints)] as? Int ?? 0
         let experience = ckRecord[User.forKey(.experience)] as? Int ?? 0
-        let currentPoints = ckRecord[User.forKey(.currentPoints)] as? Int ?? 0
+        let currentStars = ckRecord[User.forKey(.currentStars)] as? Int ?? 0
         let soloMatch = ckRecord[User.forKey(.soloMatch)] as? Int ?? 0
         let soloWin = ckRecord[User.forKey(.soloWin)] as? Int ?? 0
         let teamMatch = ckRecord[User.forKey(.teamMatch)] as? Int ?? 0
@@ -140,7 +141,7 @@ import OSLog
             accent: accent,
             allTimePoints: allTimePoints,
             experience: experience,
-            currentPoints: currentPoints,
+            currentStars: currentStars,
             soloMatch: soloMatch,
             soloWin: soloWin,
             teamMatch: teamMatch,
@@ -161,7 +162,7 @@ import OSLog
         record[User.forKey(.accent)] = accent
         record[User.forKey(.allTimePoints)] = allTimeStars
         record[User.forKey(.experience)] = experience
-        record[User.forKey(.currentPoints)] = currentPoints
+        record[User.forKey(.currentStars)] = currentStars
         record[User.forKey(.soloMatch)] = soloMatch
         record[User.forKey(.soloWin)] = soloWin
         record[User.forKey(.teamMatch)] = teamMatch
@@ -171,7 +172,7 @@ import OSLog
     
     // MARK: PrewiewData
     
-    static var preview: User =  User(
+    static var preview: User = User(
         userID: UUID().uuidString,
         country: .random(),
         title: .random(),
@@ -181,7 +182,6 @@ import OSLog
         profileEffect: .random(),
         accent: "red"
     )
-    
     
     static var previewOther: User =  User(userID: "")
     

@@ -10,17 +10,18 @@ import SwiftUI
 struct LeaderboardHeaderView: View {
     @Binding var selectedLeaderboard: LeaderboardType
     @Binding var arenaMode: ArenaMode
+    @Namespace private var namespace
 
     var body: some View {
         HStack {
             Image(
-                selectedLeaderboard == .arena ? arenaMode.imageName : selectedLeaderboard.imageName
+                selectedLeaderboard == .allTimeStars ? arenaMode.imageName : selectedLeaderboard.imageName
             )
                 .resizable()
                 .frame(width: 80, height: 80)
             
             Text(
-                selectedLeaderboard == .arena ? 
+                selectedLeaderboard == .allTimeStars ? 
                     arenaMode.header :
                     selectedLeaderboard.header
             )
@@ -29,6 +30,7 @@ struct LeaderboardHeaderView: View {
                 .multilineTextAlignment(.leading)
                 .foregroundStyle(.white)
                 .shadow(radius: 2, x: 2, y: 2)
+                .matchedGeometryEffect(id: "title", in: namespace)
             
             Spacer()
         }
@@ -39,7 +41,7 @@ struct LeaderboardHeaderView: View {
 #Preview {
     ViewPreview {
         LeaderboardHeaderView(
-            selectedLeaderboard: .constant(.achievements),
+            selectedLeaderboard: .constant(.CurrentStars),
             arenaMode: .constant(.solo)
         )
     }

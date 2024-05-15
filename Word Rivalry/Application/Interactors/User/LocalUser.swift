@@ -53,8 +53,7 @@ enum LocalUserModificationStatus<SuccessType> {
     // MARK: - User Data Management
     
     /// Fetches the user's data primarily from the database, with a fallback to local storage on failure.
-    /// This method sets up the user in the application if not already set, potentially assigning a unique username
-    /// if it is a new user.
+    /// This method sets up the user in the application if not already set, potentially assigning a unique username.
     ///
     /// ```swift 
     ///     LocalUser.shared.fetchUser()
@@ -63,6 +62,7 @@ enum LocalUserModificationStatus<SuccessType> {
     /// - Postcondition: The `user` property is updated to reflect the fetched or newly initialized user profile.
     /// - Throws: Propagates errors if both the database and local storage fetching fail, ensuring upstream handlers can react.
     public func fetchUser() async throws {
+        Logger.cloudKit.info("User is getting fetched : \(self.user.recordName)")
         self.user = try await userRepository.fetchLocalUser()
         self.isUserSet = true
         
@@ -300,7 +300,7 @@ enum LocalUserModificationStatus<SuccessType> {
     
     // MARK: SoloMatch
     
-    /// Increments the count of solo matches and returns the updated count on success.
+    /// Increments the count of solo matches and returns the updated user.
     ///
     /// Usage:
     /// ```swift
@@ -327,7 +327,7 @@ enum LocalUserModificationStatus<SuccessType> {
             if didWin {
                 user.soloWin += 1
                 user.experience += 5
-                user.currentPoints += stars
+                user.currentStars += stars
                 user.allTimeStars += stars
             } else {
                 user.experience += 2
@@ -342,7 +342,7 @@ enum LocalUserModificationStatus<SuccessType> {
     
     // MARK: TeamMatch
     
-    /// Increments the count of team matches and returns the updated count on success.
+    /// Increments the count of team matches and returns the updated user.
     ///
     /// Usage:
     /// ```swift
@@ -370,7 +370,7 @@ enum LocalUserModificationStatus<SuccessType> {
             if didWin {
                 user.teamWin += 1
                 user.experience += 5
-                user.currentPoints += stars
+                user.currentStars += stars
                 user.allTimeStars += stars
             } else {
                 user.experience += 2
@@ -409,11 +409,11 @@ enum LocalUserModificationStatus<SuccessType> {
         do {
             let user: User = try await userRepository.fetchLocalUser()
             
-            let decrementAmount = min(user.currentPoints, points) // Prevent below zero
-            user.currentPoints -= decrementAmount
+            let decrementAmount = min(user.currentStars, points) // Prevent below zero
+            user.currentStars -= decrementAmount
          
             self.user = try await userRepository.saveUser(user)
-            return .success(self.user.currentPoints)
+            return .success(self.user.currentStars)
         } catch {
             return .failure(.other(error))
         }

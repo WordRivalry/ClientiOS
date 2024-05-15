@@ -32,12 +32,15 @@ enum GameError: Error {
     private(set) var battleSocket: BattleSocketService
     
     var currentState: MatchState = .searching
+    var stars: Int
     var error: Error?
 
     init(
+        stars: Int,
         matchmakingSocket: MatchmakingSocketService = MatchmakingSocketService(),
         battleSocket: BattleSocketService = BattleSocketService()
     ) {
+        self.stars = stars
         self.matchmakingSocket = matchmakingSocket
         self.battleSocket = battleSocket
         self.matchmakingSocket.setMatchFoundDelegate(self)
@@ -51,7 +54,7 @@ extension SoloMatchViewModel: MatchmakingSocketService_MatchFound_Delegate {
             do {
                 // Work
                 let adversary = try await FetchSomeUser.execute(with: opponentUsername)
-                await LocalUser.shared.decreaseStars(by: 20)
+                await LocalUser.shared.decreaseStars(by: stars)
                 
                 //UI
                 await MainActor.run {
@@ -73,13 +76,18 @@ extension SoloMatchViewModel: MatchmakingSocketService_MatchFound_Delegate {
 
 extension SoloMatchViewModel: BattleSocketService_GameEnded_Delegate {
     func didReceiveGameResult(winner: String, playerResults: [PlayerResult]) {
+        
+        let interactor: UserAndLeaderboardCoordinator = .init()
+        
         Task {
             
             // Work
             let gameResults = GameResults(winner: winner, playerResults: playerResults)
             
             if GKLocalPlayer.local.displayName == winner {
-                await LocalUser.shared.increaseCurrentPoints(by: 20)
+                try await interactor.updateSoloGame(won: true, stars: stars * 2)
+            } else {
+                try await interactor.updateSoloGame(won: false, stars: 0)
             }
             
             // UI

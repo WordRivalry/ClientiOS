@@ -17,7 +17,7 @@ struct HeaderTabView<EnumType: TabViewEnum>: View where EnumType.AllCases: Rando
                 Spacer()
                 Text(tab.rawValue)
                     .bold()
-                    .foregroundColor(selectedTab == tab ? .lightGreen : .fontColor)
+                    .foregroundColor(selectedTab == tab ? .accentColor : .fontColor)
                     .padding(.vertical, 10)
                   
                     .background(
@@ -26,7 +26,7 @@ struct HeaderTabView<EnumType: TabViewEnum>: View where EnumType.AllCases: Rando
                             if selectedTab == tab {
                                 Rectangle()
                                     .frame(height: 5)
-                                    .foregroundColor(.lightGreen)
+                                    .foregroundColor(.accentColor)
                                     .matchedGeometryEffect(id: "underline", in: namespace)
                             }
                         },
@@ -37,11 +37,11 @@ struct HeaderTabView<EnumType: TabViewEnum>: View where EnumType.AllCases: Rando
                         // Draw lighter rectangle for other selected tab
                         Rectangle()
                             .frame(height: 5)
-                            .foregroundColor(.lightTint),
+                            .foregroundColor(.accentColor.opacity(0.3)),
                         alignment: .bottom
                     )
                     .onTapGesture {
-                        withAnimation(.easeInOut) {
+                        withAnimation(.default) {
                             selectedTab = tab
                         }
                     }

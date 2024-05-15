@@ -11,6 +11,7 @@ import XCTest
 private let LOCAL_USER_ID = "local-user-id"
 
 class MockUserRepository: UserRepositoryProtocol {
+
     // Simulating in-memory storage to mimic database interactions
     private var localStore: [String: User] = [:]
     
@@ -44,6 +45,22 @@ class MockUserRepository: UserRepositoryProtocol {
             throw NSError(domain: "UserNotFound", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
         }
     }
+    
+    func fetchManyUser(by userIDs: [String]) async throws -> [Word_Rivalry.User] {
+        
+        var users: [Word_Rivalry.User] = []
+        
+        for userID in userIDs {
+            if let user = localStore[userID] {
+                users.append(user)
+            } else {
+                throw NSError(domain: "UserNotFound", code: 404, userInfo: [NSLocalizedDescriptionKey: "User not found"])
+            }
+        }
+        
+        return users
+    }
+    
     
     func saveUser(_ user: User) async throws -> User {
         localStore[user.userID] = user
@@ -215,186 +232,47 @@ final class LocalUserTests: XCTestCase {
             }
         }
     }
+    
+    // MARK: Solo Match Played
 
-    
-    // MARK: SoloWin Update
-    
-    func testIncrementSoloWinSuccess() async {
-        let initialWins = localUser.user.soloWin
-        let result = await localUser.incrementSoloWin()
+    /// Tests the increment and handling of a solo match.
+    func testPlayedSoloMatchSuccess() async {
+        let initialUser = localUser.user
+        let result = await localUser.playedSoloMatch(didWin: true, stars: 50)
 
         switch result {
-        case .success(let updatedWins):
-            XCTAssertEqual(updatedWins, initialWins + 1, "Solo win count should increment by 1.")
-            XCTAssertEqual(localUser.user.soloWin, updatedWins, "The user's solo win count should reflect the incremented value.")
+        case .success(let updatedUser):
+            XCTAssertEqual(updatedUser.soloMatch, initialUser.soloMatch + 1, "Solo match count should increment by 1.")
+            XCTAssertEqual(updatedUser.soloWin, initialUser.soloWin + 1, "Solo win count should increment by 1.")
+            XCTAssertEqual(updatedUser.experience, initialUser.experience + 5, "Experience should increment by 5 on win.")
+            XCTAssertEqual(updatedUser.currentStars, initialUser.currentStars + 50, "Current stars should increment by the number of stars won.")
+            XCTAssertEqual(updatedUser.allTimeStars, initialUser.allTimeStars + 50, "All-time stars should increment by the number of stars won.")
         case .failure(let error):
-            XCTFail("Failed to increment solo win count: \(error)")
+            XCTFail("Failed to update for a solo match played: \(error)")
         }
     }
 
-    
-    // MARK: SoloMatch Update
-    
-    func testIncrementSoloMatchSuccess() async {
-        let initialCount = localUser.user.soloMatch
-        let result = await localUser.incrementSoloMatch()
+    // MARK: Team Match Played
+
+    /// Tests the increment and handling of a team match.
+    func testPlayedTeamMatchSuccess() async {
+        let initialUser = localUser.user
+        let result = await localUser.playedTeamMatch(didWin: true, stars: 50)
 
         switch result {
-        case .success(let updatedCount):
-            XCTAssertEqual(updatedCount, initialCount + 1, "Solo match count should increment by 1.")
-            XCTAssertEqual(localUser.user.soloMatch, updatedCount, "The user's solo match count should reflect the incremented value.")
+        case .success(let updatedUser):
+            XCTAssertEqual(updatedUser.teamMatch, initialUser.teamMatch + 1, "Team match count should increment by 1.")
+            XCTAssertEqual(updatedUser.teamWin, initialUser.teamWin + 1, "Team win count should increment by 1.")
+            XCTAssertEqual(updatedUser.experience, initialUser.experience + 5, "Experience should increment by 5 on win.")
+            XCTAssertEqual(updatedUser.currentStars, initialUser.currentStars + 50, "Current stars should increment by the number of stars won.")
+            XCTAssertEqual(updatedUser.allTimeStars, initialUser.allTimeStars + 50, "All-time stars should increment by the number of stars won.")
         case .failure(let error):
-            XCTFail("Failed to increment solo match count: \(error)")
-        }
-    }
-
-    
-    // MARK: TeamMatch Update
-    
-    func testIncrementTeamMatchSuccess() async {
-        let initialMatches = localUser.user.teamMatch
-        let result = await localUser.incrementTeamMatch()
-
-        switch result {
-        case .success(let updatedMatches):
-            XCTAssertEqual(updatedMatches, initialMatches + 1, "Team match count should increment by 1.")
-            XCTAssertEqual(localUser.user.teamMatch, updatedMatches, "The user's team match count should reflect the incremented value.")
-        case .failure(let error):
-            XCTFail("Failed to increment team match count: \(error)")
-        }
-    }
-
-    
-    // MARK: TeamWin Update
-    
-    func testIncrementTeamWinSuccess() async {
-        let initialWins = localUser.user.teamWin
-        let result = await localUser.incrementTeamWin()
-
-        switch result {
-        case .success(let updatedWins):
-            XCTAssertEqual(updatedWins, initialWins + 1, "Team win count should increment by 1.")
-            XCTAssertEqual(localUser.user.teamWin, updatedWins, "The user's team win count should reflect the incremented value.")
-        case .failure(let error):
-            XCTFail("Failed to increment team win count: \(error)")
-        }
-    }
-    
-
-    // MARK:  AllTimePoints Updates
-    
-    func testIncreaseAllTimePointsSuccess() async throws {
-        // Test for a valid non-negative input.
-        let increaseAmount = 100
-        
-        // Make sure the user is set
-        try await localUser.fetchUser()
-        
-        // Current Value
-        let currentAllTimePoints = localUser.user.allTimeStars
-        
-        // Expected Value
-        let expected = currentAllTimePoints + increaseAmount
-        
-        // Execute
-        let result = await localUser.increaseAllTimePoints(by: increaseAmount)
-
-        // Check
-        switch result {
-        case .success(let newTotal):
-            XCTAssertEqual(newTotal, expected, "AllTimePoints should match \(expected) after update.")
-            
-            XCTAssertEqual(localUser.user.allTimeStars, expected, "The user's allTimePoints property should be updated to \(expected).")
-        case .failure(let error):
-            XCTFail("Failed to update all-time points: \(error)")
-        }
-    }
-
-    func testIncreaseAllTimePointsFailure() async {
-        // Test for a negative input.
-        let result = await localUser.increaseAllTimePoints(by: -1)
-
-        switch result {
-        case .success:
-            XCTFail("Should have failed due to negative increment")
-        case .failure(let error):
-            XCTAssertEqual(error, .negativeNumberFound)
-            print("Correctly failed to update all-time points with negative input.")
-        }
-    }
-    
-    
-    // MARK:  Experience Updates
-    
-    func testIncreaseExperienceSuccess() async throws {
-        // Test for a valid non-negative input.
-        let increaseAmount = 50
-        
-        // Make sure the user is set
-        try await localUser.fetchUser()
-        
-        // Current Value
-        let currentExperience = localUser.user.experience
-        
-        // Expected Value
-        let expected = currentExperience + increaseAmount
-        
-        // Execute
-        let result = await localUser.increaseExperience(by: increaseAmount)
-
-        //  Check
-        switch result {
-        case .success(let newTotal):
-            
-            XCTAssertEqual(newTotal, expected, "Experience should match \(expected) after update.")
-            
-            XCTAssertEqual(localUser.user.experience, expected, "The user's experience property should be updated to \(expected).")
-        case .failure(let error):
-            XCTFail("Failed to update experience: \(error)")
-        }
-    }
-
-    func testIncreaseExperienceFailure() async {
-        let result = await localUser.increaseExperience(by: -50)
-
-        switch result {
-        case .success:
-            XCTFail("Should have failed due to negative increment")
-        case .failure(let error):
-            XCTAssertEqual(error, .negativeNumberFound)
-            print("Correctly failed to update experience with negative input.")
-        }
-    }
-
-    // MARK:  CurrentPoints Updates
-
-    func testIncreaseCurrentPointsSuccess() async {
-        let increaseAmount = 20
-        let result = await localUser.increaseCurrentPoints(by: increaseAmount)
-
-        switch result {
-        case .success(let newTotal):
-            XCTAssertEqual(newTotal, localUser.user.currentPoints)
-            print("Current points successfully updated to \(newTotal).")
-        case .failure(let error):
-            XCTFail("Failed to increase current points: \(error)")
-        }
-    }
-
-    func testIncreaseCurrentPointsFailure() async {
-        let result = await localUser.increaseCurrentPoints(by: -20)
-
-        switch result {
-        case .success:
-            XCTFail("Should have failed due to negative increment")
-        case .failure(let error):
-            XCTAssertEqual(error, .negativeNumberFound)
-            print("Correctly failed to increase current points with negative input.")
+            XCTFail("Failed to update for a team match played: \(error)")
         }
     }
     
     func testDecreaseCurrentPointsSuccess() async {
-        localUser.user.currentPoints = 20
+        localUser.user.currentStars = 20
         
         // Assuming initial current points are greater than 15 for this test.
         let decreaseAmount = 15
@@ -402,7 +280,7 @@ final class LocalUserTests: XCTestCase {
 
         switch result {
         case .success(let newTotal):
-            XCTAssertEqual(newTotal, localUser.user.currentPoints)
+            XCTAssertEqual(newTotal, localUser.user.currentStars)
             print("Current points successfully decreased to \(newTotal).")
         case .failure(let error):
             XCTFail("Failed to decrease current points: \(error)")

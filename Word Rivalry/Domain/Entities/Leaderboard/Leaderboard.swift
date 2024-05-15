@@ -19,18 +19,12 @@ final class Leaderboard: Codable {
     // Local player's leaderboard entry
     var localEntry: LeaderboardEntry?
     
-//    // Entries immediately preceding the local player's entry
-//    var entriesBeforeLocal: [LeaderboardEntry]?
-//
-//    // Entries immediately following the local player's entry
-//    var entriesAfterLocal: [LeaderboardEntry]?
-    
-    // Top 50 entries on this leaderboard
-    var top50: [LeaderboardEntry]
+    // Top entries on this leaderboard
+    var topPlayers: [LeaderboardEntry]
     
     init(leaderboardID: LeaderboardID) {
         self.leaderboardID = leaderboardID
-        self.top50 = []
+        self.topPlayers = []
         self.updateDate = .now
     }
 }

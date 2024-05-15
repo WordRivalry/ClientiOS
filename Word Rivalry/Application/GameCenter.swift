@@ -10,8 +10,14 @@ import Foundation
 import GameKit
 import SwiftUI
 
+/// Extension to define custom notification names related to network connectivity.
+extension Notification.Name {
+    static let presentGameCenterViewController = Notification.Name("presentGameCenterViewController")
+}
+
+
 /// - Tag:RealTimeGame
-@MainActor @Observable class GameCenter {
+@MainActor @Observable class GameCenter: NSObject {
     // The local player's friends, if they grant access.
     var friends: [Friend] = []
     
@@ -21,6 +27,11 @@ import SwiftUI
     var myName: String {
         GKLocalPlayer.local.displayName
     }
+        
+    static let shared: GameCenter = .init()
+
+    
+ 
  
     /// The root view controller of the window.
     var rootViewController: UIViewController? {
@@ -31,39 +42,36 @@ import SwiftUI
     /// Authenticates the local player, initiates a multiplayer game, and adds the access point.
     /// - Tag:authenticatePlayer
     func authenticatePlayer() {
-        // Set the authentication handler that GameKit invokes.
-        GKLocalPlayer.local.authenticateHandler = { viewController, error in
+        GKLocalPlayer.local.authenticateHandler = { [weak self] viewController, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Authentication Error: \(error.localizedDescription)")
+                return
+            }
+            
             if let viewController = viewController {
-                // If the view controller is non-nil, present it to the player so they can
-                // perform some necessary action to complete authentication.
-                self.rootViewController?.present(viewController, animated: true) { }
-                return
+                // Present the view controller if additional authentication steps are required.
+                self.rootViewController?.present(viewController, animated: true)
+            } else if GKLocalPlayer.local.isAuthenticated {
+                print("Player authenticated successfully.")
             }
-            if let error {
-                // If you can’t authenticate the player, disable Game Center features in your game.
-                print("Error: \(error.localizedDescription).")
-                return
-            }
-            
-            // A value of nil for viewController indicates successful authentication, and you can access
-            // local player properties.
-            
-            // Load the local player's avatar.
-//            GKLocalPlayer.local.loadPhoto(for: GKPlayer.PhotoSize.small) { image, error in
-//                if let image {
-//                    self.myAvatar = Image(uiImage: image)
-//                }
-//                if let error {
-//                    // Handle an error if it occurs.
-//                    print("Error: \(error.localizedDescription).")
-//                }
-//            }
-            
-            // Add an access point to the interface.
-            GKAccessPoint.shared.location = .topLeading
-            GKAccessPoint.shared.showHighlights = true
-      //      GKAccessPoint.shared.isActive = true
         }
+    }
+    
+    var gameCenterViewController: GKGameCenterViewController?
+    
+    func showGKGameCenter(state: GKGameCenterViewControllerState) {
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated.")
+            return
+        }
+        
+        gameCenterViewController = nil
+        let gameCenterViewController = GKGameCenterViewController(state: state)
+        gameCenterViewController.gameCenterDelegate = self
+        
+        rootViewController?.present(gameCenterViewController, animated: true)
     }
  
     /// Saves the local player's score.
@@ -117,3 +125,10 @@ import SwiftUI
         })
     }
 }
+
+extension GameCenter: GKGameCenterControllerDelegate {
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+}
+

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HeaderModifier: ViewModifier {
-    var backgroundColor: Color = .lightGreen
+    var backgroundColor: Color = .accentColor  //.lightGreen
     var height: CGFloat = 100
     
     func body(content: Content) -> some View {
@@ -23,7 +23,7 @@ struct HeaderModifier: ViewModifier {
 }
 
 extension View {
-    func headerStyle(backgroundColor: Color = .lightGreen, height: CGFloat = 100) -> some View {
+    func headerStyle(backgroundColor: Color = .accentColor, height: CGFloat = 100) -> some View {
         self.modifier(HeaderModifier(backgroundColor: backgroundColor, height: height))
     }
 }

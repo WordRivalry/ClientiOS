@@ -35,30 +35,30 @@ enum ArenaMode: String, CaseIterable, Identifiable {
 
 enum LeaderboardType: String, TabViewEnum {
     var id: String { rawValue }
-    case overall = "Overall"
-    case arena = "Arena"
-    case achievements = "Achievements"
+    case level = "Level"
+    case allTimeStars = "Total Stars"
+    case CurrentStars = "Current Stars"
     
     // Custom header for each leaderboard section
     var header: String {
         switch self {
-        case .overall:
-            return "Overall Leaderboard"
-        case .arena:
-            return "Arena Competitions"
-        case .achievements:
-            return "Achievements Leaderbord"
+        case .level:
+            return "Level Leaderboard"
+        case .allTimeStars:
+            return "Total Stars Competitions"
+        case .CurrentStars:
+            return "Current Starsff Leaderbord"
         }
     }
     
     // Image name for each section
     var imageName: String {
         switch self {
-        case .overall:
+        case .level:
             return "Leaderboard/Overall"
-        case .arena:
+        case .allTimeStars:
             return "Leaderboard/Arena"
-        case .achievements:
+        case .CurrentStars:
             return "Leaderboard/Achievement"
         }
     }
@@ -66,11 +66,11 @@ enum LeaderboardType: String, TabViewEnum {
     // Menu options if needed
     var menuOptions: [String] {
         switch self {
-        case .overall:
+        case .level:
             return ["Global Rank", "Local Rank", "Friends Rank"]
-        case .arena:
+        case .allTimeStars:
             return ["1v1", "2v2", "3v3"]
-        case .achievements:
+        case .CurrentStars:
             return ["Unlocked", "Locked", "Progress"]
         }
     }
@@ -95,8 +95,7 @@ extension Color {
 }
 
 struct LeaderboardNavigationStack: View {
-    @Environment(LeaderboardViewModel.self) private var ldb
-    @State private var selectedLeaderboard: LeaderboardType = .overall
+    @State private var selectedLeaderboard: LeaderboardType = .level
     @State private var arenaMode: ArenaMode = .solo
     
     var body: some View {
@@ -112,12 +111,6 @@ struct LeaderboardNavigationStack: View {
                 selectedLeaderboard: $selectedLeaderboard, arenaMode: $arenaMode
             )
             Spacer()
-        }
-        .onAppear {
-            Task {
-                try await ldb.fetchData()
-            }
-           
         }
         .defaultBackgroundIgnoreSafeBottomArea()
     }

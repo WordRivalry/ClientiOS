@@ -20,6 +20,7 @@ struct Word_RivalryApp: App {
     @State private var gameCenter = GameCenter()
     @State private var localUser = LocalUser.shared
     @State private var network = NetworkMonitoring.shared
+    @State private var publicDb = PublicDatabase.shared
     
 //    let network = Network()
  //   let appServices = AppServiceManager()
@@ -46,7 +47,6 @@ struct Word_RivalryApp: App {
                 self.handleScheneChange()
             }
             .preferredColorScheme(colorSchemeManager.getPreferredColorScheme())
-            .environment(LeaderboardViewModel())
      //       .environment(purchaseManager)
             .environment(localUser)
             .environment(GlobalOverlay.shared)

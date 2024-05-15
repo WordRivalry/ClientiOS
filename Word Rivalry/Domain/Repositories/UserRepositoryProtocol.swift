@@ -23,5 +23,6 @@ protocol UserRepositoryProtocol {
     /// - Throws: Propagates errors if both the database and local storage fetching fail.
     func fetchLocalUser() async throws -> User
     func fetchAnyUser(by userID: String) async throws -> User
+    func fetchManyUser(by userIDs: [String]) async throws -> [User]
     func saveUser(_: User) async throws -> User
 }

@@ -68,6 +68,11 @@ protocol CloudKitManageable {
     ) async throws -> T
     
     func queryModels<T: CKModel>(
+        by key: T.Key,
+        values: [String]
+    ) async throws -> [T]
+
+    func queryModels<T: CKModel>(
         for key: T.Key,
         value: String,
         resultsLimit: Int
@@ -241,6 +246,15 @@ class ModelToCloudkit: CloudKitManageable {
     }
     
     // MARK: - Querying Records
+    
+    
+    func queryModels<T: CKModel>(
+        by key: T.Key,
+        values: [String]
+    ) async throws -> [T] {
+        let predicate = NSPredicate(format: "%K IN %@", T.forKey(key), values)
+        return try await findModels(using: predicate)
+    }
     
     func queryModel<T: CKModel>(by key: T.Key, value: String) async throws -> T {
         let ret: [T] = try await queryModels(for: key, value: value, resultsLimit: 1)

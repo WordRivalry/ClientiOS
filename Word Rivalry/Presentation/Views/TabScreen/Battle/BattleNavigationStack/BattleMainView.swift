@@ -8,6 +8,16 @@
 import SwiftUI
 import OSLog
 
+
+enum GKGameCenterViewControllerState2 : Int {
+   case `default`
+   case leaderboards
+   case achievements
+   case challenges
+   case localPlayerProfile
+   case dashboard
+}
+
 extension Logger {
     /// Bundle identifier is a great way to ensure a unique identifier.
     private static var subsystem = Bundle.main.bundleIdentifier!
@@ -41,6 +51,22 @@ struct BattleMainView: View {
                 withAnimation {
                     mainRouter.showMatchScreen = true
                 }
+            }
+            
+            BasicButton(text: "Dashbaoard") {
+                GameCenter.shared.showGKGameCenter(state: .localPlayerProfile
+                )
+            }
+            
+            BasicButton(text: "Leaderboards") {
+                GameCenter.shared.showGKGameCenter(state: .leaderboards
+                )
+            }
+            
+            
+            BasicButton(text: "Achievements") {
+                GameCenter.shared.showGKGameCenter(state: .achievements
+                )
             }
         }
         .fullScreenCover(isPresented: $router.showMatchScreen, content: {

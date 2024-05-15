@@ -18,7 +18,6 @@ struct ViewPreview<Content: View>: View {
         content()
             .environment(GlobalOverlay.shared)
             .environment(LocalUser.preview)
-            .environment(LeaderboardViewModel.preview)
             .environment(PurchaseManager())
             .environment(InGameDisplaySettings())
             .environment(SoloGameViewModel.preview)

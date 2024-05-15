@@ -36,8 +36,8 @@ struct GameResultsView: View {
                     .padding(.top, 40)
                 
                 RankUpdateView(
-                    oldRating: localUser.user.currentPoints,
-                    newRating: localUser.user.currentPoints  + 20
+                    oldRating: localUser.user.currentStars,
+                    newRating: localUser.user.currentStars  + 20
                 )
                 
                 Divider()
